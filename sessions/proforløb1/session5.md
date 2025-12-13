@@ -1,0 +1,41 @@
+# Session 5
+
+## 1. Opvarmning – 5 minutter
+**Formål:** Øge kropstemperaturen, mobilisere leddene og forberede kroppen.
+
+**Øvelser (ca. 1 minut pr. øvelse):**
+- Let jog / sideskift
+- Jockey-bevægelser
+- Høje knæ & baglæns spark
+- Skipping / hoftebevægelse
+- Step-step / sidestep
+- Low skip
+- Fod til fod / hoftemobilitet
+- "Ned og samle op" / spark bevægelse
+
+## 2. Atletiske bevægelser & hurtighed – 25 minutter
+**Formål:** Forbedre acceleration, retningsskift og generel bevægelseskvalitet.
+
+**Agility med kegler:**
+- 4x to-fod mellem
+- 4x en-fod mellem
+- 4x to fod mellem og til siden
+- 4x single leg jumps
+
+**Agility bane (6 gentagelser):**
+- 5x mechanics, sprint til bold, drible, aflever, modtag og drible
+
+## 3. Afleveringer og indgå i spil – 30 minutter
+**Formål:** Træne det at indgå i spil med medspillere på få berøringer og med fart.
+
+**Øvelser:**
+- 3x1 minut af variationer med inderside, vrist og ved jorden
+- 3x1 minut med two-touch aflevering
+- 3x1 minut af aflevering med kegle kald samt afslutning med dribling
+
+## 4. Afslutninger – 15-20 minutter
+**Formål:** Træne afslutninger på mål.
+
+**Øvelser:**
+- Afslutninger fra 3 vinkler cirka 10-12 afslutninger ved hver vinkel
+- 10x Afslutning efter kombination
