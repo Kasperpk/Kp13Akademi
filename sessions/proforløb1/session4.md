@@ -1,0 +1,46 @@
+# Session 4
+
+## 1. Opvarmning – 5 minutter
+**Formål:** Øge kropstemperaturen, mobilisere leddene og forberede kroppen.
+
+**Øvelser (ca. 1 minut pr. øvelse):**
+- Let jog / sideskift
+- Jockey-bevægelser
+- Høje knæ & baglæns spark
+- Skipping / hoftebevægelse
+- Step-step / sidestep
+- Low skip
+- Fod til fod / hoftemobilitet
+- "Ned og samle op" / spark bevægelse
+
+## 2. Atletiske bevægelser & hurtighed – 15 minutter
+**Formål:** Forbedre acceleration, retningsskift og generel bevægelseskvalitet.
+
+**Firkant-øvelser (3 x 30 sekunder pr. øvelse):**
+- Stationære sprints
+- Side-til-side bevægelse
+- Kryds Sprint
+
+## 3. Ball Mastery – 10-15 minutter
+**Formål:** Skabe tryghed og kontrol med bolden.
+
+**Øvelser:**
+- Dribling 8 taller mellem 2-3 kegler (3 x 40 sek)
+- Variationer: Kigge op og kalde farver på kegler ved runding af kegler (3x 40 sek)
+  - *Note: Super god øvelse og Levi gjorde det godt. Noget vi skal fokusere på at differentiere mellem eksekvering og få ideer på banen*
+- Variationer: Drible 8 taller, med introduktion af nye kegler der skal dribles rundt om undervejs (3 x 40 sek)
+  - *Note: Levi arbejder godt under øvelserne og vi forsøgte at presse tempoet lidt i vejret undervejs*
+
+## 4. Afleveringer og indgå i spil – 20 minutter
+**Formål:** Træne det at indgå i spil med medspillere på få berøringer og med fart.
+
+**Øvelser:**
+- 3 x 40 sec aflevering i luften med inderside/vrist/ved jorden, bakke baglæns på kald og indtil kegle, hvorefter udfordring
+- Two-touch aflerveringer med fokus på hurtigt træk forbi modstander og kvalitet i eksekvering (3x40 sek)
+- Bandespil, med dribling om kegler ved kald på farve af kegle (5 x 40 sekunder)
+
+## 5. Afslutninger – 15-20 minutter
+**Formål:** Træne afslutninger på mål.
+
+**Øvelser:**
+- Opsætning af spilsituationer med fokus på at Levi skal finde løsning og eksekvere på det
