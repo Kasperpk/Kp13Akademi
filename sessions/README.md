@@ -12,32 +12,55 @@ The sessions are organized into two main programs:
 
 All training sessions follow a standardized markdown format with the following structure:
 
-### Standard Session Structure
+### Danish Session Template
 
 ```markdown
 # Session [Number]
 
-## 1. Opvarmning/Warm-up – [Time] minutter
-**Formål/Purpose:** [Purpose description]
+## 1. Opvarmning – [Time] minutter
+**Formål:** [Purpose description]
 
-**Øvelser/Exercises:**
+**Øvelser:**
 - [Exercise 1]
 - [Exercise 2]
 
 ## 2. [Main Training Block 1] – [Time] minutter
-**Formål/Purpose:** [Purpose description]
+**Formål:** [Purpose description]
 
-**Øvelser/Exercises:**
+**Øvelser:**
 - [Exercise 1]
 - [Exercise 2]
 
-## 3. [Main Training Block 2] – [Time] minutter
-...
+## N. Afslutninger – [Time] minutter
+**Formål:** [Purpose description]
 
-## N. Afslutninger/Finishing – [Time] minutter
-**Formål/Purpose:** [Purpose description]
+**Øvelser:**
+- [Exercise 1]
+```
 
-**Øvelser/Exercises:**
+### English Session Template
+
+```markdown
+# Session [Number]
+
+## 1. Warm-up – [Time] minutes
+**Purpose:** [Purpose description]
+
+**Exercises:**
+- [Exercise 1]
+- [Exercise 2]
+
+## 2. [Main Training Block 1] – [Time] minutes
+**Purpose:** [Purpose description]
+
+**Exercises:**
+- [Exercise 1]
+- [Exercise 2]
+
+## N. Finishing – [Time] minutes
+**Purpose:** [Purpose description]
+
+**Exercises:**
 - [Exercise 1]
 ```
 
