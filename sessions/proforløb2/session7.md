@@ -32,17 +32,13 @@ Session 7 fokuserer på at udvikle spilleren til den bedste fodboldspiller han k
 
 **Øvelser:**
 
-### Del A: Eksplosive bevægelser (8 minutter)
+### Del A: Eksplosive bevægelser (20 minutter)
 - Stationære sprints med eksplosiv start (6x - fokus på første 3 skridt)
-- Single leg jumps for balance og styrke (6x hver ben)
-- Reactive sprints med visuel signal - coach peger retning, spiller reagerer (8x)
 - Lateral shuffles til sprint transition (6x - til hver side)
-
-### Del B: Agilitet med retningsskift (12 minutter)
+- Single leg jumps for balance og styrke (6x hver ben)
 - Angled sprints i Z-formation med maksimal fart (6x)
 - Cone weave sprint uden bold - fokus på lave hofter og hurtige fødder (6x)
-- T-drill: Sprint frem, side til side shuffle, sprint tilbage (5x)
-- Box drill med eksplosive retningsskift i alle 4 retninger (4x)
+- Reactive sprints med visuel signal - coach peger retning, spiller reagerer (8x)
 - 180 og 360 graders vendinger med eksplosiv acceleration efter (6x kombineret)
 
 *Coaching note: Fokuser på korrekt teknik - lave hofter, hurtig fodkontakt med jorden, armenes betydning for balance og acceleration*
@@ -58,7 +54,6 @@ Session 7 fokuserer på at udvikle spilleren til den bedste fodboldspiller han k
 - Tennisbold udfordring: Dribl mens du jonglerer tennisbold i hænderne (2 minutter)
 
 ### Del B: Dynamisk dribling (12 minutter)
-- Cone weave med tætte kegler (1 meter afstand) - fokus på tæt boldkontrol (8x med godt ben, 4x med svagt ben)
 - Figure-8 driblinger rundt om 2 kegler med tempo eskalering:
   - Runde 1-2: Kontrolleret tempo
   - Runde 3-4: Moderat tempo
