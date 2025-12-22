@@ -8,6 +8,9 @@ The sessions are organized into two main programs:
 - **proforløb1/** - Pro Course 1 sessions
 - **proforløb2/** - Pro Course 2 sessions (advanced level)
 
+### Additional Standalone Sessions:
+- **strength-training-fundamental.md** - 30-minute fundamental strength training for professional football preparation (ages 16-25)
+
 ## Session Format
 
 All training sessions follow a standardized markdown format with the following structure:
