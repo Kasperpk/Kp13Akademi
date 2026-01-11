@@ -381,9 +381,9 @@ This session gave you approximately **800-1000 quality touches** with the ball. 
 5. **Watch professional players** and try to copy their moves
 
 ### Additional Training:
-- **Ball Mastery 35-minute session** (in /ball mastery/ folder) for pure technical work
-- **Session 10** (in /sessions/proforløb1/) for more advanced coordination
-- **Strength training fundamentals** when age 13+ (in /sessions/)
+- **Ball Mastery 35-minute session** (/ball mastery/ball-mastery-session.md) for pure technical work
+- **Session 10** (/sessions/proforløb1/session10.md) for more advanced coordination
+- **Strength training fundamental** when age 13+ (/sessions/strength-training-fundamental.md)
 
 ---
 
