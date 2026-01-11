@@ -9,6 +9,8 @@ The sessions are organized into two main programs:
 - **proforløb2/** - Pro Course 2 sessions (advanced level)
 
 ### Additional Standalone Sessions:
+- **indoor-training-age10.md** - 40-minute comprehensive indoor training session for 10-year-old aspiring top player (winter conditions)
+- **indoor-training-age10-quick-reference.md** - Quick reference guide for recording the indoor training session
 - **strength-training-fundamental.md** - 30-minute fundamental strength training for professional football preparation (ages 16-25)
 
 ## Session Format
