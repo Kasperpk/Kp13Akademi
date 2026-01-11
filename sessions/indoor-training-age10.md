@@ -339,7 +339,7 @@ Each sequence 20 seconds, repeat 5 times:
 
 1. **MAXIMUM TOE TAPS** (20 sec)
    - Absolute fastest you can go
-   - Count them - try to break 80!
+   - Count them - try to break 50! (Elite level: 60+)
    - REST 10 sec
 
 2. **EXPLOSIVE CUTS** (20 sec)
@@ -589,7 +589,8 @@ That's ALL you need!
 ## Tracking Progress - INTENSITY METRICS
 
 ### Keep Track of These Numbers:
-- [ ] Toe taps in 40 seconds (Goal: 80+)
+- [ ] Toe taps in 40 seconds (Goal: 60-80, Elite: 80+)
+- [ ] Toe taps in 20 seconds (Goal: 40-50, Elite: 60+)
 - [ ] Cuts in 30 seconds (Goal: 15+)
 - [ ] Complete 1v1 sequences in 20 seconds (Goal: 4-5)
 - [ ] Touches in tight box 20 seconds (Goal: 30+)
