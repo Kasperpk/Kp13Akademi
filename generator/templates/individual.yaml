@@ -1,0 +1,73 @@
+name: "Individual Session"
+context: "individual"
+total_duration_minutes: [75, 90]
+
+phases:
+  - name: "Warm-up & Activation"
+    duration_minutes: [8, 12]
+    required_categories:
+      - warmup
+      - ball_mastery
+    min_exercises: 2
+    max_exercises: 4
+    notes: >
+      Start with dynamic movement, transition quickly to ball work.
+      Every warm-up should include a ball. Build intensity gradually.
+
+  - name: "Ball Mastery & Technical"
+    duration_minutes: [15, 20]
+    required_categories:
+      - ball_mastery
+      - agility
+    min_exercises: 3
+    max_exercises: 6
+    notes: >
+      Progressive difficulty: foundation → speed → combinations.
+      PersianBall intensity — maximum speed touches with short rest.
+      Equal work on both feet. Head up whenever possible.
+
+  - name: "Passing & Receiving"
+    duration_minutes: [12, 18]
+    required_categories:
+      - passing
+      - receiving
+    min_exercises: 2
+    max_exercises: 5
+    notes: >
+      Two-touch and one-touch passing. Directional first touch.
+      Always receive with purpose — touch away from pressure.
+      Include aerial control if player is ready.
+
+  - name: "Game-Realistic Pressure"
+    duration_minutes: [12, 18]
+    required_categories:
+      - one_v_one
+      - receiving
+    min_exercises: 2
+    max_exercises: 4
+    notes: >
+      Simulate match pressure: 1v1 scenarios, receiving under pressure,
+      turning with a defender behind. Fatigue-state decision-making.
+      Coach provides active pressure where possible.
+
+  - name: "Finishing"
+    duration_minutes: [12, 18]
+    required_categories:
+      - finishing
+    min_exercises: 2
+    max_exercises: 5
+    notes: >
+      Finish under fatigue — this phase comes late deliberately.
+      Vary angles, distances, and techniques.
+      Include combination play into finishing where possible.
+      Both feet. Weak foot gets equal or more reps.
+
+  - name: "Cool Down"
+    duration_minutes: [3, 5]
+    required_categories:
+      - cool_down
+    min_exercises: 1
+    max_exercises: 3
+    notes: >
+      Gentle ball work, static stretching, reflection.
+      Ask: What was your best moment? What will you work on?

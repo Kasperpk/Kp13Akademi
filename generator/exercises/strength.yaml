@@ -1,0 +1,190 @@
+exercises:
+  - id: str_jump_squats
+    name: "Jump Squats"
+    description: "Quarter squat → explosive jump as high as possible → land softly with bent knees. 10 reps per set."
+    category: strength
+    coaching_points:
+      - "Explode up, land soft"
+      - "Knees track over toes on landing"
+      - "Arms drive the jump"
+    age_range: [12, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: []
+    duration_seconds: [30, 60]
+    intensity: high
+    methodology_tags: [explicit_instruction]
+    physical_tags: [power, acceleration]
+    source: "existing_library"
+
+  - id: str_single_leg_rdl
+    name: "Single-Leg Romanian Deadlift"
+    description: "Balance on one leg, hinge at hips, reach toward ground, return via glute and hamstring. 8 reps each leg."
+    category: strength
+    coaching_points:
+      - "Flat back throughout"
+      - "Squeeze glute at the top"
+      - "Trailing leg stays in line with torso"
+    age_range: [12, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: []
+    duration_seconds: [30, 60]
+    intensity: moderate
+    methodology_tags: [explicit_instruction, both_feet]
+    physical_tags: [stability, power]
+    source: "existing_library"
+
+  - id: str_lateral_bounds
+    name: "Lateral Bounds"
+    description: "Stand on one leg, push off laterally, land on opposite leg, stabilize 2 seconds, bound back. 8 reps each side."
+    category: strength
+    coaching_points:
+      - "Stick the landing — no wobble"
+      - "Push off powerfully from standing leg"
+      - "2-second hold develops stability"
+    age_range: [12, 25]
+    min_players: 1
+    max_players: null
+    space: small_10x10
+    equipment: []
+    duration_seconds: [30, 60]
+    intensity: high
+    methodology_tags: [both_feet]
+    physical_tags: [power, stability, change_of_direction]
+    source: "existing_library"
+
+  - id: str_bulgarian_split_squat
+    name: "Bulgarian Split Squats"
+    description: "Rear foot elevated on bench or step. Front leg squat to full depth. 10 reps each leg. Key single-leg strength exercise."
+    category: strength
+    coaching_points:
+      - "Front knee tracks over toe"
+      - "Torso upright"
+      - "Depth is important — go low"
+    age_range: [14, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: []
+    duration_seconds: [45, 90]
+    intensity: moderate
+    methodology_tags: [both_feet, explicit_instruction]
+    physical_tags: [power, stability]
+    source: "existing_library"
+
+  - id: str_glute_bridges
+    name: "Glute Bridges"
+    description: "Lie on back, knees bent, drive hips up squeezing glutes, hold top 2 seconds, lower. 2 x 10 reps."
+    category: strength
+    coaching_points:
+      - "Squeeze glutes at the top — don't hyperextend"
+      - "Drive through heels"
+      - "Core tight throughout"
+    age_range: [10, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: []
+    duration_seconds: [30, 60]
+    intensity: low
+    methodology_tags: [explicit_instruction]
+    physical_tags: [stability, power]
+    source: "existing_library"
+
+  - id: str_plank_hold
+    name: "Plank Hold"
+    description: "Forearm plank, neutral spine, squeeze core and glutes. 2 x 20-30 seconds."
+    category: strength
+    coaching_points:
+      - "Straight line from head to heels"
+      - "Don't sag hips or pike up"
+      - "Breathe normally — don't hold breath"
+    age_range: [8, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: []
+    duration_seconds: [20, 40]
+    intensity: moderate
+    methodology_tags: [explicit_instruction]
+    physical_tags: [stability]
+    source: "existing_library"
+
+  - id: str_dead_bug
+    name: "Dead Bug"
+    description: "Lie on back, arms up, knees 90°. Lower opposite arm and leg simultaneously while keeping back flat. 10 reps each side."
+    category: strength
+    coaching_points:
+      - "Back stays flat on ground — no arching"
+      - "Slow and controlled movement"
+      - "Breathe out as you extend"
+    age_range: [10, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: []
+    duration_seconds: [30, 60]
+    intensity: moderate
+    methodology_tags: [explicit_instruction]
+    physical_tags: [stability]
+    source: "existing_library"
+
+  - id: str_side_plank_hip_dip
+    name: "Side Plank with Hip Dip"
+    description: "Side plank on elbow, lower hip to just above ground, raise above neutral. 8 reps each side. Oblique stability."
+    category: strength
+    coaching_points:
+      - "Stack feet or stagger for balance"
+      - "Full range: dip low, raise high"
+      - "Core tight throughout"
+    age_range: [10, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: []
+    duration_seconds: [30, 60]
+    intensity: moderate
+    methodology_tags: [explicit_instruction]
+    physical_tags: [stability]
+    source: "existing_library"
+
+  - id: str_mountain_climbers
+    name: "Mountain Climbers (Slow & Controlled)"
+    description: "High plank, drive knee to chest alternating, keep hips level. 20 reps total (10 each side). Core endurance."
+    category: strength
+    coaching_points:
+      - "Hips stay level — don't bounce"
+      - "Slow: 2 seconds per rep"
+      - "Core braced throughout"
+    age_range: [10, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: []
+    duration_seconds: [30, 60]
+    intensity: moderate
+    methodology_tags: [explicit_instruction]
+    physical_tags: [stability, endurance]
+    source: "existing_library"
+
+  - id: str_nordic_hamstring_curl
+    name: "Nordic Hamstring Curls"
+    description: "Kneel with ankles secured, lower body forward slowly (5-second descent), catch with hands, push back up. 3 x 5 reps. Key injury prevention."
+    category: strength
+    coaching_points:
+      - "5-second descent — resist the fall"
+      - "Hips stay extended — don't fold at waist"
+      - "This prevents hamstring injuries — take it seriously"
+    age_range: [14, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: []
+    duration_seconds: [60, 120]
+    intensity: high
+    methodology_tags: [explicit_instruction]
+    physical_tags: [stability, power]
+    source: "existing_library"

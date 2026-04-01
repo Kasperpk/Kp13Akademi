@@ -1,0 +1,180 @@
+exercises:
+  - id: cd_gentle_dribble
+    name: "Gentle Dribbling Cool Down"
+    description: "Soft touches, walking pace dribbling. Focus on breathing and recovery while maintaining ball contact."
+    category: cool_down
+    coaching_points:
+      - "Breathing: slow, deep breaths"
+      - "Lightest possible touches"
+      - "Let heart rate come down gradually"
+    age_range: [6, 25]
+    min_players: 1
+    max_players: null
+    space: small_10x10
+    equipment: [ball]
+    duration_seconds: [30, 60]
+    intensity: low
+    methodology_tags: [periodization_recovery]
+    physical_tags: [flexibility]
+    la_masia_principles: [technical_excellence]
+    source: "existing_library"
+    setup: |
+      Each player has a ball. Use the full training area (no grid needed).
+      Walk slowly around the space, gently touching the ball with every step.
+      Alternate: inside foot, outside foot, sole taps.
+      Coach leads by example — walking pace, calm voice.
+      Duration: 1-2 minutes. Heart rate should visibly drop.
+    diagram: |
+      ┌──────────────────────┐
+      │  ● →   ● →          │   ● = player with ball
+      │       ● →    ● →    │   → = walking direction
+      │  ● →         ● →    │
+      │      ● →  ● →       │   Gentle dribble, walking pace
+      └──────────────────────┘   Use full space, no grid needed
+
+  - id: cd_sole_rolls_slow
+    name: "Slow Sole Rolls"
+    description: "Calm, controlled sole rolls — forward, backward, circular. Mindful ball contact while recovering."
+    category: cool_down
+    coaching_points:
+      - "No rushing — deliberate and slow"
+      - "Feel every part of the sole on the ball"
+      - "Deep breathing throughout"
+    age_range: [6, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: [ball]
+    duration_seconds: [30, 60]
+    intensity: low
+    methodology_tags: [periodization_recovery, both_feet]
+    physical_tags: [flexibility, stability]
+    la_masia_principles: [technical_excellence]
+    source: "existing_library"
+    setup: |
+      Each player stands with ball at feet. No movement needed — stationary.
+      Sequence (30 sec each, both feet):
+      1. Sole rolls forward/back (roll ball under sole gently)
+      2. Sole rolls side to side
+      3. Circular sole rolls (small circles with sole on ball)
+      Coach counts breathing: "Breathe in 4 counts... out 4 counts..."
+    diagram: |
+      Player stands still with ball:
+      
+          ○  ← player
+         /|\
+          |
+        ──●──  ← ball under sole
+      
+      Forward/back → Side to side → Circles
+      Both feet. Slow. Breathe deeply.
+
+  - id: cd_static_stretching
+    name: "Static Stretching Routine"
+    description: "Full body static stretch: hamstrings (30s per leg), quads (30s), hip flexors (30s per side), calves (30s), glutes (figure-4, 30s)."
+    category: cool_down
+    coaching_points:
+      - "Hold each stretch — no bouncing"
+      - "Breathe into the stretch"
+      - "This is recovery — treat it seriously"
+    age_range: [6, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: []
+    duration_seconds: [120, 240]
+    intensity: low
+    methodology_tags: [periodization_recovery]
+    physical_tags: [flexibility]
+    source: "existing_library"
+    setup: |
+      Players sit/stand in a circle or scatter in the area.
+      Coach leads through the routine — demonstrate each stretch.
+      Order (hold each 30 seconds per side):
+      1. Hamstrings: seated toe-touch or standing leg on ball
+      2. Quads: standing, grab ankle behind
+      3. Hip flexors: kneeling lunge
+      4. Calves: push against wall stance
+      5. Glutes: seated figure-4 (ankle on opposite knee)
+      Keep talking — use this time for reflection too.
+    diagram: |
+      Players in circle, coach in centre:
+      
+          ●   ●   ●
+        ●           ●
+        ●   COACH   ●     Coach demonstrates each stretch.
+        ●           ●     Hold 30 sec per side.
+          ●   ●   ●       No bouncing. Breathe deeply.
+      
+      Sequence: Hamstrings → Quads → Hip flexors → Calves → Glutes
+
+  - id: cd_juggling_fun
+    name: "Juggling / Freestyle (For Fun)"
+    description: "Free juggling or freestyle tricks. No pressure, just enjoy the ball. Celebrates the end of a tough session."
+    category: cool_down
+    coaching_points:
+      - "Have fun — no pressure"
+      - "Try new tricks you wouldn't normally try"
+      - "Celebrate your hard work today"
+    age_range: [6, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: [ball]
+    duration_seconds: [60, 180]
+    intensity: low
+    methodology_tags: [implicit_learning]
+    physical_tags: [stability]
+    la_masia_principles: [technical_excellence]
+    source: "existing_library"
+    setup: |
+      Each player has a ball. Spread out — lots of space.
+      "Free time! Juggle, try tricks, have fun."
+      No instruction. No pressure. Let them experiment.
+      For U7-U9: challenge them "Can you beat your record?"
+      Coach can juggle alongside — model enjoyment.
+      Duration: 1-3 minutes as a wind-down reward.
+    diagram: |
+      ┌────────────────────────┐
+      │  ●↑    ●↑      ●↑     │   ● = player
+      │     ●↑      ●↑        │   ↑ = ball in air (juggling)
+      │  ●↑      ●↑    ●↑     │
+      │     ●↑         ●↑     │   Free space. No structure.
+      └────────────────────────┘   Just enjoy the ball!
+
+  - id: cd_reflection
+    name: "Group/Individual Reflection"
+    description: "Guided reflection: What was your best moment? What will you work on next? What did you learn about yourself today?"
+    category: cool_down
+    coaching_points:
+      - "Encourage honest self-reflection"
+      - "Celebrate effort, not just outcomes"
+      - "Positive reinforcement always"
+    age_range: [6, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: []
+    duration_seconds: [60, 150]
+    intensity: low
+    methodology_tags: [explicit_instruction]
+    physical_tags: []
+    source: "existing_library"
+    setup: |
+      Players sit in a circle (or semi-circle facing coach).
+      Coach asks 3 questions — go around the circle:
+      1. "What was your best moment today?"
+      2. "What is one thing you want to improve?"
+      3. "What did you learn?"
+      For young players (U7-U9): keep it to 1 question, max 2 min.
+      End with: "Great session. Be proud of your effort."
+    diagram: |
+      Players seated in circle:
+      
+          ●   ●   ●
+        ●           ●
+        ●   COACH   ●     Coach asks reflection questions.
+        ●           ●     Go around circle.
+          ●   ●   ●       Keep it short for young players.
+      
+      "What was your best moment today?"

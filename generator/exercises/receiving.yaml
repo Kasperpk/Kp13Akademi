@@ -1,0 +1,204 @@
+exercises:
+  - id: recv_directional_first_touch
+    name: "Directional First Touch (Edge of Square)"
+    description: "Receive ball on edge of a square, first touch must take ball in a specific direction away from imaginary pressure. Practice all 4 directions."
+    category: receiving
+    coaching_points:
+      - "Check shoulder before ball arrives — know where pressure is"
+      - "Open body toward the direction you want to go"
+      - "First touch is decisive — no extra adjustments"
+      - "Touch into space, not under your feet"
+    age_range: [7, 25]
+    min_players: 1
+    max_players: 12
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [120, 300]
+    intensity: moderate
+    methodology_tags: [game_realistic, explicit_instruction, both_feet]
+    physical_tags: [change_of_direction]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "existing_library"
+
+  - id: recv_step_through_cones_receive
+    name: "Step Through Cones and Receive"
+    description: "Player steps through a cone gate, creates space, then receives pass. Focus on movement before receiving — don't wait for the ball standing still."
+    category: receiving
+    coaching_points:
+      - "Movement creates the passing lane"
+      - "Check shoulder during the run"
+      - "Receive on the move — don't stop"
+    age_range: [7, 25]
+    min_players: 2
+    max_players: 12
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [120, 300]
+    intensity: moderate
+    methodology_tags: [game_realistic, decision_making]
+    physical_tags: [acceleration]
+    la_masia_principles: [technical_excellence, positional_play]
+    source: "existing_library"
+
+  - id: recv_behind_defense_turn
+    name: "Receive Behind Defense and Turn"
+    description: "Ball played into player who receives with back to goal (imaginary defender behind). Must control, turn, and create forward opportunity."
+    category: receiving
+    coaching_points:
+      - "Check shoulder — know defender's position"
+      - "Body side-on if possible for quicker turn"
+      - "Shield ball on touch, then accelerate away"
+      - "Decide before receiving: turn or lay off"
+    age_range: [8, 25]
+    min_players: 1
+    max_players: 8
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [120, 300]
+    intensity: moderate
+    methodology_tags: [game_realistic, decision_making]
+    physical_tags: [change_of_direction, acceleration]
+    la_masia_principles: [technical_excellence]
+    source: "existing_library"
+
+  - id: recv_one_touch_turn
+    name: "One-Touch Turn"
+    description: "Receive and turn in a single touch — using Cruyff turn, outside hook, or inside flick. Ball and body change direction simultaneously."
+    category: receiving
+    coaching_points:
+      - "Pre-scan: know which turn to use before ball arrives"
+      - "Cruyff: hook behind standing leg"
+      - "Outside hook: open and spin"
+      - "Accelerate immediately out of the turn"
+    age_range: [8, 25]
+    min_players: 1
+    max_players: 8
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [60, 180]
+    intensity: moderate
+    methodology_tags: [game_realistic, both_feet]
+    physical_tags: [change_of_direction, acceleration]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "existing_library"
+
+  - id: recv_aerial_control
+    name: "Aerial Control"
+    description: "Control airborne balls using chest-to-foot, thigh-to-foot, or direct foot control. Ball tossed from various heights and angles."
+    category: receiving
+    coaching_points:
+      - "Get in line with the ball"
+      - "Cushion — withdraw the surface on contact"
+      - "First touch down and into space"
+    age_range: [7, 25]
+    min_players: 1
+    max_players: null
+    space: small_10x10
+    equipment: [ball]
+    duration_seconds: [120, 300]
+    intensity: moderate
+    methodology_tags: [explicit_instruction, both_feet]
+    physical_tags: [stability]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "existing_library"
+
+  - id: recv_check_receive_turn_go
+    name: "Check-Receive-Turn-Go"
+    description: "Full sequence: check shoulder, receive, quick turn, explode forward with ball. 5-6 reps in 20 seconds. PersianBall intensity."
+    category: receiving
+    coaching_points:
+      - "Shoulder check before ball arrives"
+      - "First touch sets up the turn"
+      - "Explosion forward is match-speed"
+      - "Don't pause between steps"
+    age_range: [8, 25]
+    min_players: 1
+    max_players: null
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [15, 30]
+    intensity: high
+    methodology_tags: [game_realistic, both_feet]
+    physical_tags: [acceleration, change_of_direction]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "persianball"
+
+  - id: recv_pressure_control
+    name: "Pressure Control (Defender on Back)"
+    description: "Imagine defender on back. Receive, shield ball with body, turn away from pressure, burst forward. Develop physicality in receiving."
+    category: receiving
+    coaching_points:
+      - "Feel the defender — use your body"
+      - "Low center of gravity when shielding"
+      - "Turn into space, not into pressure"
+    age_range: [8, 25]
+    min_players: 1
+    max_players: 8
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [60, 180]
+    intensity: high
+    methodology_tags: [game_realistic]
+    physical_tags: [stability, power]
+    la_masia_principles: [technical_excellence]
+    source: "persianball"
+
+  - id: recv_fake_and_turn
+    name: "Fake and Turn"
+    description: "Receive ball, fake to go one direction with body shape, spin and go opposite direction. Deceive the imaginary defender."
+    category: receiving
+    coaching_points:
+      - "Sell the fake with shoulder drop"
+      - "Quick feet on the turn"
+      - "Accelerate away immediately"
+    age_range: [8, 25]
+    min_players: 1
+    max_players: 8
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [60, 180]
+    intensity: moderate
+    methodology_tags: [game_realistic, both_feet]
+    physical_tags: [change_of_direction, deceleration, acceleration]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "existing_library"
+
+  - id: recv_first_touch_away
+    name: "First Touch Away from Pressure"
+    description: "Roll ball to yourself, take first touch away from imaginary pressure direction, then explode into space. PersianBall rapid reps."
+    category: receiving
+    coaching_points:
+      - "Decide which direction before ball arrives"
+      - "Touch is firm enough to move ball 1-2m away"
+      - "Explode onto the touch — run with it"
+    age_range: [7, 25]
+    min_players: 1
+    max_players: null
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [15, 30]
+    intensity: high
+    methodology_tags: [game_realistic, both_feet]
+    physical_tags: [acceleration]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "persianball"
+
+  - id: recv_under_pressure_simulation
+    name: "Under Pressure Simulation (Full Sequence)"
+    description: "Complete game-realistic sequence: check shoulder → receive → turn → move → explode. 20-second rounds, maximum quality."
+    category: receiving
+    coaching_points:
+      - "Every step has a purpose"
+      - "Speed of thought before speed of feet"
+      - "This is what elite players do 500 times per match"
+    age_range: [8, 25]
+    min_players: 1
+    max_players: 8
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [15, 30]
+    intensity: high
+    methodology_tags: [game_realistic, both_feet]
+    physical_tags: [acceleration, change_of_direction]
+    la_masia_principles: [technical_excellence]
+    source: "persianball"

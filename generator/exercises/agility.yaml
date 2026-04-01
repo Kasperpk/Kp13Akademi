@@ -1,0 +1,266 @@
+exercises:
+  - id: agil_stationary_sprints
+    name: "Stationary Sprints"
+    description: "Explosive sprint from static start. 3 x 20-30 second rounds. Focus on first-step explosivity and arm drive."
+    category: agility
+    coaching_points:
+      - "Low start position"
+      - "Drive arms powerfully"
+      - "First 3 steps are the most important"
+    age_range: [7, 25]
+    min_players: 1
+    max_players: null
+    space: small_10x10
+    equipment: [cones]
+    duration_seconds: [15, 30]
+    intensity: maximum
+    methodology_tags: [explicit_instruction]
+    physical_tags: [acceleration, power]
+    source: "existing_library"
+
+  - id: agil_side_to_side_shuffle
+    name: "Side-to-Side Lateral Shuffle"
+    description: "Quick lateral shuffle between two cones. Stay low in athletic position. 3 x 20-30 seconds."
+    category: agility
+    coaching_points:
+      - "Low center of gravity"
+      - "Push off trailing foot"
+      - "Don't cross feet"
+    age_range: [6, 25]
+    min_players: 1
+    max_players: null
+    space: small_10x10
+    equipment: [cones]
+    duration_seconds: [15, 30]
+    intensity: high
+    methodology_tags: [game_realistic]
+    physical_tags: [change_of_direction, acceleration]
+    source: "existing_library"
+
+  - id: agil_cross_sprint
+    name: "Cross/Diagonal Sprints"
+    description: "Sprint diagonally across grid in X pattern. Decelerate at each corner, change direction, explode to next. Multi-directional."
+    category: agility
+    coaching_points:
+      - "Decelerate with small steps before the turn"
+      - "Low during the turn, explode out"
+      - "Use different turning techniques"
+    age_range: [7, 25]
+    min_players: 1
+    max_players: null
+    space: small_10x10
+    equipment: [cones]
+    duration_seconds: [15, 30]
+    intensity: maximum
+    methodology_tags: [game_realistic]
+    physical_tags: [acceleration, deceleration, change_of_direction]
+    source: "existing_library"
+
+  - id: agil_up_down_turns
+    name: "Up-Down Sprints with Turns"
+    description: "Sprint forward, turn 180° at cone, sprint back. Work on deceleration before turn and acceleration out."
+    category: agility
+    coaching_points:
+      - "Chop steps to decelerate"
+      - "Low through the turn"
+      - "Explode out — don't drift"
+    age_range: [6, 25]
+    min_players: 1
+    max_players: null
+    space: small_10x10
+    equipment: [cones]
+    duration_seconds: [10, 20]
+    intensity: high
+    methodology_tags: [game_realistic]
+    physical_tags: [deceleration, acceleration, change_of_direction]
+    source: "existing_library"
+
+  - id: agil_side_hop_sprint
+    name: "Side Hop and Sprint"
+    description: "Lateral hops (2-3 hops), then explosive forward sprint. Develops lateral power transfer into linear speed."
+    category: agility
+    coaching_points:
+      - "Land softly on each hop"
+      - "Transition to sprint is instant"
+      - "Drive forward, not up"
+    age_range: [7, 25]
+    min_players: 1
+    max_players: null
+    space: small_10x10
+    equipment: [cones]
+    duration_seconds: [15, 30]
+    intensity: high
+    methodology_tags: [game_realistic]
+    physical_tags: [power, acceleration, change_of_direction]
+    source: "existing_library"
+
+  - id: agil_two_foot_between_cones
+    name: "Two-Foot Jumps Between Cones"
+    description: "Jump forward with both feet between cone gates. Focus on landing stability and quick re-jump. Bilateral power exercise."
+    category: agility
+    coaching_points:
+      - "Land with both feet simultaneously"
+      - "Absorb landing, don't collapse"
+      - "Minimize ground contact time"
+    age_range: [6, 25]
+    min_players: 1
+    max_players: null
+    space: small_10x10
+    equipment: [cones]
+    duration_seconds: [15, 30]
+    intensity: moderate
+    methodology_tags: [explicit_instruction]
+    physical_tags: [power, stability]
+    source: "existing_library"
+
+  - id: agil_single_leg_hops
+    name: "Single-Leg Hops"
+    description: "Hop forward on one leg through cone gates. Develop single-leg power and landing stability. Both legs equally."
+    category: agility
+    coaching_points:
+      - "Knee drives forward on each hop"
+      - "Land softly with bent knee"
+      - "Equal reps on both legs"
+    age_range: [7, 25]
+    min_players: 1
+    max_players: null
+    space: small_10x10
+    equipment: [cones]
+    duration_seconds: [15, 30]
+    intensity: moderate
+    methodology_tags: [both_feet]
+    physical_tags: [power, stability]
+    source: "existing_library"
+
+  - id: agil_angled_sprints
+    name: "Z-Formation Angled Sprints"
+    description: "Sprint in Z-pattern between offset cones, 6 reps at max speed. Develops multi-directional speed changes."
+    category: agility
+    coaching_points:
+      - "Plant and push on each direction change"
+      - "Stay low through direction change"
+      - "Arms drive opposite to legs"
+    age_range: [7, 25]
+    min_players: 1
+    max_players: null
+    space: small_10x10
+    equipment: [cones]
+    duration_seconds: [10, 20]
+    intensity: maximum
+    methodology_tags: [game_realistic]
+    physical_tags: [acceleration, deceleration, change_of_direction]
+    source: "existing_library"
+
+  - id: agil_180_360_turns
+    name: "180° and 360° Turns with Sprint"
+    description: "From standing, perform 180° or 360° turn on coach signal, then sprint to target cone. Develops reactive turning."
+    category: agility
+    coaching_points:
+      - "Stay compact during turn"
+      - "Eyes find target immediately after turn"
+      - "Explode forward the moment you face target"
+    age_range: [7, 25]
+    min_players: 1
+    max_players: null
+    space: small_10x10
+    equipment: [cones]
+    duration_seconds: [10, 20]
+    intensity: high
+    methodology_tags: [game_realistic]
+    physical_tags: [change_of_direction, acceleration]
+    source: "existing_library"
+
+  - id: agil_reactive_sprint_visual
+    name: "Reactive Sprints with Visual Signal"
+    description: "Coach points direction or holds up color, player reacts and sprints that direction. Develops reaction time + first step."
+    category: agility
+    coaching_points:
+      - "Stay on balls of feet, ready position"
+      - "React to what you see — don't guess"
+      - "First step is the most important"
+    age_range: [6, 25]
+    min_players: 1
+    max_players: 12
+    space: small_10x10
+    equipment: [cones]
+    duration_seconds: [15, 30]
+    intensity: high
+    methodology_tags: [game_realistic, decision_making]
+    physical_tags: [acceleration, change_of_direction]
+    source: "existing_library"
+
+  - id: agil_lateral_shuffle_sprint_transition
+    name: "Lateral Shuffle to Sprint Transition"
+    description: "Side shuffle between cones, then on signal explode into forward sprint. Trains lateral-to-linear transition (common in match defending→attacking)."
+    category: agility
+    coaching_points:
+      - "Low during shuffle"
+      - "Drop hips, drive forward on transition"
+      - "Sprint is at 100%"
+    age_range: [7, 25]
+    min_players: 1
+    max_players: null
+    space: small_10x10
+    equipment: [cones]
+    duration_seconds: [10, 20]
+    intensity: high
+    methodology_tags: [game_realistic]
+    physical_tags: [acceleration, change_of_direction]
+    source: "existing_library"
+
+  - id: agil_full_agility_course
+    name: "Full Agility Course"
+    description: "Complete course with cones: forward sprint → lateral shuffle → backward run → 180° turn → slalom → finish sprint. 6 reps with varying start positions."
+    category: agility
+    coaching_points:
+      - "Smooth transitions between movement types"
+      - "Don't slow down at transitions"
+      - "Each rep should be faster than the last"
+    age_range: [7, 25]
+    min_players: 1
+    max_players: null
+    space: small_10x10
+    equipment: [cones]
+    duration_seconds: [60, 120]
+    intensity: maximum
+    methodology_tags: [game_realistic]
+    physical_tags: [acceleration, deceleration, change_of_direction, endurance]
+    source: "existing_library"
+
+  - id: agil_slalom_with_pass
+    name: "Slalom Sprint with Pass and Drive"
+    description: "Weave through slalom cones, receive a pass at the end, drive forward with ball. Combines agility with ball control under speed."
+    category: agility
+    coaching_points:
+      - "Quick feet through the slalom"
+      - "Composed touch on the ball"
+      - "First touch forward and run with it"
+    age_range: [7, 25]
+    min_players: 2
+    max_players: 8
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [15, 30]
+    intensity: high
+    methodology_tags: [game_realistic]
+    physical_tags: [acceleration, change_of_direction]
+    source: "existing_library"
+
+  - id: agil_long_jumps_with_pass
+    name: "Long Jumps into Pass"
+    description: "Series of long jumps (3-4 jumps) ending with an immediate pass reception. Develops power and composure transition."
+    category: agility
+    coaching_points:
+      - "Drive arms and knees forward"
+      - "Land in athletic position on final jump"
+      - "Show for the pass immediately"
+    age_range: [7, 25]
+    min_players: 2
+    max_players: 8
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [15, 30]
+    intensity: high
+    methodology_tags: [game_realistic]
+    physical_tags: [power, acceleration]
+    source: "existing_library"

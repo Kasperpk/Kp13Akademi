@@ -1,0 +1,35 @@
+[
+  {
+    "date": "2026-04-01",
+    "template_name": "U9 Team Session (La Masia)",
+    "exercise_ids": [
+      "warmup_possession_circle",
+      "warmup_dribble_race_gates",
+      "warmup_rondo_light",
+      "rondo_5v2",
+      "rondo_3v1_basic",
+      "pp_3v3_plus_1",
+      "pp_4v4_plus_2",
+      "ssg_funnel_game",
+      "ssg_multi_ball",
+      "ssg_4v4_diamond_goals",
+      "cd_juggling_fun",
+      "cd_static_stretching"
+    ],
+    "notes": ""
+  },
+  {
+    "date": "2026-04-01",
+    "template_name": "U9 Team Session (La Masia)",
+    "exercise_ids": [
+      "warmup_speed_dribble_box",
+      "warmup_ball_rolls_touches",
+      "rondo_4v2",
+      "pp_build_up_from_gk",
+      "ssg_counter_attack_3v2",
+      "ssg_direction_gates",
+      "cd_sole_rolls_slow"
+    ],
+    "notes": ""
+  }
+]

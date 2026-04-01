@@ -1,0 +1,609 @@
+exercises:
+  # --- Foundation: Static Ball Mastery (from ball mastery session + proforløb) ---
+  - id: bm_sole_taps
+    name: "Sole Taps"
+    description: "Alternating sole taps on top of ball. Start slow for control, build to maximum speed."
+    category: ball_mastery
+    coaching_points:
+      - "Light touch — ball barely moves"
+      - "Stay on balls of feet"
+      - "Arms out for balance"
+    age_range: [6, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: [ball]
+    duration_seconds: [20, 60]
+    intensity: moderate
+    methodology_tags: [both_feet, explicit_instruction]
+    physical_tags: [stability]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "existing_library"
+
+  - id: bm_toe_taps_speed
+    name: "Speed Toe Taps"
+    description: "Quick toe taps on top of ball at maximum speed. Focus on rhythm and foot speed."
+    category: ball_mastery
+    coaching_points:
+      - "Tap with the toe area, not full sole"
+      - "Keep ball centered under body"
+      - "Goal: 80+ taps in 40 seconds"
+    age_range: [6, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: [ball]
+    duration_seconds: [20, 60]
+    intensity: high
+    methodology_tags: [both_feet]
+    physical_tags: [acceleration]
+    la_masia_principles: [technical_excellence]
+    source: "persianball"
+
+  - id: bm_inside_outside_taps
+    name: "Inside-Outside Taps"
+    description: "Rhythmic inside-outside-inside-outside tapping with one foot, then switch. Develop foot surface awareness."
+    category: ball_mastery
+    coaching_points:
+      - "Keep ball on a line"
+      - "Rhythm first, speed second"
+      - "Equal time on each foot"
+    age_range: [6, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: [ball]
+    duration_seconds: [20, 60]
+    intensity: moderate
+    methodology_tags: [both_feet, explicit_instruction]
+    physical_tags: [stability]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "existing_library"
+
+  - id: bm_pull_push
+    name: "Pull-Push"
+    description: "Pull ball back with sole, immediately push forward with laces. Alternate feet. Develops deceleration-acceleration pattern."
+    category: ball_mastery
+    coaching_points:
+      - "Sole to pull, laces to push"
+      - "Quick transition between pull and push"
+      - "Ball stays close to feet"
+    age_range: [6, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: [ball]
+    duration_seconds: [20, 60]
+    intensity: moderate
+    methodology_tags: [both_feet, explicit_instruction]
+    physical_tags: [deceleration, acceleration]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "existing_library"
+
+  - id: bm_l_shape
+    name: "L-Shape"
+    description: "Pull ball across body with sole, push forward at 90-degree angle. Creates L-shaped ball path. Both feet."
+    category: ball_mastery
+    coaching_points:
+      - "Sharp 90-degree angle"
+      - "Pull is across body, push is forward"
+      - "Accelerate out of the L"
+    age_range: [6, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: [ball]
+    duration_seconds: [20, 60]
+    intensity: moderate
+    methodology_tags: [both_feet, explicit_instruction]
+    physical_tags: [change_of_direction]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "existing_library"
+
+  - id: bm_v_shape
+    name: "V-Shape"
+    description: "Inside foot pull ball back, push diagonally forward creating V-shaped path. Both feet."
+    category: ball_mastery
+    coaching_points:
+      - "Ball goes backward then diagonal forward"
+      - "Wide V-shape, not narrow"
+      - "Accelerate out on the forward touch"
+    age_range: [6, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: [ball]
+    duration_seconds: [20, 60]
+    intensity: moderate
+    methodology_tags: [both_feet, explicit_instruction]
+    physical_tags: [change_of_direction]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "existing_library"
+
+  - id: bm_roll_and_cut
+    name: "Roll and Cut"
+    description: "Roll ball laterally with sole, then cut back sharply with inside of opposite foot. Alternate continuously."
+    category: ball_mastery
+    coaching_points:
+      - "Roll is smooth, cut is sharp"
+      - "Body weight shifts with each cut"
+      - "Stay low through the cut"
+    age_range: [6, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: [ball]
+    duration_seconds: [20, 60]
+    intensity: moderate
+    methodology_tags: [both_feet]
+    physical_tags: [change_of_direction, deceleration]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "existing_library"
+
+  # --- Moving Ball Mastery (from ball mastery session) ---
+  - id: bm_stepover_series
+    name: "Step-Over Series"
+    description: "Continuous step-overs while moving forward slowly. Focus on selling the feint with body movement."
+    category: ball_mastery
+    coaching_points:
+      - "Drop shoulder into the step-over"
+      - "Ball stays close to feet"
+      - "Exit with outside of foot"
+    age_range: [6, 25]
+    min_players: 1
+    max_players: null
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [20, 60]
+    intensity: moderate
+    methodology_tags: [both_feet, explicit_instruction]
+    physical_tags: [change_of_direction]
+    la_masia_principles: [technical_excellence]
+    source: "existing_library"
+
+  - id: bm_inside_outside_dribble
+    name: "Inside-Outside Dribbling"
+    description: "Dribble forward using only inside-outside touch pattern with one foot. Repeat with other foot."
+    category: ball_mastery
+    coaching_points:
+      - "Ball follows zigzag path"
+      - "Keep ball within stride length"
+      - "Head up — don't watch your feet"
+    age_range: [6, 25]
+    min_players: 1
+    max_players: null
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [20, 60]
+    intensity: moderate
+    methodology_tags: [both_feet, explicit_instruction]
+    physical_tags: [change_of_direction]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "existing_library"
+
+  - id: bm_scissors
+    name: "Scissors"
+    description: "Alternating scissors (foot circles around ball without touching) while moving forward. Sell feint with body."
+    category: ball_mastery
+    coaching_points:
+      - "Circle foot around ball, not over it"
+      - "Body dips into the feint direction"
+      - "Exit with opposite foot"
+    age_range: [6, 25]
+    min_players: 1
+    max_players: null
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [20, 60]
+    intensity: moderate
+    methodology_tags: [both_feet]
+    physical_tags: [change_of_direction]
+    la_masia_principles: [technical_excellence]
+    source: "existing_library"
+
+  - id: bm_cruyff_turn_series
+    name: "Cruyff Turn Series"
+    description: "Dribble forward, Cruyff turn at cone (hook ball behind standing leg with inside of foot), accelerate back."
+    category: ball_mastery
+    coaching_points:
+      - "Sell the pass/shot fake first"
+      - "Hook ball sharply behind standing leg"
+      - "Accelerate immediately out of the turn"
+    age_range: [7, 25]
+    min_players: 1
+    max_players: null
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [60, 180]
+    intensity: moderate
+    methodology_tags: [both_feet, game_realistic]
+    physical_tags: [deceleration, acceleration, change_of_direction]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "existing_library"
+
+  - id: bm_fake_and_go
+    name: "Body Feint and Accelerate"
+    description: "Body feint to one side, then accelerate in opposite direction with ball. Focus on selling the fake."
+    category: ball_mastery
+    coaching_points:
+      - "Drop shoulder and shift weight into the fake"
+      - "Explosive first touch in new direction"
+      - "Sell it — the defender needs to bite"
+    age_range: [6, 25]
+    min_players: 1
+    max_players: null
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [30, 120]
+    intensity: high
+    methodology_tags: [game_realistic, both_feet]
+    physical_tags: [acceleration, deceleration, change_of_direction]
+    la_masia_principles: [technical_excellence]
+    source: "existing_library"
+
+  - id: bm_continuous_turns
+    name: "Continuous Turns Mix"
+    description: "Dribble freely, turning every 3-5 touches using a mix of inside and outside foot turns. Vary the turn type each time."
+    category: ball_mastery
+    coaching_points:
+      - "Don't pre-decide — react to space"
+      - "Mix inside hook, outside hook, Cruyff, drag-back"
+      - "Scan before turning"
+    age_range: [6, 25]
+    min_players: 1
+    max_players: null
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [60, 180]
+    intensity: moderate
+    methodology_tags: [differential_learning, both_feet, decision_making]
+    physical_tags: [change_of_direction]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "existing_library"
+
+  # --- High-Intensity PersianBall Circuits ---
+  - id: bm_fast_feet_foundation
+    name: "Fast Feet Foundation"
+    description: "10s max speed toe taps → 10s sole rolls alternating feet → 10s inside-outside at max speed → 10s freestyle. 3 sets, 20s rest."
+    category: ball_mastery
+    coaching_points:
+      - "Maximum speed on every interval"
+      - "Smooth transitions between patterns"
+      - "Use rest wisely — breathe and reset"
+    age_range: [8, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: [ball]
+    duration_seconds: [120, 200]
+    intensity: maximum
+    methodology_tags: [both_feet]
+    physical_tags: [acceleration, endurance]
+    la_masia_principles: [technical_excellence]
+    source: "persianball"
+
+  - id: bm_cone_to_cone_explosions
+    name: "Cone-to-Cone Explosions"
+    description: "Sprint with ball corner-to-corner in 3x3m box. Sharp cut at each cone, explode to next. Max reps in 30 seconds."
+    category: ball_mastery
+    coaching_points:
+      - "Sharp cuts — plant and push"
+      - "Ball stays within playing distance"
+      - "Accelerate out of every cut"
+    age_range: [8, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: [ball, cones]
+    duration_seconds: [20, 40]
+    intensity: maximum
+    methodology_tags: [game_realistic]
+    physical_tags: [acceleration, deceleration, change_of_direction]
+    la_masia_principles: [technical_excellence]
+    source: "persianball"
+
+  - id: bm_360_rapid_spins
+    name: "360° Rapid Spins"
+    description: "Quick 360-degree spins with ball under control at maximum speed. Alternate clockwise and counter-clockwise."
+    category: ball_mastery
+    coaching_points:
+      - "Sole drags ball through the spin"
+      - "Stay centered over ball"
+      - "Alternate spin direction each rep"
+    age_range: [8, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: [ball]
+    duration_seconds: [20, 40]
+    intensity: high
+    methodology_tags: [both_feet]
+    physical_tags: [change_of_direction, stability]
+    la_masia_principles: [technical_excellence]
+    source: "persianball"
+
+  - id: bm_scissors_speed_challenge
+    name: "Scissors Speed Challenge"
+    description: "Right scissors + left scissors + explosive exit. Repeat continuously for 30 seconds at maximum speed."
+    category: ball_mastery
+    coaching_points:
+      - "Full circle around ball each time"
+      - "Exit is explosive — burst forward"
+      - "Reset quickly for next rep"
+    age_range: [8, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: [ball, cones]
+    duration_seconds: [20, 40]
+    intensity: maximum
+    methodology_tags: [game_realistic]
+    physical_tags: [acceleration, change_of_direction]
+    la_masia_principles: [technical_excellence]
+    source: "persianball"
+
+  - id: bm_rapid_cut_series
+    name: "Rapid Cut Series"
+    description: "Inside cuts alternating with outside cuts at speed. Move laterally across area. Maximum changes of direction."
+    category: ball_mastery
+    coaching_points:
+      - "Plant foot firmly for each cut"
+      - "Ball stays close to feet"
+      - "Push off explosively into next direction"
+    age_range: [8, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: [ball, cones]
+    duration_seconds: [20, 40]
+    intensity: high
+    methodology_tags: [both_feet, game_realistic]
+    physical_tags: [change_of_direction, deceleration]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "persianball"
+
+  - id: bm_touch_touch_explode
+    name: "Touch-Touch-Explode"
+    description: "Two quick controlled touches then explosive burst with ball to a cone. Decelerate, repeat in new direction."
+    category: ball_mastery
+    coaching_points:
+      - "First two touches are calm and close"
+      - "Third touch is an explosive push"
+      - "Decelerate under control before next rep"
+    age_range: [7, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: [ball, cones]
+    duration_seconds: [20, 40]
+    intensity: high
+    methodology_tags: [game_realistic]
+    physical_tags: [acceleration, deceleration]
+    la_masia_principles: [technical_excellence]
+    source: "persianball"
+
+  - id: bm_figure_8_tempo
+    name: "Figure-8 with Tempo Escalation"
+    description: "Dribble figure-8 around two cones. 3 rounds: controlled pace → moderate → maximum speed. Builds through intensity."
+    category: ball_mastery
+    coaching_points:
+      - "Tight to cones on every turn"
+      - "Inside and outside foot on turns"
+      - "Final round is match speed or higher"
+    age_range: [6, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: [ball, cones]
+    duration_seconds: [90, 180]
+    intensity: high
+    methodology_tags: [both_feet, differential_learning]
+    physical_tags: [change_of_direction, acceleration]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "persianball"
+
+  - id: bm_star_pattern_speed
+    name: "Star Pattern Speed"
+    description: "Ball at center. Sprint with ball to each of 4 corners and back to center. Maximum speed, explosive direction changes."
+    category: ball_mastery
+    coaching_points:
+      - "Touch ball on every stride"
+      - "Sharp turns at center point"
+      - "Race against yourself — count total in time"
+    age_range: [8, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: [ball, cones]
+    duration_seconds: [20, 40]
+    intensity: maximum
+    methodology_tags: [game_realistic]
+    physical_tags: [acceleration, deceleration, change_of_direction]
+    la_masia_principles: [technical_excellence]
+    source: "persianball"
+
+  - id: bm_close_control_intensity
+    name: "Close Control Intensity"
+    description: "Stay inside 1x1m area. Maximum number of touches in 30 seconds. Ball cannot leave the tiny square."
+    category: ball_mastery
+    coaching_points:
+      - "Small, quick touches"
+      - "Use all surfaces of feet"
+      - "Ball stays in the box — control is king"
+    age_range: [7, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: [ball, cones]
+    duration_seconds: [20, 40]
+    intensity: maximum
+    methodology_tags: [both_feet]
+    physical_tags: [stability]
+    la_masia_principles: [technical_excellence]
+    source: "persianball"
+
+  # --- Game-realistic dribbling (from proforløb) ---
+  - id: bm_dribble_look_up_colors
+    name: "Dribble and Call Colors"
+    description: "Dribble through cones while coach holds up colored cones or fingers. Player must call correct color/number without losing ball control."
+    category: ball_mastery
+    coaching_points:
+      - "Head up — scanning is the goal"
+      - "Peripheral vision while dribbling"
+      - "Ball control must not suffer when looking up"
+    age_range: [6, 16]
+    min_players: 1
+    max_players: null
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [60, 120]
+    intensity: moderate
+    methodology_tags: [game_realistic, decision_making, constraints_led]
+    physical_tags: [change_of_direction]
+    la_masia_principles: [technical_excellence]
+    source: "existing_library"
+
+  - id: bm_tennis_ball_challenge
+    name: "Tennis Ball Dribble Challenge"
+    description: "Dribble football while catching and throwing a tennis ball with hands. Forces head-up play and dual coordination."
+    category: ball_mastery
+    coaching_points:
+      - "Football control by feel, not sight"
+      - "Throw tennis ball to self — don't rely on partner"
+      - "If you lose the tennis ball, football is priority"
+    age_range: [8, 25]
+    min_players: 1
+    max_players: null
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [60, 150]
+    intensity: moderate
+    methodology_tags: [constraints_led, differential_learning]
+    physical_tags: [stability]
+    la_masia_principles: [technical_excellence]
+    source: "existing_library"
+    variations:
+      - name: "Partner toss"
+        description: "Partner throws tennis ball while player dribbles — must catch and return"
+      - name: "Two tennis balls"
+        description: "Juggle two tennis balls while dribbling for extreme coordination"
+
+  - id: bm_pressure_dribble_vs_coach
+    name: "Pressure Dribbling vs Coach"
+    description: "Dribble toward coach who applies light defensive pressure and challenges. Player must protect ball and find way through."
+    category: ball_mastery
+    coaching_points:
+      - "Body between defender and ball"
+      - "Use skills to create space"
+      - "Don't panic — take your time"
+    age_range: [6, 25]
+    min_players: 1
+    max_players: null
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [60, 180]
+    intensity: high
+    methodology_tags: [game_realistic, decision_making, constraints_led]
+    physical_tags: [change_of_direction, deceleration]
+    la_masia_principles: [technical_excellence]
+    source: "existing_library"
+
+  - id: bm_cone_weave_flow
+    name: "Flowing Cone Weaves"
+    description: "Weave through line of cones using inside/outside touches. Focus on flowing rhythm and keeping ball tight to cones."
+    category: ball_mastery
+    coaching_points:
+      - "Ball leads, body follows"
+      - "Touch on every cone — don't skip"
+      - "Build speed once rhythm is set"
+    age_range: [6, 25]
+    min_players: 1
+    max_players: null
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [30, 90]
+    intensity: moderate
+    methodology_tags: [both_feet, explicit_instruction]
+    physical_tags: [change_of_direction]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "existing_library"
+
+  - id: bm_power_side_to_side
+    name: "Power Side-to-Side Dribbling"
+    description: "Stationary side-to-side dribbling at maximum power. 20-second bursts. Emphasis on weak foot getting 50% of touches."
+    category: ball_mastery
+    coaching_points:
+      - "Wide stance for power"
+      - "Inside of foot drives ball across"
+      - "Weak foot gets equal or more work"
+    age_range: [8, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: [ball]
+    duration_seconds: [15, 30]
+    intensity: maximum
+    methodology_tags: [both_feet]
+    physical_tags: [power]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "persianball"
+
+  - id: bm_elastico
+    name: "Elastico (Flip-Flap)"
+    description: "Outside-to-inside foot flick in one motion. Push ball outside with outer foot then quickly snap inside with same foot."
+    category: ball_mastery
+    coaching_points:
+      - "One fluid motion — outside snap to inside"
+      - "Ankle does the work"
+      - "Sell with body lean opposite direction"
+    age_range: [9, 25]
+    min_players: 1
+    max_players: null
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [60, 180]
+    intensity: moderate
+    methodology_tags: [both_feet, explicit_instruction, game_realistic]
+    physical_tags: [change_of_direction]
+    la_masia_principles: [technical_excellence]
+    source: "existing_library"
+
+  - id: bm_maradona_spin
+    name: "Maradona Spin (Roulette)"
+    description: "360-degree spin with sole drags — one foot stops ball, other foot pulls it through the spin. Used in tight spaces."
+    category: ball_mastery
+    coaching_points:
+      - "First foot stops the ball"
+      - "Second foot drags through the turn"
+      - "Exit with acceleration"
+    age_range: [9, 25]
+    min_players: 1
+    max_players: null
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [60, 180]
+    intensity: moderate
+    methodology_tags: [both_feet, explicit_instruction]
+    physical_tags: [change_of_direction, stability]
+    la_masia_principles: [technical_excellence]
+    source: "existing_library"
+
+  - id: bm_matthews_feint
+    name: "Matthews Feint"
+    description: "Body feint to one side, inside foot cut to opposite direction. Classic dribbling move that deceives defender with body movement."
+    category: ball_mastery
+    coaching_points:
+      - "Exaggerate the body lean"
+      - "Weight shift sells the move"
+      - "Cut is sharp with inside of foot"
+    age_range: [7, 25]
+    min_players: 1
+    max_players: null
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [60, 180]
+    intensity: moderate
+    methodology_tags: [both_feet, game_realistic]
+    physical_tags: [change_of_direction, deceleration, acceleration]
+    la_masia_principles: [technical_excellence]
+    source: "existing_library"

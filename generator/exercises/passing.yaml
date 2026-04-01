@@ -1,0 +1,201 @@
+exercises:
+  - id: pass_basic_two_touch
+    name: "Basic Two-Touch Passing"
+    description: "Partner passing — first touch to control, second touch to pass. Focus on weight, accuracy, and open body shape."
+    category: passing
+    coaching_points:
+      - "First touch out of feet to set up pass"
+      - "Weight of pass — firm to feet"
+      - "Open body: see partner and the space behind"
+    age_range: [6, 25]
+    min_players: 2
+    max_players: 20
+    space: small_10x10
+    equipment: [ball]
+    duration_seconds: [60, 180]
+    intensity: low
+    methodology_tags: [explicit_instruction, both_feet]
+    physical_tags: [stability]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "existing_library"
+
+  - id: pass_one_touch
+    name: "One-Touch Passing Drill"
+    description: "First-time passing between partners. No extra touches. Demands pre-scanning, body shape, and timing."
+    category: passing
+    coaching_points:
+      - "Know where to pass before ball arrives"
+      - "Body position dictates pass direction"
+      - "Quality of pass surface — inside foot"
+    age_range: [7, 25]
+    min_players: 2
+    max_players: 20
+    space: small_10x10
+    equipment: [ball]
+    duration_seconds: [60, 180]
+    intensity: moderate
+    methodology_tags: [game_realistic, both_feet]
+    physical_tags: [stability]
+    la_masia_principles: [technical_excellence, both_feet, possession]
+    source: "existing_library"
+
+  - id: pass_intensive_match_speed
+    name: "Intensive Passing at Match Speed"
+    description: "1-minute rounds of maximum speed passing. Ball on the ground, accurate, firm. Match intensity or higher."
+    category: passing
+    coaching_points:
+      - "Speed of pass matters — don't float it"
+      - "Accuracy under fatigue"
+      - "Movement between passes — don't stand flat"
+    age_range: [8, 25]
+    min_players: 2
+    max_players: 20
+    space: small_10x10
+    equipment: [ball]
+    duration_seconds: [45, 90]
+    intensity: high
+    methodology_tags: [game_realistic, both_feet]
+    physical_tags: [endurance]
+    la_masia_principles: [technical_excellence, possession]
+    source: "existing_library"
+
+  - id: pass_aerial_surfaces
+    name: "Aerial Passing with Multiple Surfaces"
+    description: "Practice passes in the air — inside foot lofted, outside foot driven, along the ground. Alternate all three surfaces."
+    category: passing
+    coaching_points:
+      - "Get under ball for lofted pass"
+      - "Follow through toward target"
+      - "Lock ankle on every surface"
+    age_range: [8, 25]
+    min_players: 2
+    max_players: null
+    space: small_10x10
+    equipment: [ball]
+    duration_seconds: [120, 240]
+    intensity: moderate
+    methodology_tags: [explicit_instruction, both_feet]
+    physical_tags: [power]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "existing_library"
+
+  - id: pass_wall_passing_bandespil
+    name: "Wall Passing / Bandespil"
+    description: "Give-and-go patterns. Player passes, receives return pass, dribbles to next station. Use color call to vary direction."
+    category: passing
+    coaching_points:
+      - "Pass and move — never stand after passing"
+      - "Timing of the run matches the pass"
+      - "First touch after wall pass sets up next action"
+    age_range: [7, 25]
+    min_players: 2
+    max_players: 12
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [120, 300]
+    intensity: moderate
+    methodology_tags: [game_realistic, decision_making]
+    physical_tags: [acceleration, endurance]
+    la_masia_principles: [possession, third_man, technical_excellence]
+    source: "existing_library"
+
+  - id: pass_from_positions
+    name: "Passing from Different Positions"
+    description: "Four positions around a central area. Player receives color call, runs to that position, receives pass, and plays forward. Game-realistic positioning."
+    category: passing
+    coaching_points:
+      - "React to the call — quick feet to position"
+      - "Set body shape before ball arrives"
+      - "Play forward when possible"
+    age_range: [7, 25]
+    min_players: 2
+    max_players: 8
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [120, 300]
+    intensity: moderate
+    methodology_tags: [game_realistic, decision_making]
+    physical_tags: [acceleration, change_of_direction]
+    la_masia_principles: [positional_play, technical_excellence]
+    source: "existing_library"
+
+  - id: pass_give_and_go_combination
+    name: "Give-and-Go Combination"
+    description: "Quick pass-receive-shoot combination with movement. Pass to partner, run into space, receive return pass, finish or pass forward."
+    category: passing
+    coaching_points:
+      - "Sprint after the pass — demand the return"
+      - "Receiver: first-time layoff"
+      - "Runner: timing of run is everything"
+    age_range: [7, 25]
+    min_players: 2
+    max_players: 8
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [120, 300]
+    intensity: high
+    methodology_tags: [game_realistic, decision_making]
+    physical_tags: [acceleration]
+    la_masia_principles: [third_man, possession, technical_excellence]
+    source: "existing_library"
+
+  - id: pass_inside_outside_with_head_up
+    name: "Inside/Outside Dribble into Pass"
+    description: "Dribble with inside/outside touches, head up. On coach signal, lift head, find partner, deliver pass. Combines dribbling and passing."
+    category: passing
+    coaching_points:
+      - "Dribble with ball feel, not by watching"
+      - "Lift head to scan before passing"
+      - "Pass weight matches distance"
+    age_range: [7, 25]
+    min_players: 2
+    max_players: 12
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [120, 240]
+    intensity: moderate
+    methodology_tags: [game_realistic, decision_making, both_feet]
+    physical_tags: [change_of_direction]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "existing_library"
+
+  - id: pass_triangle_rotation
+    name: "Triangle Passing with Rotation"
+    description: "Three players in triangle. Pass and follow your pass to next position. Continuous rotation with ball moving. Two-touch then one-touch."
+    category: passing
+    coaching_points:
+      - "Follow your pass immediately"
+      - "Set body shape at new position instantly"
+      - "Ball speed: crisp passes on the ground"
+      - "This is positional passing — always relate back to match positions"
+    age_range: [7, 25]
+    min_players: 3
+    max_players: 9
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [180, 360]
+    intensity: moderate
+    methodology_tags: [game_realistic, explicit_instruction]
+    physical_tags: [endurance]
+    la_masia_principles: [positional_play, possession, technical_excellence]
+    source: "la_masia"
+
+  - id: pass_long_range_switching
+    name: "Long-Range Switching Passes"
+    description: "Partners 20-30m apart. Driven pass along ground or lofted switch of play. Practice both feet. Game-realistic distance."
+    category: passing
+    coaching_points:
+      - "Driven: lock ankle, hit through center of ball"
+      - "Lofted: lean back slightly, under the ball"
+      - "Accuracy over power — find the target"
+    age_range: [9, 25]
+    min_players: 2
+    max_players: null
+    space: medium_20x20
+    equipment: [ball]
+    duration_seconds: [120, 300]
+    intensity: moderate
+    methodology_tags: [both_feet, explicit_instruction]
+    physical_tags: [power]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "la_masia"

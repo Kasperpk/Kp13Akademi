@@ -1,0 +1,362 @@
+exercises:
+  # --- Ball-based team warm-ups (La Masia: ball always present) ---
+  - id: warmup_possession_circle
+    name: "Possession Circle Warm-up"
+    description: "Players in circle, 2-3 balls moving. Pass and follow your pass to a new spot. Gradually increase tempo and reduce touches."
+    category: warmup
+    coaching_points:
+      - "Call team-mate's name before passing"
+      - "Open body to see the whole circle"
+      - "Weight of pass — on the ground, to feet"
+    age_range: [6, 25]
+    min_players: 6
+    max_players: 20
+    space: small_10x10
+    equipment: [ball]
+    duration_seconds: [120, 180]
+    intensity: low
+    methodology_tags: [game_realistic, decision_making]
+    physical_tags: [endurance]
+    la_masia_principles: [possession, technical_excellence]
+    setup: |
+      Players form a large circle (radius ~5m). Give 2-3 balls to players
+      spread evenly around the circle. No cones needed.
+      Round 1: Free touches, pass and stay.
+      Round 2: Pass and follow your pass to new spot.
+      Round 3: Two-touch only.
+    diagram: |
+              A
+              /     \
+              F    ●    B
+              |         |
+              E    ●    C
+              \     /
+              D         ● = ball (2-3 in play)
+                        Pass + jog to receiver's spot
+    source: "la_masia"
+
+  - id: warmup_rondo_light
+    name: "Light Rondo Warm-up (4v1)"
+    description: "Easy 4v1 rondo at walking/jogging pace. Free touches. The defender barely presses — this is about finding rhythm, not intensity."
+    category: warmup
+    coaching_points:
+      - "Relax — enjoy the ball"
+      - "Open body shape from the start"
+      - "Two-touch maximum, but don't rush"
+    age_range: [6, 25]
+    min_players: 5
+    max_players: 8
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [180, 300]
+    intensity: low
+    methodology_tags: [implicit_learning, decision_making]
+    physical_tags: [endurance]
+    la_masia_principles: [rondo, possession, technical_excellence]
+    setup: |
+      Mark a 5x5m square with cones. Four players on the outside edges,
+      one defender in the middle. Multiple grids if >5 players (e.g. two
+      4v1 grids with 10 players). Defender walks/jogs — low pressure.
+      Swap defender every 60 seconds or after 3 interceptions.
+    diagram: |
+        5m
+        ○─────────○
+        |  A     B |
+        |          |
+        |     D    |  D = defender (light press)
+        |          |  A,B,C,E = passers
+        |  E     C |  ○ = cone
+        ○─────────○
+    source: "la_masia"
+
+  - id: warmup_dynamic_stretch_with_ball
+    name: "Dynamic Stretching with Ball"
+    description: "Light jogging with ball at feet, incorporating high knees while tapping ball, butt kicks with rolls, side shuffles with ball between feet."
+    category: warmup
+    coaching_points:
+      - "Ball always moving with you"
+      - "Soft touches, keep ball close"
+      - "Gradually increase movement range"
+    age_range: [6, 25]
+    min_players: 1
+    max_players: null
+    space: small_10x10
+    equipment: [ball]
+    duration_seconds: [60, 120]
+    intensity: low
+    methodology_tags: [both_feet]
+    physical_tags: [flexibility, endurance]
+    la_masia_principles: [technical_excellence]
+    setup: |
+      Each player has a ball. Use whole pitch or a 15x15m area.
+      Coach demonstrates each movement, players copy for 30s each:
+      1) Jog + sole taps on ball  2) High knees + tap ball forward
+      3) Butt kicks + roll ball  4) Side shuffle + ball between feet
+    diagram: |
+      START ─────────────────────── END
+       ●→   jog + sole taps         15m
+       ●→   high knees + tap
+       ●→   butt kicks + roll
+       ●→   side shuffle + ball
+
+      Each player has a ball. Go and come back.
+    source: "existing_library"
+
+  - id: warmup_ball_rolls_touches
+    name: "Ball Rolls & Touches Circuit"
+    description: "Sole rolls forward/back, inside foot rolls in circle, outside foot rolls in circle — 30 seconds each foot per variation."
+    category: warmup
+    coaching_points:
+      - "Light pressure on ball with sole"
+      - "Both feet equal time"
+      - "Increase speed as you warm up"
+    age_range: [6, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: [ball]
+    duration_seconds: [120, 180]
+    intensity: low
+    methodology_tags: [both_feet, explicit_instruction]
+    physical_tags: [stability]
+    la_masia_principles: [technical_excellence, both_feet]
+    setup: |
+      Each player has a ball, standing in own 2x2m space.
+      Coach calls the movement, 30 seconds per variation per foot:
+      1) Sole roll forward/back  2) Inside foot roll in circle
+      3) Outside foot roll in circle  4) Sole roll side to side
+    diagram: |
+      Player stands stationary with ball:
+
+         ←── sole roll ──→       Roll ball forward/back
+             ●                   with bottom of foot
+          ↙     ↘
+        ●    P    ●              Then circle the ball
+          ↖     ↗               with inside/outside foot
+             ●
+    source: "existing_library"
+
+  - id: warmup_gentle_dribble_direction_change
+    name: "Free Dribbling with Direction Changes"
+    description: "Free dribbling in area with soft touches, changing direction every 3-5 seconds. Use both feet equally."
+    category: warmup
+    coaching_points:
+      - "Head up — scan the space"
+      - "Soft touches, ball within playing distance"
+      - "Change direction, not just speed"
+    age_range: [6, 25]
+    min_players: 1
+    max_players: 20
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [90, 150]
+    intensity: moderate
+    methodology_tags: [both_feet, implicit_learning]
+    physical_tags: [change_of_direction]
+    la_masia_principles: [technical_excellence, both_feet]
+    setup: |
+      Mark a 15x15m area with cones. Every player has a ball.
+      Dribble freely inside the area. On coach's whistle:
+      change direction. Vary: "inside cut", "outside cut",
+      "sole pullback", "Cruyff turn".
+    diagram: |
+      ○───────────────○
+      |  →●  ●↗       |
+      |      ↙●        |  15m x 15m grid
+      |  ●←     →●    |  Everyone dribbling
+      |     ●↘         |  ● = player with ball
+      |  ↗●      ●←   |
+      ○───────────────○
+    source: "existing_library"
+
+  - id: warmup_speed_dribble_box
+    name: "Speed Dribbling in Box"
+    description: "Maximum speed dribbling inside 3x3m area, changing direction every 2 seconds. PersianBall intensity."
+    category: warmup
+    coaching_points:
+      - "Explosive changes of direction"
+      - "Ball always in control"
+      - "Match intensity or higher"
+    age_range: [8, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: [ball, cones]
+    duration_seconds: [20, 40]
+    intensity: high
+    methodology_tags: [game_realistic]
+    physical_tags: [acceleration, change_of_direction]
+    la_masia_principles: [technical_excellence]
+    setup: |
+      Mark a 3x3m box with 4 cones per player.
+      Each player has a ball inside their own box.
+      Dribble at MAXIMUM speed, touch every 2 seconds must
+      be a sharp direction change. 20 seconds on, 10 seconds rest.
+      Repeat 3-4 rounds.
+    diagram: |
+       3m
+       ○────○
+       |    |  Player dribbles at max speed
+       | ●→ |  inside this tiny box.
+       |  ↓ |  Sharp cuts at each cone.
+       ○────○
+       3m     20s on / 10s rest
+    source: "persianball"
+
+  - id: warmup_toe_taps_speed
+    name: "Maximum Speed Toe Taps"
+    description: "Rapid alternating toe taps on top of ball. Count total taps in 30 seconds — compete against yourself."
+    category: warmup
+    coaching_points:
+      - "Light touches, ball barely moves"
+      - "Stay on balls of feet"
+      - "Arms out for balance"
+    age_range: [6, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: [ball]
+    duration_seconds: [20, 40]
+    intensity: high
+    methodology_tags: [both_feet]
+    physical_tags: [acceleration]
+    la_masia_principles: [technical_excellence]
+    setup: |
+      Each player stands with ball stationary on ground.
+      Alternate feet tapping top of ball as fast as possible.
+      Count taps in 30 seconds. Rest 15s. Beat your score.
+    diagram: |
+         L  R  L  R  L  R       Alternate feet
+          ↓↓ ↓↓ ↓↓ ↓↓ ↓↓       as fast as possible
+             ●                   Ball stays still
+                                 Count taps in 30s
+    source: "persianball"
+
+  # --- Team game-based warm-ups ---
+  - id: warmup_tag_with_ball
+    name: "Tag Game with Ball"
+    description: "Everyone dribbles a ball. One player is 'it' and must tag another while dribbling. Tagged player becomes 'it'."
+    category: warmup
+    coaching_points:
+      - "Keep ball close while scanning for tagger"
+      - "Use body feints to avoid being tagged"
+      - "Head up at all times"
+    age_range: [6, 12]
+    min_players: 4
+    max_players: 20
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [120, 180]
+    intensity: moderate
+    methodology_tags: [implicit_learning, game_realistic, decision_making]
+    physical_tags: [acceleration, change_of_direction]
+    la_masia_principles: [technical_excellence]
+    setup: |
+      Mark a 15x15m area (smaller = harder). Every player has a ball.
+      Choose one 'it' player (give them a bib to hold up).
+      'It' must dribble AND tag someone. Tagged = new 'it'.
+      Variation: 2 taggers for larger groups.
+    diagram: |
+      ○───────────────○
+      |                |
+      |  ●  ●  IT→●   |  15m x 15m
+      |     ●     ●   |
+      |  ●     ●      |  IT = tagger (holds bib)
+      |     ●     ●   |  Everyone has a ball
+      ○───────────────○
+    source: "existing_library"
+
+  - id: warmup_tick_tock_coordination
+    name: "Tick-Tock Coordination Touches"
+    description: "Alternating inside-foot touches (tick-tock rhythm) moving the ball side to side. Build speed progressively."
+    category: warmup
+    coaching_points:
+      - "Rhythm first, then speed"
+      - "Ball moves side to side in straight line"
+      - "Add small hop between touches to increase difficulty"
+    age_range: [6, 16]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: [ball]
+    duration_seconds: [45, 90]
+    intensity: moderate
+    methodology_tags: [both_feet, explicit_instruction]
+    physical_tags: [stability]
+    la_masia_principles: [technical_excellence, both_feet]
+    setup: |
+      Each player with a ball, standing in place.
+      Touch ball side-to-side with inside of alternating feet.
+      Like a pendulum: left inside push right, right inside push left.
+      30s slow → 30s medium → 30s max speed.
+    diagram: |
+        L foot    R foot
+          ↘        ↙
+           ● ←→ ●         Ball moves side to side
+          ↗        ↖       Inside of each foot
+                            "Tick... tock... tick... tock"
+    source: "existing_library"
+
+  - id: warmup_partner_passing_movement
+    name: "Partner Passing on the Move"
+    description: "Pairs pass one ball while jogging across the area. Focus on weight of pass, communication, and open body shape."
+    category: warmup
+    coaching_points:
+      - "Open body toward partner"
+      - "Call for the ball"
+      - "Play to partner's front foot"
+    age_range: [6, 25]
+    min_players: 2
+    max_players: 20
+    space: small_10x10
+    equipment: [ball]
+    duration_seconds: [120, 180]
+    intensity: moderate
+    methodology_tags: [game_realistic, decision_making]
+    physical_tags: [endurance]
+    la_masia_principles: [possession, technical_excellence]
+    setup: |
+      Pairs, one ball per pair. Use the full area (20x15m).
+      Both jog forward side by side, passing back and forth.
+      At the end, turn and come back. Vary: two-touch, one-touch,
+      different distances apart (5m, 10m).
+    diagram: |
+      A ─── ● ───→ B        Pairs jog forward
+      ↑            ↑        together, passing
+      |   5-10m    |        back and forth
+      |  apart     |
+      A ←── ● ──── B        Turn and come back
+    source: "existing_library"
+
+  - id: warmup_dribble_race_gates
+    name: "Dribble Race through Gates"
+    description: "Cone gates scattered in area. Players dribble through as many gates as possible in set time. Cannot use same gate twice in a row."
+    category: warmup
+    coaching_points:
+      - "Head up to spot open gates"
+      - "Close control through gates"
+      - "Change speed — accelerate out of gates"
+    age_range: [6, 12]
+    min_players: 2
+    max_players: 20
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [120, 180]
+    intensity: moderate
+    methodology_tags: [implicit_learning, decision_making, game_realistic]
+    physical_tags: [acceleration, change_of_direction]
+    la_masia_principles: [technical_excellence]
+    setup: |
+      Place 8-12 cone gates (2 cones ~1m apart) randomly inside
+      a 15x15m area. Every player has a ball. Dribble through
+      a gate = 1 point. Same gate can't be used twice in a row.
+      Play for 90 seconds, count your score, try to beat it.
+    diagram: |
+      ○───────────────────○
+      |  ○ ○    ○ ○       |
+      |       ○ ○    ○ ○  |  15m x 15m
+      |  ○ ○              |
+      |       ○ ○   ○ ○   |  ○ ○ = gate (1m wide)
+      |  ○ ○       ○ ○    |
+      | ●→  ●→    ●→      |  Players dribble through
+      ○───────────────────○  as many gates as possible

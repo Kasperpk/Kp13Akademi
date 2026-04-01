@@ -1,0 +1,395 @@
+exercises:
+  - id: rondo_3v1_basic
+    name: "Rondo 3v1 (Basic)"
+    description: "Three attackers keep possession against one defender in a small grid. If defender wins ball, swaps with attacker who lost it."
+    category: rondo
+    coaching_points:
+      - "Open body shape — always see the ball and both teammates"
+      - "Play to the back foot of the receiver"
+      - "Support at an angle, not in a straight line"
+      - "Defender: be patient, cut passing lanes"
+    age_range: [6, 25]
+    min_players: 4
+    max_players: 4
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [180, 360]
+    intensity: moderate
+    methodology_tags: [implicit_learning, decision_making, game_realistic]
+    physical_tags: [change_of_direction, endurance]
+    la_masia_principles: [rondo, possession, technical_excellence]
+    setup: |
+      Mark a 5x5m square with 4 cones. Three attackers position
+      on three edges of the square, one defender in the middle.
+      If you have 8+ players, set up two grids side by side (2m gap).
+      Rotate defender every 60s or after 2 interceptions.
+    diagram: |
+           5m
+           ○─────────○
+           |    A     |
+           |          |
+           C |    X     | 5m    A,B,C = passers
+           |          |       X = defender
+           |    B     |       ○ = corner cone
+           ○─────────○        ● with A
+    source: "la_masia"
+    variations:
+      - name: "Two-touch"
+        description: "Maximum two touches per player"
+      - name: "One-touch"
+        description: "One touch only — demands pre-scanning and body shape"
+      - name: "Free touch with time limit"
+        description: "Must pass within 3 seconds or become defender"
+
+  - id: rondo_4v1_diamond
+    name: "Rondo 4v1 (Diamond)"
+    description: "Four attackers in diamond shape, one defender in center. Introduces forward passing option through the diamond."
+    category: rondo
+    coaching_points:
+      - "Diamond shape — one player at each point"
+      - "Forward pass through the middle when possible"
+      - "Move after you pass — don't stand still"
+      - "Check shoulders before receiving"
+    age_range: [6, 25]
+    min_players: 5
+    max_players: 5
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [180, 360]
+    intensity: moderate
+    methodology_tags: [implicit_learning, decision_making, game_realistic]
+    physical_tags: [change_of_direction, endurance]
+    la_masia_principles: [rondo, possession, positional_play, technical_excellence]
+    setup: |
+      Mark a diamond (rotated square) about 7x7m with 4 cones, one
+      at each point. One attacker at each cone, one defender in the
+      center. If you have 10 players, set up two diamonds.
+      Rotate defender every 60s or after 2 interceptions.
+    diagram: |
+              A
+              ○
+              / \
+              /   \       7m tip-to-tip
+              /     \
+              D ○   X   ○ B    A,B,C,D = passers (diamond points)
+              \     /        X = defender (center)
+              \   /         ○ = cone at each point
+              \ /          ● with D
+              ○
+              C
+    source: "la_masia"
+    variations:
+      - name: "Two-touch"
+        description: "Maximum two touches"
+      - name: "Through-ball bonus"
+        description: "Successful split pass through middle = 3 points"
+
+  - id: rondo_4v2
+    name: "Rondo 4v2"
+    description: "Four attackers vs two defenders. Demands quicker decisions — two defenders can cover more passing lanes."
+    category: rondo
+    coaching_points:
+      - "Move the defenders — make them shift"
+      - "Use the free man quickly"
+      - "Body shape open to see all passing options"
+      - "Defenders: work together, press as a pair"
+    age_range: [7, 25]
+    min_players: 6
+    max_players: 6
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [180, 360]
+    intensity: moderate
+    methodology_tags: [decision_making, game_realistic, implicit_learning]
+    physical_tags: [change_of_direction, endurance]
+    la_masia_principles: [rondo, possession, positional_play, technical_excellence]
+    setup: |
+      Mark an 8x8m square with 4 cones. Four attackers on the edges
+      (one per side), two defenders inside the grid.
+      If you have 12 players, set up two grids.
+      Rotate defending pair every 90s or after 3 interceptions.
+    diagram: |
+            8m
+            ○──────────○
+            |     A     |
+            |           |
+            D |  X    Y   | B   8m   A,B,C,D = passers (one per edge)
+            |           |          X,Y = defenders
+            |     C     |          ○ = corner cone
+            ○──────────○           ● with A
+    source: "la_masia"
+    variations:
+      - name: "Two-touch"
+        description: "Maximum two touches"
+      - name: "One-touch"
+        description: "One touch only"
+      - name: "Split-pass escape"
+        description: "If attackers play through the two defenders = round won"
+
+  - id: rondo_5v2
+    name: "Rondo 5v2 (Positional)"
+    description: "Five attackers forming a pentagon, two defenders inside. Core La Masia rondo — teaches positional awareness and ball circulation."
+    category: rondo
+    coaching_points:
+      - "Maintain the shape — fill the gaps when a teammate moves"
+      - "Play away from pressure"
+      - "Third-man concept: next pass, not the obvious one"
+      - "Quick feet — receive and release"
+    age_range: [7, 25]
+    min_players: 7
+    max_players: 7
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [240, 420]
+    intensity: moderate
+    methodology_tags: [decision_making, game_realistic, implicit_learning]
+    physical_tags: [endurance, change_of_direction]
+    la_masia_principles: [rondo, possession, positional_play, third_man, technical_excellence]
+    setup: |
+      Place 5 cones in a pentagon shape, roughly 8m across. One
+      attacker at each cone, two defenders inside. Attackers can
+      move along the edge between their two nearest cones but must
+      keep the pentagon shape. Rotate defenders every 90s or after
+      3 interceptions.
+    diagram: |
+              A
+              ○
+              / \
+              /   \         ~8m across
+              /     \
+              E ○  X  Y ○ B    A,B,C,D,E = passers (pentagon)
+              |       |       X,Y = defenders (inside)
+              |       |       ○ = cone at each point
+              D ○───────○ C     ● with E
+    source: "la_masia"
+
+  - id: rondo_with_transition
+    name: "Rondo with Transition"
+    description: "Standard rondo but when defenders win ball, they immediately try to score on a mini-goal or dribble out. Attackers must counter-press."
+    category: rondo
+    coaching_points:
+      - "Transition is instant — no pause"
+      - "Attackers: counter-press within 3 seconds"
+      - "Defenders: first thought is forward when you win it"
+      - "Game-realistic intensity on the transition"
+    age_range: [7, 25]
+    min_players: 5
+    max_players: 8
+    space: small_10x10
+    equipment: [ball, cones, goals]
+    duration_seconds: [240, 420]
+    intensity: high
+    methodology_tags: [game_realistic, decision_making, constraints_led]
+    physical_tags: [acceleration, change_of_direction, endurance]
+    la_masia_principles: [rondo, possession, positional_play]
+    setup: |
+      Mark a 10x10m grid with 4 cones. Place a mini-goal (or cone
+      gate 2m wide) on one edge outside the grid. 4v2 or 5v2 inside.
+      On interception, defenders break out and try to score on the
+      mini-goal. Attackers counter-press immediately. Reset after
+      goal or ball out. For 8 players: run 5v2 + 1 resting.
+    diagram: |
+                  ⊓ ← mini-goal (2m)
+                  10m
+                  ○──────────○
+                  |     A     |
+                  |  E        |
+                  D |  X    Y   | B  10m   A,B,C,D,E = passers
+                  |           |          X,Y = defenders
+                  |     C     |          ⊓ = mini-goal (top edge)
+                  ○──────────○           On intercept: X/Y → ⊓
+    source: "la_masia"
+
+  - id: rondo_directional
+    name: "Directional Rondo"
+    description: "Rondo where the team must advance ball from one end to a target player on the other side. Not just keeping the ball — advancing it."
+    category: rondo
+    coaching_points:
+      - "Look forward first before going sideways"
+      - "Target player must check shoulders and show for ball"
+      - "Combine short passes with one penetrating pass"
+      - "Possession with purpose"
+    age_range: [7, 25]
+    min_players: 6
+    max_players: 10
+    space: medium_20x20
+    equipment: [ball, cones, bibs]
+    duration_seconds: [300, 480]
+    intensity: moderate
+    methodology_tags: [game_realistic, decision_making, constraints_led]
+    physical_tags: [endurance]
+    la_masia_principles: [rondo, possession, positional_play, play_out_from_back, third_man]
+    setup: |
+      Mark a 15x10m rectangle with cones. Split into 3 zones (5m
+      each). Place a target player (T) in each end zone. Middle zone
+      has 4v2 (or 3v2 with fewer players). Attackers must play from
+      one target to the other through the middle. Target players
+      stay in their zones. Point scored for each successful end-to-end
+      pass sequence.
+    diagram: |
+        ○─────── 10m ───────○
+        |  T1   :     :  T2  |
+        |       :     :      |
+        |       : A B :      |  15m
+        |       :X   Y:      |
+        |       : C D :      |  T1,T2 = target players
+        |       :     :      |  A,B,C,D = possession team
+        ○───────:─────:──────○  X,Y = defenders
+         zone1   mid    zone2   Direction: T1 → mid → T2
+          5m      5m     5m
+    source: "la_masia"
+
+  - id: rondo_moving_grid
+    name: "Moving Rondo"
+    description: "Rondo where the grid moves — coach calls direction and entire rondo shifts while maintaining possession. Teaches spatial awareness."
+    category: rondo
+    coaching_points:
+      - "Move as a unit — maintain shape while shifting"
+      - "Awareness of boundaries changing"
+      - "Communication is key"
+    age_range: [8, 25]
+    min_players: 5
+    max_players: 8
+    space: medium_20x20
+    equipment: [ball, cones, bibs]
+    duration_seconds: [240, 360]
+    intensity: moderate
+    methodology_tags: [constraints_led, decision_making, game_realistic]
+    physical_tags: [endurance, change_of_direction]
+    la_masia_principles: [rondo, possession, positional_play]
+    setup: |
+      Use a large 20x20m area (no fixed grid — the grid is imaginary
+      and moves). Start a 4v2 or 5v2 rondo in the center. Coach calls
+      "left!", "right!", "up!", "down!" and the entire rondo must
+      shift ~5m in that direction while keeping possession. Players
+      must maintain their shape and spacing as they move. Stay within
+      the outer 20x20m boundary.
+    diagram: |
+        ○───────── 20m ──────────○
+        |                         |
+        |      ┌───8m───┐        |
+        |      | A     B |       |
+        |      |  X   Y  | ←──→  | 20m  Coach calls direction,
+        |      | C     D |       |       group shifts as a unit
+        |      └─────────┘        |
+        |     imaginary grid      |       A,B,C,D = passers
+        |                         |       X,Y = defenders
+        ○─────────────────────────○       ○ = outer boundary cones
+    source: "la_masia"
+
+  - id: rondo_with_neutral
+    name: "Rondo with Neutral Players"
+    description: "3v3 or 4v4 rondo with 1-2 neutral players who always play with possession team. Creates numerical overload. Neutrals play on edges."
+    category: rondo
+    coaching_points:
+      - "Neutrals: always available, open body, quick release"
+      - "Use the overload — find the free man"
+      - "Neutral players = your safe option"
+      - "Playing team: don't rely only on neutrals"
+    age_range: [7, 25]
+    min_players: 7
+    max_players: 12
+    space: small_10x10
+    equipment: [ball, cones, bibs]
+    duration_seconds: [300, 480]
+    intensity: moderate
+    methodology_tags: [game_realistic, decision_making, implicit_learning]
+    physical_tags: [endurance]
+    la_masia_principles: [rondo, possession, positional_play, third_man]
+    setup: |
+      Mark a 12x12m grid with cones. Two teams of 3 (or 4) inside
+      the grid. Two neutral players (different bib colour) positioned
+      on opposite edges — they always play with the team in possession,
+      creating a 5v3 (or 6v4) overload. Neutrals stay on the edge
+      lines. Switch roles every 3 minutes. For 12 players: 4v4 + 2
+      neutrals, or split into two grids of 3v3+1.
+    diagram: |
+              N1
+              12m
+              ○──────────○
+              |  A  a     |
+              |           |
+              |  B  b     | 12m    A,B,C = Team 1 (bibs)
+              |           |        a,b,c = Team 2
+              |  C  c     |        N1,N2 = neutrals (edge)
+              ○──────────○         Possession team + N1,N2
+              N2              ● with possession team
+    source: "la_masia"
+
+  - id: rondo_with_target
+    name: "Rondo with Target Player"
+    description: "Standard rondo with a target player positioned outside the grid. Successful pass to target = point. Target lays off and ball continues."
+    category: rondo
+    coaching_points:
+      - "Look for the target — don't just circulate sideways"
+      - "Target player: show with good body shape, lay off first time"
+      - "Passing team: create angles to make the target pass possible"
+    age_range: [7, 25]
+    min_players: 5
+    max_players: 8
+    space: small_10x10
+    equipment: [ball, cones, bibs]
+    duration_seconds: [240, 420]
+    intensity: moderate
+    methodology_tags: [game_realistic, decision_making, constraints_led]
+    physical_tags: [endurance]
+    la_masia_principles: [rondo, possession, positional_play, play_out_from_back, third_man]
+    setup: |
+      Mark an 8x8m grid with 4 cones. Run a 4v2 rondo inside the
+      grid. Place one target player (T) about 3m outside the grid
+      on one side — they can move along that edge but not enter.
+      Successful pass to T and layoff back = 1 point. Rotate target
+      every 2 minutes. For 8 players: 4v2 + 1 target + 1 resting.
+    diagram: |
+            8m
+            ○──────────○
+            |     A     |
+            |           |
+            D |  X    Y   | B   8m   A,B,C,D = passers
+            |           |          X,Y = defenders
+            |     C     |          T = target player (outside)
+            ○──────────○
+              ↓ 3m                Pass to T = 1 point
+              T                    T lays off, play continues
+    source: "la_masia"
+
+  - id: rondo_touch_restricted
+    name: "Touch-Restricted Rondo"
+    description: "Rondo where touch count changes on coach signal. Starts at free touch, then 2-touch, then 1-touch. Teaches adaptation under pressure."
+    category: rondo
+    coaching_points:
+      - "Pre-scan before the ball arrives"
+      - "Body shape adjusts to touch restriction"
+      - "1-touch demands you know where to pass before receiving"
+      - "Quality over speed"
+    age_range: [8, 25]
+    min_players: 5
+    max_players: 8
+    space: small_10x10
+    equipment: [ball, cones, bibs]
+    duration_seconds: [240, 420]
+    intensity: moderate
+    methodology_tags: [constraints_led, decision_making, game_realistic]
+    physical_tags: [endurance]
+    la_masia_principles: [rondo, possession, technical_excellence]
+    setup: |
+      Mark an 8x8m grid with 4 cones. Run a 4v2 or 5v2 rondo
+      inside. Coach controls touch restriction by calling out:
+      "Free!" → "Two!" → "One!" progressing every 90s.
+      Grid can shrink to 6x6m for 1-touch to increase difficulty.
+      For 8 players: 5v2 + 1 resting, or run two 4v1 grids.
+    diagram: |
+            8m
+            ○──────────○
+            |  A     B  |
+            |           |
+            E |  X    Y   | C   8m   A,B,C,D,E = passers
+            |           |          X,Y = defenders
+            |     D     |          ○ = corner cone
+            ○──────────○
+
+            Coach calls:             Progression:
+            "Free!" → free touch     1. Free (90s)
+            "Two!"  → 2-touch max    2. Two-touch (90s)
+            "One!"  → 1-touch only   3. One-touch (90s)
+    source: "la_masia"

@@ -1,0 +1,630 @@
+exercises:
+  - id: ssg_funino_3v3_four_goals
+    name: "FUNiño (3v3 Four Mini-Goals)"
+    description: >
+      Horst Wein's masterpiece: 3v3 on small pitch with 2 mini-goals on each end line.
+      Players must dribble through a goal to score (no shooting). Forces scanning,
+      decision-making, 1v1, and switching play. Considered THE optimal game form for
+      U6-U10 by German FA (DFB), Spanish FA (RFEF), and Dutch FA (KNVB).
+    category: small_sided_games
+    coaching_points:
+      - "Two goals to attack — scan which one is open"
+      - "Defend both goals — can't just stand in front of one"
+      - "Dribble through = score → forces close control"
+      - "Stay quiet as coach — let them play and discover"
+    age_range: [5, 10]
+    min_players: 6
+    max_players: 6
+    space: small_10x10
+    equipment: [ball, cones, bibs]
+    duration_seconds: [300, 600]
+    intensity: high
+    methodology_tags: [implicit_learning, game_realistic, decision_making, constraints_led]
+    physical_tags: [acceleration, change_of_direction, endurance]
+    la_masia_principles: [small_sided, technical_excellence]
+    source: "horst_wein"
+    setup: |
+      Mark 20x15m pitch with cones (small!).
+      Place 2 mini-goals (2 cones, 1.5m wide) on EACH end line, spaced apart.
+      3v3 — no goalkeepers. Score by dribbling through a mini-goal.
+      No shooting allowed — must dribble the ball through.
+      Play 3-min games, rotate teams if more than 6 players.
+    diagram: |
+      ○━━[g1]━━━━[g2]━━○    20x15m pitch
+      |                  |    [g] = mini-goal (1.5m)
+      |   A   A     B    |    A = Team A (3)
+      |      B    A   B  |    B = Team B (3)
+      |                  |
+      ○━━[g3]━━━━[g4]━━○    A attacks g1/g2, B attacks g3/g4
+      Score = dribble ball through goal
+    variations:
+      - name: "Goals only from combination"
+        description: "Must pass to teammate before dribbling through goal"
+      - name: "Switch goals"
+        description: "After scoring on one goal, next score must be on the other goal"
+      - name: "4v4 four goals"
+        description: "Expand to 4v4 with same setup for more complexity"
+
+  - id: ssg_4v4_diamond_goals
+    name: "4v4 Diamond Goals"
+    description: >
+      4v4 with diamond-shaped goal placement: one goal at each corner of the pitch
+      (so each team defends two and attacks two). Forces 360-degree awareness,
+      switching play, and positional flexibility. Used across Ajax and La Masia youth.
+    category: small_sided_games
+    coaching_points:
+      - "Constant scanning — threats and opportunities everywhere"
+      - "Switch play: if one goal is blocked, the other is open"
+      - "No fixed positions — everyone attacks and defends"
+      - "Quick transitions: you can counter to either goal"
+    age_range: [6, 12]
+    min_players: 8
+    max_players: 8
+    space: medium_20x20
+    equipment: [ball, cones, bibs]
+    duration_seconds: [300, 600]
+    intensity: high
+    methodology_tags: [implicit_learning, game_realistic, decision_making, constraints_led]
+    physical_tags: [acceleration, change_of_direction, endurance]
+    la_masia_principles: [small_sided, possession]
+    source: "ajax"
+    setup: |
+      Mark 25x25m square pitch.
+      Place mini-goals (2 cones, 1.5m) in CORNERS: top-left, top-right, bottom-left, bottom-right.
+      Team A attacks top-left + bottom-right (diagonal pair).
+      Team B attacks top-right + bottom-left (other diagonal pair).
+      4v4 — no GKs. Play 3-4 min rounds. Ball through goal = score.
+    diagram: |
+      [gB]○━━━━━━━━━━○[gA]  gA = Team A's goals (diagonal)
+      |              |     gB = Team B's goals (diagonal)
+      |  A  B   A    |
+      |    A  B      |     Each team attacks 2 diagonal corners
+      |  B     A  B  |     and defends the other 2.
+      |              |     360° awareness required!
+      [gA]○━━━━━━━━━━○[gB]  25m square pitch
+
+  - id: ssg_3v3_end_zones
+    name: "3v3 to End Zones"
+    description: "3v3 game scoring by dribbling into opponent's end zone. No goals needed. Encourages dribbling, 1v1, and support play."
+    category: small_sided_games
+    coaching_points:
+      - "Width — spread out to create space"
+      - "Support the player on the ball"
+      - "When to dribble vs when to pass"
+    age_range: [6, 12]
+    min_players: 6
+    max_players: 6
+    space: medium_20x20
+    equipment: [ball, cones, bibs]
+    duration_seconds: [300, 600]
+    intensity: high
+    methodology_tags: [implicit_learning, game_realistic, decision_making]
+    physical_tags: [acceleration, change_of_direction, endurance]
+    la_masia_principles: [small_sided, technical_excellence]
+    source: "la_masia"
+    setup: |
+      Mark 20x15m pitch. Mark 3m deep end zones at each end with flat markers.
+      3v3 — no goalkeepers.
+      Score by dribbling the ball into the opponent's end zone under control.
+      Ball must be under control when entering zone (no blasting it in).
+      No defenders allowed IN the end zone — defend in front of it.
+    diagram: |
+      ┌─── END ZONE B (3m) ───┐
+      │▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒│   ▒ = end zone
+      │                        │
+      │   A   B    A    B      │   A = Team A (3)
+      │      A       B         │   B = Team B (3)
+      │                        │
+      │▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒│   Dribble into opponent's
+      └─── END ZONE A (3m) ───┘   end zone to score
+
+  - id: ssg_4v4_small_goals
+    name: "4v4 with Small Goals (No GK)"
+    description: "4v4 with small cone goals on each end. Low goals force ground play. Fast transitions. La Masia bread and butter."
+    category: small_sided_games
+    coaching_points:
+      - "Keep the ball on the ground"
+      - "Quick transitions — attack immediately when you win it"
+      - "Find the free player"
+    age_range: [6, 12]
+    min_players: 8
+    max_players: 8
+    space: medium_20x20
+    equipment: [ball, cones, bibs]
+    duration_seconds: [300, 600]
+    intensity: high
+    methodology_tags: [implicit_learning, game_realistic, decision_making]
+    physical_tags: [acceleration, change_of_direction, endurance]
+    la_masia_principles: [small_sided, possession, technical_excellence]
+    source: "la_masia"
+    setup: |
+      Mark 25x20m pitch. One cone goal (2m wide) on each end line, centred.
+      Goals are LOW — ball must go through on the ground to count.
+      4v4 — no goalkeepers.
+      If ball goes out, restart with pass-in (no throw-ins).
+      Play 4-min halves.
+    diagram: |
+      ○━━━━[==]━━━━━○    25m pitch, [==] = cone goal (2m)
+      |              |
+      |  A  B  A     |    A = Team A (4)
+      |    A  B   B  |    B = Team B (4)
+      |  B     A     |
+      |              |    Ball must roll along ground through goal.
+      ○━━━━[==]━━━━━○    No goalkeepers, no high shots.
+
+  - id: ssg_4v4_plus_gk
+    name: "4v4 + Goalkeepers"
+    description: "4v4 with goalkeepers on each end. Full game with positional structure. GKs can play with feet."
+    category: small_sided_games
+    coaching_points:
+      - "GK is your extra player — use them"
+      - "Build from the back"
+      - "Positional awareness: don't all chase the ball"
+    age_range: [6, 14]
+    min_players: 10
+    max_players: 10
+    space: medium_20x20
+    equipment: [ball, cones, bibs, goals]
+    duration_seconds: [360, 720]
+    intensity: high
+    methodology_tags: [implicit_learning, game_realistic, decision_making]
+    physical_tags: [acceleration, change_of_direction, endurance]
+    la_masia_principles: [small_sided, possession, play_out_from_back]
+    source: "la_masia"
+    setup: |
+      Mark 30x20m pitch. Place size-appropriate goals at each end.
+      4v4 outfield + 1 GK per team (total 10 players).
+      GK MUST play short to a teammate — no punting allowed.
+      After every goal, restart from GK.
+      Play 5-min halves or first to 3 goals.
+    diagram: |
+      ╔═══════════════════════════╗
+      ║ [=====GOAL=====]          ║
+      ║         GK                ║
+      ║                           ║
+      ║   A  A     B  B          ║    A = Team A (4 outfield)
+      ║      B  A     B  A      ║    B = Team B (4 outfield)
+      ║                           ║    GK = goalkeeper on each end
+      ║         GK                ║
+      ║ [=====GOAL=====]          ║    GK must play short!
+      ╚═══════════════════════════╝
+
+  - id: ssg_5v5_combination_goals
+    name: "5v5 — Goals Only from Combinations"
+    description: "5v5 game where goals only count if scored after a give-and-go, third-man run, or wall pass. Forces combination play."
+    category: small_sided_games
+    coaching_points:
+      - "You can't score alone — combine!"
+      - "Movement off the ball creates combinations"
+      - "Check shoulder to find the right moment"
+    age_range: [7, 14]
+    min_players: 10
+    max_players: 10
+    space: medium_20x20
+    equipment: [ball, cones, bibs, goals]
+    duration_seconds: [360, 720]
+    intensity: high
+    methodology_tags: [constraints_led, game_realistic, decision_making, implicit_learning]
+    physical_tags: [endurance, acceleration]
+    la_masia_principles: [small_sided, possession, third_man, technical_excellence]
+    source: "la_masia"
+    setup: |
+      Mark 30x25m pitch with goals at each end.
+      5v5 (no GKs, or with GKs if enough players).
+      Goal only counts if preceded by: give-and-go, wall pass, or third-man run.
+      Coach judges — if goal is solo effort, it doesn't count.
+      Explain combinations before starting. Demo one example.
+      Play 5-min halves.
+    diagram: |
+      ╔═══════════════════════════╗
+      ║ [====GOAL====]            ║
+      ║                           ║
+      ║   A  B  A  B   A         ║    A = Team A (5)
+      ║     A  B    B  A  B     ║    B = Team B (5)
+      ║                           ║
+      ║ [====GOAL====]            ║    Goal only counts after
+      ╚═══════════════════════════╝    combination play!
+      
+      VALID: A1→A2→A1 finish (give-go)
+      VALID: A1→A2, A3 runs onto A2's pass (third-man)
+
+  - id: ssg_transition_game
+    name: "Transition Game (Attack↔Defend)"
+    description: "On turnover, defending team must counter-attack immediately. Attacking team counter-presses within 3 seconds. Intense transitions."
+    category: small_sided_games
+    coaching_points:
+      - "Win ball → first thought is forward"
+      - "Lose ball → press instantly (3-second rule)"
+      - "Transitions win modern football"
+    age_range: [7, 25]
+    min_players: 6
+    max_players: 14
+    space: medium_20x20
+    equipment: [ball, cones, bibs, goals]
+    duration_seconds: [300, 600]
+    intensity: maximum
+    methodology_tags: [game_realistic, decision_making, constraints_led]
+    physical_tags: [acceleration, deceleration, endurance]
+    la_masia_principles: [small_sided, possession]
+    source: "la_masia"
+    setup: |
+      Mark 25x20m pitch with mini-goals at each end.
+      Two equal teams (3v3 to 7v7 depending on numbers).
+      Rule: on turnover, new attacking team has 6 seconds to shoot.
+      If they don't shoot in 6 seconds, possession goes back.
+      Previous attacking team must counter-press within 3 seconds.
+      Coach counts aloud "1, 2, 3..." to enforce timing.
+      2-minute rounds with rest between — very intense.
+    diagram: |
+      ○━━━━[goal]━━━━○
+      |                |
+      |  A→→→ turnover!|    Turnover happens!
+      |  B←←← counter! |    B has 6 sec to finish
+      |    ←A presses   |    A counter-presses in 3 sec
+      |                |
+      ○━━━━[goal]━━━━○
+      Coach counts: "1... 2... 3..." on every turnover
+
+  - id: ssg_counter_attack_3v2
+    name: "Counter-Attack Game (3v2)"
+    description: "On turnover, 3 attackers break against 2 defenders. Creates numerical overload counter-attack situation. Rotate roles."
+    category: small_sided_games
+    coaching_points:
+      - "Speed of attack — don't let defenders recover"
+      - "Wide support: stretch the 2 defenders"
+      - "Decision: when to shoot vs when to pass"
+    age_range: [7, 25]
+    min_players: 5
+    max_players: 10
+    space: medium_20x20
+    equipment: [ball, cones, bibs, goals]
+    duration_seconds: [300, 600]
+    intensity: high
+    methodology_tags: [game_realistic, decision_making]
+    physical_tags: [acceleration, endurance]
+    la_masia_principles: [small_sided]
+    source: "la_masia"
+    setup: |
+      Mark 30x20m pitch with a full-size or large goal at one end.
+      Coach or GK starts with ball at the goal. 3 attackers on halfway line.
+      2 defenders start 5m ahead of goal.
+      Coach plays ball to any attacker → 3v2 counter begins.
+      Attackers must finish within 8 seconds.
+      After attempt: reset. Rotate attackers/defenders every 3 reps.
+    diagram: |
+      ╔═══════════════════════════╗
+      ║  [=====GOAL=====]         ║
+      ║      D      D             ║  D = defenders (2)
+      ║                           ║
+      ║                           ║
+      ║ ─ ─ ─ ─halfway─ ─ ─ ─ ─ ║
+      ║   A1     A2     A3       ║  A = attackers (3)
+      ║                           ║
+      ║        Coach ●            ║  Coach plays ball → 3v2 starts
+      ╚═══════════════════════════╝  8 seconds to finish!
+
+  - id: ssg_possession_target_score
+    name: "Possession with Target Score"
+    description: "Possession game: X consecutive passes = 1 point. Teams compete to reach target score first. Teaches patience and ball retention."
+    category: small_sided_games
+    coaching_points:
+      - "Patience — don't force forward passes"
+      - "Move off the ball to create options"
+      - "Count out loud — build excitement"
+    age_range: [6, 25]
+    min_players: 6
+    max_players: 16
+    space: medium_20x20
+    equipment: [ball, cones, bibs]
+    duration_seconds: [300, 600]
+    intensity: moderate
+    methodology_tags: [constraints_led, implicit_learning, decision_making, game_realistic]
+    physical_tags: [endurance]
+    la_masia_principles: [possession, small_sided, positional_play]
+    source: "la_masia"
+    setup: |
+      Mark 20x20m grid (adjust for player count).
+      Two equal teams. Coach sets target: e.g. "5 passes = 1 point."
+      Players count passes aloud. On interception, count resets to 0.
+      First to 3 points wins the round.
+      Progress: start with 3 passes, increase to 5, then 7 as they improve.
+    diagram: |
+      ○═══════════════════○
+      |                   |
+      |  A  B   A    B    |   A = Team A
+      |    A  B    A  B   |   B = Team B
+      |      B   A        |   5 consecutive passes = 1 point
+      |                   |   "1! 2! 3! 4! 5! — POINT!"
+      ○═══════════════════○
+      No goals. Just keep the ball. First to 3 points.
+
+  - id: ssg_direction_gates
+    name: "Direction Game with Gates"
+    description: "Scattered cone gates across pitch. Score by passing through any gate to a teammate on the other side. Encourages scanning and switching play."
+    category: small_sided_games
+    coaching_points:
+      - "Scan for open gates — don't just look at the ball"
+      - "Switch play to find an unguarded gate"
+      - "Move to create passing lanes through gates"
+    age_range: [6, 12]
+    min_players: 6
+    max_players: 16
+    space: medium_20x20
+    equipment: [ball, cones, bibs]
+    duration_seconds: [300, 600]
+    intensity: moderate
+    methodology_tags: [constraints_led, implicit_learning, decision_making, game_realistic]
+    physical_tags: [change_of_direction, endurance]
+    la_masia_principles: [small_sided, possession, technical_excellence]
+    source: "la_masia"
+    setup: |
+      Mark 25x20m pitch. Scatter 6-8 cone gates (2 cones, 1.5m apart) randomly
+      across the pitch — not on the edges.
+      Two equal teams. Score = pass through any gate to a teammate on the other side.
+      Teammate must receive to count. Can't score through same gate twice in a row.
+      First to 5 points wins. Rotate gate positions between rounds.
+    diagram: |
+      ○═══════════════════════○
+      |        ╫         ╫    |   ╫ = cone gate (1.5m)
+      |   A  B     ╫         |
+      |      ╫    A  B   A   |   Score = pass THROUGH a gate
+      |  B      ╫       B    |   to a teammate on other side.
+      |    A  ╫       ╫      |
+      |              B   A   |   6-8 gates scattered randomly.
+      ○═══════════════════════○
+
+  - id: ssg_line_soccer
+    name: "Line Soccer (End Zone Scoring)"
+    description: "Score by stopping the ball on opponent's end line. Encourages controlled finishing, build-up play, and team shape."
+    category: small_sided_games
+    coaching_points:
+      - "Must control ball dead on the line — precision"
+      - "Build up patiently to create opportunity"
+      - "Defend as a team — shape before recovery"
+    age_range: [6, 12]
+    min_players: 6
+    max_players: 14
+    space: medium_20x20
+    equipment: [ball, cones, bibs]
+    duration_seconds: [300, 600]
+    intensity: high
+    methodology_tags: [implicit_learning, game_realistic, decision_making]
+    physical_tags: [endurance, acceleration]
+    la_masia_principles: [small_sided, possession]
+    source: "la_masia"
+    setup: |
+      Mark 25x20m pitch. No goals.
+      Score = stop the ball dead with foot on opponent's end line.
+      Ball must be UNDER CONTROL on the line (not blasted across).
+      Equal teams: 3v3 to 7v7. Kick-off from centre.
+      Out of play restarts with pass-in from sideline.
+      Play 4-min halves.
+    diagram: |
+      ═══════ B's end line ═══════
+      |                          |
+      |   A  B     A   B         |  A attacks B's line (top)
+      |     A   B   A   B       |  B attacks A's line (bottom)
+      |        B       A         |
+      |                          |  Score = ball stopped dead
+      ═══════ A's end line ═══════  on opponent's end line
+
+  - id: ssg_mandatory_third_man
+    name: "Game with Mandatory Third Man"
+    description: "Goals only count if they involve a third-man run. Passer → receiver → third player finishes. Forces combination play."
+    category: small_sided_games
+    coaching_points:
+      - "The third man is the one who wasn't in the pass exchange"
+      - "Timing of the run: arrive as ball arrives"
+      - "This is Barcelona DNA — third-man movement"
+    age_range: [8, 25]
+    min_players: 6
+    max_players: 14
+    space: medium_20x20
+    equipment: [ball, cones, bibs, goals]
+    duration_seconds: [300, 600]
+    intensity: high
+    methodology_tags: [constraints_led, game_realistic, decision_making]
+    physical_tags: [acceleration, endurance]
+    la_masia_principles: [small_sided, third_man, possession]
+    source: "la_masia"
+    setup: |
+      Mark 25x20m pitch with mini-goals at each end.
+      Equal teams (3v3 to 7v7).
+      Rule: goal only counts if a THIRD player (not the passer or first receiver)
+      is involved in the finishing move.
+      Example: A1 passes to A2, A3 makes run, A2 lays off to A3 → A3 scores. Valid!
+      A1 dribbles and shoots → NOT valid. Explain + demo before starting.
+    diagram: |
+      ○━━━[goal]━━━○
+      |              |
+      |  A1──→A2     |   A1 passes to A2
+      |        │     |   A2 lays off to A3
+      |        ↓     |   A3 finishes → GOAL!
+      |       A3→ ⚽ |   (3rd player must be involved)
+      |              |
+      ○━━━[goal]━━━○
+      Solo goals don't count. Combine!
+
+  - id: ssg_build_up_requirement
+    name: "Game with Build-up Requirement"
+    description: "Must restart from GK or back player after every goal. Cannot play long. Forces playing out from the back every time."
+    category: small_sided_games
+    coaching_points:
+      - "Be brave — play short from the back"
+      - "Create triangles to escape the press"
+      - "GK is your first attacker"
+    age_range: [7, 14]
+    min_players: 8
+    max_players: 14
+    space: medium_20x20
+    equipment: [ball, cones, bibs, goals]
+    duration_seconds: [360, 720]
+    intensity: high
+    methodology_tags: [constraints_led, game_realistic, decision_making]
+    physical_tags: [endurance]
+    la_masia_principles: [play_out_from_back, possession, positional_play, small_sided]
+    source: "la_masia"
+    setup: |
+      Mark 30x20m pitch with goals + GKs.
+      After every goal OR ball out of play: restart from GK (short pass only).
+      GK CANNOT punt or throw long. Must play to nearest outfield player.
+      If pressed, other outfield players must drop back to create passing angles.
+      Opposing team can press from a "press line" (5m from goal).
+      Play 5-min halves.
+    diagram: |
+      ╔═══════════════════════════╗
+      ║ [=====GOAL=====]          ║
+      ║         GK ──→ A         ║   GK must play short!
+      ║ ─ ─ press line (5m) ─ ─  ║   Press line = opponents can't
+      ║    B    B                 ║   go closer than 5m to goal
+      ║   A  A    B  B    A     ║   on restart.
+      ║ ─ ─ press line (5m) ─ ─  ║
+      ║         GK ──→ B         ║
+      ║ [=====GOAL=====]          ║
+      ╚═══════════════════════════╝
+
+  - id: ssg_funnel_game
+    name: "Funnel Game (Wide to Narrow)"
+    description: "Pitch narrows from wide build-up area to narrow finishing zone. Forces teams to build wide then penetrate centrally. Teaches width-to-depth transition."
+    category: small_sided_games
+    coaching_points:
+      - "Build wide — use the space"
+      - "When you enter the narrow zone, be quick and direct"
+      - "Defending team: compress the funnel"
+    age_range: [8, 25]
+    min_players: 8
+    max_players: 14
+    space: medium_20x20
+    equipment: [ball, cones, bibs, goals]
+    duration_seconds: [300, 600]
+    intensity: high
+    methodology_tags: [constraints_led, game_realistic, decision_making]
+    physical_tags: [endurance, acceleration]
+    la_masia_principles: [small_sided, positional_play, possession]
+    source: "la_masia"
+    setup: |
+      Mark a trapezoid pitch: 25m wide at each end, narrowing to 10m in the centre.
+      Use extra cones to mark the "funnel" — a narrowing channel in the middle third.
+      Goals at each end. Equal teams (4v4 to 7v7).
+      Ball MUST pass through the narrow funnel zone to enter the attacking third.
+      Build-up happens in the wide zones; finishing in the narrow zone.
+    diagram: |
+      [=GOAL=]
+      ○━━━━━━━━━━━━━━━━━━━━━○  ← 25m wide (attacking zone)
+      |  ╲                ╱  |
+      |    ╲  FUNNEL    ╱    |  ← narrows to 10m
+      |      ╲════════╱      |     (must play through here)
+      |    ╱            ╲    |
+      |  ╱                ╲  |
+      ○━━━━━━━━━━━━━━━━━━━━━○  ← 25m wide (build-up zone)
+      [=GOAL=]
+      Build wide → penetrate narrow → finish!
+
+  - id: ssg_multi_ball
+    name: "Multi-Ball Game"
+    description: "Coach continuously feeds new balls when one goes out. No stoppages. Develops quick reactions, continuous play, and fitness."
+    category: small_sided_games
+    coaching_points:
+      - "Always be ready — a new ball is coming"
+      - "Transition instantly to the new ball"
+      - "Never switch off mentally"
+    age_range: [6, 12]
+    min_players: 6
+    max_players: 14
+    space: medium_20x20
+    equipment: [ball, cones, bibs, goals]
+    duration_seconds: [180, 360]
+    intensity: maximum
+    methodology_tags: [game_realistic, implicit_learning]
+    physical_tags: [endurance, acceleration]
+    la_masia_principles: [small_sided]
+    source: "la_masia"
+    setup: |
+      Mark 25x20m pitch with mini-goals at each end.
+      Coach stands on sideline with 8-10 extra balls.
+      Equal teams (3v3 to 7v7). Normal SSG rules.
+      When ball goes out: NO STOPPAGE — coach immediately feeds new ball
+      to random area. Players must react instantly.
+      2-minute rounds (very intense!) with 1-min rest between.
+    diagram: |
+      ○━━━[goal]━━━○
+      |              |
+      |  A  B  A     |   ● ● ●  ← Coach with extra balls
+      |    B  A  B   |   ●  on sideline
+      |              |
+      ○━━━[goal]━━━○
+      Ball out? New ball INSTANTLY from coach.
+      No breaks. React and play. 2-min rounds.
+
+  - id: ssg_champions_league
+    name: "Champions League Format"
+    description: "3-4 teams, winner stays on. 2-minute games (or first goal wins). Losing team rotates off. High intensity, competitive, game-like."
+    category: small_sided_games
+    coaching_points:
+      - "Every second counts — play with intensity"
+      - "Compete — this is a tournament"
+      - "Can you keep winning? Mental toughness."
+    age_range: [6, 14]
+    min_players: 9
+    max_players: 16
+    space: medium_20x20
+    equipment: [ball, cones, bibs, goals]
+    duration_seconds: [600, 900]
+    intensity: maximum
+    methodology_tags: [game_realistic, implicit_learning, decision_making]
+    physical_tags: [endurance, acceleration]
+    la_masia_principles: [small_sided]
+    source: "la_masia"
+    setup: |
+      Mark 20x15m pitch with mini-goals.
+      Split into 3-4 teams of 3 (or 4). Each team wears different bibs.
+      Two teams play at a time. Game = 2 minutes or first-to-score.
+      Loser rotates off; new team comes on.
+      Winner stays on. Track wins: most wins at end = champions!
+      Waiting teams do ball mastery on sideline.
+    diagram: |
+      ○━━[goal]━━○
+      |    A  B   |   Teams A vs B play (2 min or first goal)
+      |  A  B  A  |   Loser → off. Team C comes on.
+      |     B     |   Winner stays.
+      ○━━[goal]━━○
+      
+      Waiting:  (C) ●● ●●   (D) ●● ●●
+                Ball mastery on sideline
+      Track wins: "Who is the champion?"
+
+  - id: ssg_free_play
+    name: "Free Play (Unrestricted)"
+    description: "Regular small-sided game with no specific rules or constraints. Let them play. Coach stays quiet. The game is the teacher."
+    category: small_sided_games
+    coaching_points:
+      - "Stay quiet — let them solve problems"
+      - "Only intervene for safety or unfair play"
+      - "Observe: are they applying session themes naturally?"
+    age_range: [6, 25]
+    min_players: 4
+    max_players: 16
+    space: medium_20x20
+    equipment: [ball, cones, bibs, goals]
+    duration_seconds: [360, 900]
+    intensity: high
+    methodology_tags: [implicit_learning, game_realistic, decision_making]
+    physical_tags: [endurance, acceleration, change_of_direction]
+    la_masia_principles: [small_sided]
+    source: "la_masia"
+    setup: |
+      Mark pitch appropriate to player count (3v3: 20x15m, 5v5: 30x20m).
+      Goals at each end. Bibs for teams.
+      No special rules. No constraints. Just play football.
+      Coach is SILENT. Only intervene for safety.
+      This is the most important part of training — the game itself.
+      Use this to observe: are players using what they learned today?
+    diagram: |
+      ╔═══════════════════════════╗
+      ║ [====GOAL====]            ║
+      ║                           ║
+      ║   A  B    A  B   A       ║   Just play.
+      ║     A  B     B    A  B  ║   No rules.
+      ║                           ║   Coach is quiet.
+      ║ [====GOAL====]            ║   The game is the teacher.
+      ╚═══════════════════════════╝

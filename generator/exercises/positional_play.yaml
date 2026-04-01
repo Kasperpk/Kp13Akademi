@@ -1,0 +1,409 @@
+exercises:
+  - id: pp_possession_square
+    name: "Possession Square (Juego de Posición)"
+    description: >
+      4v2 or 5v2 in a square grid. Four outside players on the edges, two defenders
+      inside. Outside players must keep possession using only the outside channels.
+      Inside players can intercept. When ball reaches opposite side, point scored.
+      This IS the Barcelona positional play exercise — Guardiola's foundation drill.
+    category: positional_play
+    coaching_points:
+      - "Body shape: always open to receive sideways and play forward"
+      - "Play away from pressure — if pressed, switch"
+      - "Use the 'third man' — the pass after the next pass"
+      - "Receive across body to play forward"
+    age_range: [7, 25]
+    min_players: 6
+    max_players: 8
+    space: small_10x10
+    equipment: [ball, cones, bibs]
+    duration_seconds: [300, 600]
+    intensity: moderate
+    methodology_tags: [game_realistic, decision_making, implicit_learning, constraints_led]
+    physical_tags: [endurance, change_of_direction]
+    la_masia_principles: [positional_play, possession, third_man, technical_excellence, rondo]
+    source: "la_masia"
+    setup: |
+      Mark a 10x10m square with cones. Place one player on each side of
+      the square (4 outside). Two defenders start inside.
+      Outside players can slide along their edge but cannot enter.
+      Ball starts with any outside player. Defender who intercepts swaps
+      with the passer. Run 3-minute rounds, rotate defenders.
+      With 8 players: two per side on opposite edges.
+    diagram: |
+      ○───A1────○     10m wide square
+      |         |
+      A4   D D  A2    D = defenders (inside)
+      |         |     A1-A4 = outside passers
+      ○───A3────○     ○ = cone
+      Pass around the square. Split through middle = bonus point.
+    variations:
+      - name: "Two-touch maximum"
+        description: "Forces quicker decisions and pre-scanning"
+      - name: "Add inside neutral"
+        description: "One neutral inside who always plays with possession, creating through-ball option"
+      - name: "Directional"
+        description: "Must advance ball to far side to score — possession with penetration"
+
+  - id: pp_3v3_plus_1
+    name: "Positional Game 3v3+1"
+    description: "3v3 with one neutral player who always joins the team in possession. Creates 4v3 overload. Played in small grid with mini goals or end zones."
+    category: positional_play
+    coaching_points:
+      - "Find the neutral — that's your extra man"
+      - "Open body to see both goals"
+      - "Move after passing — create a new angle"
+      - "Switch play to find space"
+    age_range: [7, 25]
+    min_players: 7
+    max_players: 7
+    space: medium_20x20
+    equipment: [ball, cones, bibs, goals]
+    duration_seconds: [300, 600]
+    intensity: high
+    methodology_tags: [game_realistic, decision_making, implicit_learning, constraints_led]
+    physical_tags: [endurance, change_of_direction, acceleration]
+    la_masia_principles: [possession, positional_play, small_sided]
+    source: "la_masia"
+    setup: |
+      Mark 20x15m grid. Mini-goal (2 cones, 1m wide) at each end.
+      Team A (3, bibs) vs Team B (3, no bibs).
+      Neutral (different colour bib) always joins team in possession → 4v3.
+      Swap neutral every 3-4 minutes to avoid fatigue.
+    diagram: |
+      ○═══════════════════○
+      |  [g]          [g] |  [g] = mini-goal (1m)
+      |                   |
+      |  A  A   N    B    |  A = Team A (3)
+      |     B       A  B  |  B = Team B (3)
+      |                   |  N = Neutral (always joins ball team)
+      ○═══════════════════○
+              20m
+
+  - id: pp_4v4_plus_2
+    name: "Positional Game 4v4+2 Neutrals"
+    description: "4v4 with two neutral players who always play with possession team (6v4 overload). Neutrals on outside. Teaches playing with numerical advantage."
+    category: positional_play
+    coaching_points:
+      - "Use width — neutrals stretch the play"
+      - "Patience in possession — find the right moment to penetrate"
+      - "Third man running: receive, pass, move into space"
+      - "Defending team: press as a unit, compact shape"
+    age_range: [8, 25]
+    min_players: 10
+    max_players: 10
+    space: medium_20x20
+    equipment: [ball, cones, bibs, goals]
+    duration_seconds: [360, 600]
+    intensity: high
+    methodology_tags: [game_realistic, decision_making, implicit_learning, constraints_led]
+    physical_tags: [endurance, change_of_direction]
+    la_masia_principles: [possession, positional_play, small_sided, third_man]
+    source: "la_masia"
+    setup: |
+      Mark 25x20m grid. Mini-goals at each end.
+      Team A (4, bibs) vs Team B (4, no bibs).
+      Two neutrals (yellow bibs) on opposite sidelines.
+      Neutrals always play with whoever has the ball → 6v4.
+      Neutrals: max 2 touches, cannot score.
+      Rotate neutrals every 4 minutes.
+    diagram: |
+      ○══════════════════════○   25m wide
+      |  [g]            [g]  |
+      |                      |
+      N   A  A    B  B       N   N = Neutral (on sideline)
+      |       B  A   B  A   |   A = Team A (4)
+      |                      |   B = Team B (4)
+      ○══════════════════════○
+      Neutrals slide along sideline. Possession team = 6v4.
+
+  - id: pp_diamond_passing_pattern
+    name: "Diamond Passing Patterns"
+    description: "Players in diamond shape. Passing sequences: short-short-long, give-go-third man, rotation after pass. Relates to midfield diamond positioning."
+    category: positional_play
+    coaching_points:
+      - "Open body to receive across body"
+      - "Check shoulder before receiving"
+      - "Weight of pass — firm to feet"
+      - "Move to next position after passing"
+    age_range: [7, 25]
+    min_players: 4
+    max_players: 8
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [240, 420]
+    intensity: moderate
+    methodology_tags: [explicit_instruction, game_realistic]
+    physical_tags: [endurance]
+    la_masia_principles: [positional_play, possession, third_man, technical_excellence]
+    source: "la_masia"
+    setup: |
+      Place 4 cones in a diamond, ~8m apart.
+      One player at each cone. Ball starts at bottom.
+      Pattern 1: Bottom→Right→Top→Left→Bottom (follow your pass).
+      Pattern 2: Bottom→Right, Right lays off to Top, Top plays long to Left.
+      With 8 players: two per cone, alternate.
+      Run 2 min, then reverse direction.
+    diagram: |
+      T = top cone
+           / \
+          /   \        Pass: B→R→T→L→B
+         L     R       Follow your pass to next cone.
+          \   /        Reverse after 2 min.
+           \ /
+            B
+      ● = ball starts at B     ~8m between cones
+
+  - id: pp_build_up_from_gk
+    name: "Build-up from Goalkeeper (3v2)"
+    description: "GK starts with ball. Three outfield players must build out against two pressers. Goal is to advance ball past halfway line through passing, not long ball."
+    category: positional_play
+    coaching_points:
+      - "GK: be brave, play short"
+      - "Create triangles around the press"
+      - "Split the defenders with a pass"
+      - "If pressed hard, switch the play"
+    age_range: [7, 25]
+    min_players: 6
+    max_players: 8
+    space: medium_20x20
+    equipment: [ball, cones, bibs]
+    duration_seconds: [300, 600]
+    intensity: moderate
+    methodology_tags: [game_realistic, decision_making, constraints_led]
+    physical_tags: [endurance]
+    la_masia_principles: [play_out_from_back, possession, positional_play, third_man]
+    source: "la_masia"
+    setup: |
+      Use 25x20m grid. Cone line across the middle = "halfway" target.
+      GK on goal line with ball. 3 build-up players (bibs) in own half.
+      2 pressers (no bibs) try to win ball.
+      Success = ball crosses halfway through passing (no long ball!).
+      If pressers win, they score on open goal. Reset after each attempt.
+      Rotate pressers every 3 attempts.
+    diagram: |
+      ╔═══════════════════════╗
+      ║         [GOAL]        ║
+      ║           GK          ║
+      ║                       ║
+      ║     A1         A2     ║  A1-A3 = build-up players
+      ║          A3           ║  D1,D2 = pressers
+      ║ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ║  ─ ─ = halfway (target line)
+      ║     D1      D2        ║
+      ╚═══════════════════════╝
+      GK plays short → combine → cross line = success
+
+  - id: pp_third_man_combinations
+    name: "Third Man Combinations"
+    description: "Groups of 3. Player A passes to B, B lays off for C (the third man) who plays forward. Rotate positions."
+    category: positional_play
+    coaching_points:
+      - "C times the run — arrives as ball arrives"
+      - "B's layoff is first time and into C's path"
+      - "A follows the pass and supports"
+      - "This is how Barcelona play through midfield"
+    age_range: [7, 25]
+    min_players: 3
+    max_players: 12
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [240, 420]
+    intensity: moderate
+    methodology_tags: [explicit_instruction, game_realistic]
+    physical_tags: [endurance, acceleration]
+    la_masia_principles: [third_man, positional_play, possession, technical_excellence]
+    source: "la_masia"
+    setup: |
+      3 cones in a line, ~8m apart. A at first, B at middle, C at far.
+      Ball starts with A.
+      Sequence: A passes to B → B lays off first-time → C runs onto layoff.
+      Rotate: A→B, B→C, C→A.
+      With 12 players: run 4 groups side by side.
+    diagram: |
+      A ───pass───→ B
+                     │
+                     ↓ layoff
+                     C ───→ runs onto ball → finish/pass
+      
+      (cone)        (cone)        (cone)
+        8m            8m
+      Rotate: A→B→C→A after each rep
+
+  - id: pp_width_and_depth
+    name: "Width and Depth Positioning Game"
+    description: "4v4 in grid with bonus zones on all sides. Points for passing to a player in a bonus zone. Teaches stretching the pitch."
+    category: positional_play
+    coaching_points:
+      - "Stretch the play — someone must be wide"
+      - "Create depth — don't all stand on a line"
+      - "Quick switch to the open side"
+      - "Shape: think rectangle, not circle"
+    age_range: [7, 25]
+    min_players: 8
+    max_players: 12
+    space: medium_20x20
+    equipment: [ball, cones, bibs]
+    duration_seconds: [300, 600]
+    intensity: high
+    methodology_tags: [constraints_led, game_realistic, decision_making, implicit_learning]
+    physical_tags: [endurance, change_of_direction]
+    la_masia_principles: [positional_play, possession, small_sided]
+    source: "la_masia"
+    setup: |
+      Mark 20x20m main grid. Add 3m bonus zones on all 4 sides (flat markers).
+      4v4 inside the main grid.
+      Any player can step into a bonus zone to receive = 1 point.
+      After receiving in bonus zone, must play back inside within 2 touches.
+      First to 5 bonus-zone passes wins the round.
+    diagram: |
+      ┌───── bonus (3m) ──────┐
+      │ ┌──────────────────┐  │
+      │ │                  │  │
+      │b│  A  A    B  B    │b │  b = side bonus zones
+      │o│    B  A    B  A  │o │  A = Team A, B = Team B
+      │n│                  │n │  Step into bonus zone + receive = 1pt
+      │ └──────────────────┘  │
+      └───── bonus (3m) ──────┘
+
+  - id: pp_switching_play
+    name: "Switching Play Exercise"
+    description: "Two grids side by side. Complete 3 passes in one grid, then switch ball to other grid. Teaches switching the point of attack."
+    category: positional_play
+    coaching_points:
+      - "Recognize when your side is overloaded — switch!"
+      - "Long pass must be accurate to feet"
+      - "Players in far grid: stay alive, keep moving, be ready"
+      - "Speed of switch creates advantage"
+    age_range: [8, 25]
+    min_players: 8
+    max_players: 14
+    space: medium_20x20
+    equipment: [ball, cones, bibs]
+    duration_seconds: [300, 600]
+    intensity: high
+    methodology_tags: [game_realistic, decision_making, constraints_led]
+    physical_tags: [endurance, change_of_direction]
+    la_masia_principles: [positional_play, possession]
+    source: "la_masia"
+    setup: |
+      Two 12x12m grids side by side with 5m gap.
+      Split each team across both grids (e.g. 2 per team per grid).
+      3 passes in one grid → switch (long pass) → 3 passes in new grid = 1pt.
+      Defenders cannot cross between grids.
+    diagram: |
+      ┌──Grid A──┐     ┌──Grid B──┐
+      │ A  B     │     │  A  B    │
+      │    A  B  │ 5m  │ B     A  │
+      │          │ gap │          │
+      └──────────┘     └──────────┘
+      3 passes → long switch → 3 passes = 1 point
+
+  - id: pp_overlap_underlap
+    name: "Overlap and Underlap Patterns"
+    description: "Wide player receives, fullback overlaps outside or underlaps inside. Practice run timing, pass weight, final delivery. Both sides."
+    category: positional_play
+    coaching_points:
+      - "Overlap: run behind and around, outside"
+      - "Underlap: run inside, between defender and winger"
+      - "Communication: call 'hold' or 'go'"
+      - "Timing of run matches timing of pass"
+    age_range: [8, 25]
+    min_players: 3
+    max_players: 8
+    space: medium_20x20
+    equipment: [ball, cones]
+    duration_seconds: [240, 420]
+    intensity: moderate
+    methodology_tags: [explicit_instruction, game_realistic]
+    physical_tags: [acceleration, endurance]
+    la_masia_principles: [positional_play, third_man, technical_excellence]
+    source: "la_masia"
+    setup: |
+      Set up on left side of pitch (mirror for right).
+      Winger (W) wide with ball, Fullback (FB) 10m behind, CM inside.
+      Overlap: W holds, FB runs outside → W passes → FB crosses.
+      Underlap: W holds, FB cuts inside → W passes inside → FB finishes.
+      4-5 reps each pattern, then swap sides.
+    diagram: |
+      OVERLAP:                    UNDERLAP:
+        W ──hold──→                  W ──hold──→
+       ↗                               ↖
+      FB ──outside run──→ cross     FB ──inside cut──→ finish
+      
+      Set cones for start positions. Mirror on both sides.
+      CM stays central as wall-pass/support option.
+
+  - id: pp_free_man_recognition
+    name: "Free Man Recognition"
+    description: "Possession game where coach secretly assigns one attacker as 'free' (undefended). First team to find and pass to the free man scores."
+    category: positional_play
+    coaching_points:
+      - "Scan constantly — who is free?"
+      - "Don't telegraph the pass to the free man"
+      - "Free man: make yourself available but don't stand still"
+      - "This is what Xavi and Iniesta did every second of every game"
+    age_range: [7, 25]
+    min_players: 6
+    max_players: 14
+    space: medium_20x20
+    equipment: [ball, cones, bibs]
+    duration_seconds: [300, 480]
+    intensity: moderate
+    methodology_tags: [constraints_led, decision_making, implicit_learning, game_realistic]
+    physical_tags: [endurance]
+    la_masia_principles: [possession, positional_play]
+    source: "la_masia"
+    setup: |
+      Mark 20x20m grid. Two equal teams (e.g. 4v4).
+      Coach whispers to one attacker: "You are free."
+      That player's defender must stand still / not press.
+      Attacking team must find and pass to free man = 1 point.
+      Change the free man every 90 seconds (whisper to new player).
+    diagram: |
+      ○═══════════════════○
+      |                   |
+      |  A  B  A  B       |  Coach whispers to one A: "you're free"
+      |     A  B    A  B  |  That A's defender (B) freezes
+      |         ★         |  ★ = free man (unknown to defence)
+      |                   |  Find ★ and pass to them = 1 point
+      ○═══════════════════○
+
+  - id: pp_playing_between_lines
+    name: "Playing Between the Lines"
+    description: "Three horizontal zones. Defenders in zone 1, midfield in zone 2, attackers in zone 3. Must play through each zone to score. No skipping."
+    category: positional_play
+    coaching_points:
+      - "Receive between the lines — face forward"
+      - "Midfielder: half-turn to play forward quickly"
+      - "Patience — wait for the passing lane to open"
+      - "This is how La Masia builds attacks"
+    age_range: [8, 25]
+    min_players: 8
+    max_players: 16
+    space: medium_20x20
+    equipment: [ball, cones, bibs, goals]
+    duration_seconds: [300, 600]
+    intensity: high
+    methodology_tags: [game_realistic, decision_making, constraints_led]
+    physical_tags: [endurance, change_of_direction]
+    la_masia_principles: [play_out_from_back, positional_play, possession, third_man]
+    source: "la_masia"
+    setup: |
+      Mark 30x20m pitch divided into 3 horizontal zones (10m each).
+      Mini-goals at each end.
+      Zone 1: 2 defenders + GK. Zone 2: 2v2 midfield. Zone 3: 2v2 attack.
+      Ball must pass through each zone in order — no long balls.
+      After scoring, other team builds from their Zone 1.
+      Rotate zones every 5 minutes.
+    diagram: |
+      ╔═════════════════════╗
+      ║ [goal]  ZONE 3      ║  2v2 attack
+      ║  A  A   d  d        ║
+      ║─ ─ ─ ─ ─ ─ ─ ─ ─ ─║
+      ║       ZONE 2        ║  2v2 midfield
+      ║   A  d    A  d      ║
+      ║─ ─ ─ ─ ─ ─ ─ ─ ─ ─║
+      ║       ZONE 1        ║  Build-up
+      ║  GK   A     A       ║  Must go 1→2→3. No skipping.
+      ║       [goal]        ║
+      ╚═════════════════════╝

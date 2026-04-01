@@ -1,0 +1,241 @@
+exercises:
+  - id: ovo_1v1_basic
+    name: "1v1 Direct"
+    description: "Attacker vs defender, direct to goal. Basic 1v1 with attacker trying to score, defender trying to win ball. Alternate roles."
+    category: one_v_one
+    coaching_points:
+      - "Attacker: run at defender, commit them to a side"
+      - "Use skill moves to create space for shot"
+      - "Defender: stay on feet, jockey, be patient"
+    age_range: [6, 25]
+    min_players: 2
+    max_players: 12
+    space: small_10x10
+    equipment: [ball, cones, goals]
+    duration_seconds: [180, 360]
+    intensity: high
+    methodology_tags: [game_realistic, decision_making]
+    physical_tags: [acceleration, deceleration, change_of_direction]
+    la_masia_principles: [technical_excellence]
+    source: "existing_library"
+
+  - id: ovo_1v1_end_zone
+    name: "1v1 to End Zone"
+    description: "Receive pass, dribble past defender to end zone. No goal — score by dribbling ball to a dead stop in the zone. Focuses on dribbling past a player."
+    category: one_v_one
+    coaching_points:
+      - "Attack the space next to the defender"
+      - "Change of speed: slow-slow-FAST"
+      - "Don't telegraph your move"
+    age_range: [6, 25]
+    min_players: 2
+    max_players: 12
+    space: small_10x10
+    equipment: [ball, cones, bibs]
+    duration_seconds: [180, 360]
+    intensity: high
+    methodology_tags: [game_realistic, decision_making, both_feet]
+    physical_tags: [acceleration, deceleration, change_of_direction]
+    la_masia_principles: [technical_excellence]
+    source: "existing_library"
+
+  - id: ovo_1v1_receive_and_attack
+    name: "1v1 Receive and Attack"
+    description: "Ball played to attacker who has back to goal. Defender closes from behind. Attacker must control, turn, beat defender, shoot."
+    category: one_v_one
+    coaching_points:
+      - "Feel the defender — where's the pressure?"
+      - "Turn into space, not into defender"
+      - "Be decisive — commit to your move"
+    age_range: [8, 25]
+    min_players: 2
+    max_players: 12
+    space: small_10x10
+    equipment: [ball, cones, goals]
+    duration_seconds: [180, 360]
+    intensity: high
+    methodology_tags: [game_realistic, decision_making]
+    physical_tags: [acceleration, change_of_direction]
+    la_masia_principles: [technical_excellence]
+    source: "existing_library"
+
+  - id: ovo_1v1_different_starts
+    name: "1v1 from Different Starting Positions"
+    description: "1v1 with varied starting scenarios: both facing goal, attacker behind defender, side-by-side race to ball, back-to-back. Different start = different challenge."
+    category: one_v_one
+    coaching_points:
+      - "Each start position demands a different first action"
+      - "React and adapt — no two situations are the same"
+      - "Game-realistic: in a match, 1v1s start in many ways"
+    age_range: [6, 25]
+    min_players: 2
+    max_players: 12
+    space: small_10x10
+    equipment: [ball, cones, goals]
+    duration_seconds: [240, 480]
+    intensity: high
+    methodology_tags: [differential_learning, game_realistic, decision_making]
+    physical_tags: [acceleration, change_of_direction]
+    la_masia_principles: [technical_excellence]
+    source: "la_masia"
+
+  - id: ovo_1v1_with_finish
+    name: "1v1 with Transition to Finish"
+    description: "Win the 1v1, then must finish on goal within 3 seconds. No time to set up — game-realistic urgency."
+    category: one_v_one
+    coaching_points:
+      - "Beat the defender AND finish — both matter"
+      - "First touch past defender sets up the finish"
+      - "Composure: don't rush the shot after rushing the dribble"
+    age_range: [7, 25]
+    min_players: 2
+    max_players: 12
+    space: medium_20x20
+    equipment: [ball, cones, goals]
+    duration_seconds: [240, 480]
+    intensity: high
+    methodology_tags: [game_realistic, decision_making, both_feet]
+    physical_tags: [acceleration, power]
+    la_masia_principles: [technical_excellence]
+    source: "la_masia"
+
+  - id: ovo_2v1_creating_1v1
+    name: "2v1 Creating 1v1"
+    description: "2v1 attack. Two attackers combine with a pass to create a 1v1 for one of them. Teaches when to pass and when to take on your man."
+    category: one_v_one
+    coaching_points:
+      - "Attacker with ball: run at defender to commit them"
+      - "Second attacker: time your run to create space"
+      - "If defender shifts, you have a 1v1 — go!"
+    age_range: [7, 25]
+    min_players: 3
+    max_players: 12
+    space: medium_20x20
+    equipment: [ball, cones, goals, bibs]
+    duration_seconds: [240, 480]
+    intensity: high
+    methodology_tags: [game_realistic, decision_making]
+    physical_tags: [acceleration, change_of_direction]
+    la_masia_principles: [technical_excellence, third_man, small_sided]
+    source: "la_masia"
+
+  - id: ovo_1v1_with_support_option
+    name: "1v1 with Support Player Option"
+    description: "1v1 but attacker has a support player on the side. Can choose to take on defender or use the support player. Develops decision-making."
+    category: one_v_one
+    coaching_points:
+      - "Read the defender: if they're tight, use support"
+      - "If defender shows you inside, go outside (or vice versa)"
+      - "Support player: stay active, create an option"
+    age_range: [7, 25]
+    min_players: 3
+    max_players: 12
+    space: small_10x10
+    equipment: [ball, cones, goals, bibs]
+    duration_seconds: [240, 480]
+    intensity: high
+    methodology_tags: [game_realistic, decision_making, constraints_led]
+    physical_tags: [acceleration, change_of_direction]
+    la_masia_principles: [technical_excellence, small_sided]
+    source: "la_masia"
+
+  - id: ovo_1v1_end_zone_game
+    name: "1v1 End Zone Game (Continuous)"
+    description: "Two players, each defending an end zone. Win ball from opponent and dribble to their end zone to score. Continuous play — no resets."
+    category: one_v_one
+    coaching_points:
+      - "Win the ball, attack immediately"
+      - "Transition from defense to attack is instant"
+      - "Compete with intensity — this is sport"
+    age_range: [6, 12]
+    min_players: 2
+    max_players: 2
+    space: small_10x10
+    equipment: [ball, cones]
+    duration_seconds: [60, 120]
+    intensity: maximum
+    methodology_tags: [game_realistic, implicit_learning]
+    physical_tags: [acceleration, deceleration, endurance]
+    la_masia_principles: [technical_excellence, small_sided]
+    source: "la_masia"
+
+  # --- PersianBall 1v1 simulation drills (for individual sessions) ---
+  - id: ovo_explosive_stepover_attack
+    name: "Explosive Step-Over Attack"
+    description: "Double step-over at full speed past cone (imaginary defender). 4-5 reps in 20 seconds. PersianBall intensity."
+    category: one_v_one
+    coaching_points:
+      - "Drop shoulder into the step-over"
+      - "Exit with outside of foot, explosive burst"
+      - "Sell it — the cone is a defender"
+    age_range: [8, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: [ball, cones]
+    duration_seconds: [15, 25]
+    intensity: maximum
+    methodology_tags: [game_realistic]
+    physical_tags: [acceleration, change_of_direction]
+    la_masia_principles: [technical_excellence]
+    source: "persianball"
+
+  - id: ovo_cruyff_explosion_sim
+    name: "Cruyff Explosion (1v1 Simulation)"
+    description: "Full-speed approach to cone, Cruyff turn, explosive burst past. Simulates beating a defender with the Cruyff. 4-5 reps in 20 seconds."
+    category: one_v_one
+    coaching_points:
+      - "Approach at match speed"
+      - "Sharp hook behind standing leg"
+      - "Burst away — don't admire the move"
+    age_range: [8, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: [ball, cones]
+    duration_seconds: [15, 25]
+    intensity: maximum
+    methodology_tags: [game_realistic, both_feet]
+    physical_tags: [deceleration, acceleration, change_of_direction]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "persianball"
+
+  - id: ovo_drag_back_explosion
+    name: "Drag Back Explosion"
+    description: "Full speed dribble to cone, sole drag back, turn opposite direction, explode past. Simulates escaping a pressing defender."
+    category: one_v_one
+    coaching_points:
+      - "Sell the forward momentum"
+      - "Sharp drag back with sole"
+      - "180° and explode — don't hesitate"
+    age_range: [8, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: [ball, cones]
+    duration_seconds: [15, 25]
+    intensity: maximum
+    methodology_tags: [game_realistic, both_feet]
+    physical_tags: [deceleration, acceleration, change_of_direction]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "persianball"
+
+  - id: ovo_free_choice_max
+    name: "Free Choice Maximum Intensity"
+    description: "Pick your best personal move and execute at maximum intensity against cone/defender. 5+ reps in 20 seconds. Develop your signature move."
+    category: one_v_one
+    coaching_points:
+      - "This is YOUR move — own it"
+      - "Match speed every rep"
+      - "Every great player has a go-to move"
+    age_range: [7, 25]
+    min_players: 1
+    max_players: null
+    space: minimal_3x3
+    equipment: [ball, cones]
+    duration_seconds: [15, 25]
+    intensity: maximum
+    methodology_tags: [game_realistic, differential_learning, both_feet]
+    physical_tags: [acceleration, change_of_direction]
+    la_masia_principles: [technical_excellence]
+    source: "persianball"

@@ -1,0 +1,261 @@
+exercises:
+  - id: fin_angles_variety
+    name: "Finishing from Different Angles"
+    description: "Approach goal from 3 zones: central, left diagonal, right diagonal. Practice lob, driven shot, and placed finish from each angle."
+    category: finishing
+    coaching_points:
+      - "Head down, over the ball for driven shots"
+      - "Lean back slightly for lofted chips"
+      - "Placement beats power — pick your corner"
+      - "Both feet: weak foot gets equal attempts"
+    age_range: [7, 25]
+    min_players: 1
+    max_players: 8
+    space: medium_20x20
+    equipment: [ball, cones, goals]
+    duration_seconds: [300, 600]
+    intensity: moderate
+    methodology_tags: [both_feet, explicit_instruction]
+    physical_tags: [power]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "existing_library"
+
+  - id: fin_after_combination
+    name: "Finishing After Combination Play"
+    description: "Pass-and-move sequence ending with a shot. Receive layoff, play give-and-go, then finish. Combines technical passing with composure in front of goal."
+    category: finishing
+    coaching_points:
+      - "Stay composed — don't rush the finish"
+      - "Quality of the combination matters as much as the shot"
+      - "Pick your spot before you strike"
+    age_range: [7, 25]
+    min_players: 2
+    max_players: 8
+    space: medium_20x20
+    equipment: [ball, cones, goals]
+    duration_seconds: [300, 600]
+    intensity: moderate
+    methodology_tags: [game_realistic, both_feet]
+    physical_tags: [acceleration]
+    la_masia_principles: [technical_excellence, third_man]
+    source: "existing_library"
+
+  - id: fin_cone_weave_and_shoot
+    name: "Cone Weave into Finish"
+    description: "Dribble through cone slalom pattern, then shoot on goal. Combines ball mastery with finishing under light fatigue. Alternate feet."
+    category: finishing
+    coaching_points:
+      - "Don't slow down through the cones"
+      - "Set the ball with the last touch for the shot"
+      - "Head up to pick your corner as you exit the weave"
+    age_range: [7, 25]
+    min_players: 1
+    max_players: 8
+    space: medium_20x20
+    equipment: [ball, cones, goals]
+    duration_seconds: [240, 480]
+    intensity: moderate
+    methodology_tags: [both_feet, game_realistic]
+    physical_tags: [change_of_direction, acceleration]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "existing_library"
+
+  - id: fin_inside_outside_drag_shoot
+    name: "Inside-Outside Drag and Shoot"
+    description: "Practice inside-outside drag pattern between cones, then immediately strike. Ball movement before the shot creates game-realistic setup."
+    category: finishing
+    coaching_points:
+      - "Drag sets up the shooting angle"
+      - "Plant foot points at target"
+      - "Strike through center or top of ball"
+    age_range: [7, 25]
+    min_players: 1
+    max_players: 8
+    space: medium_20x20
+    equipment: [ball, cones, goals]
+    duration_seconds: [240, 420]
+    intensity: moderate
+    methodology_tags: [both_feet, explicit_instruction]
+    physical_tags: [power]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "existing_library"
+
+  - id: fin_side_to_side_rhythm_shoot
+    name: "Side-to-Side Rhythm into Shot"
+    description: "4-8 quick side-to-side ball contacts, building rhythm, then strike. Develops pre-shot body movement and composure."
+    category: finishing
+    coaching_points:
+      - "Rhythm with feet before the shot"
+      - "Set ball slightly ahead on the last touch"
+      - "Strike in stride — no stutter"
+    age_range: [7, 25]
+    min_players: 1
+    max_players: 8
+    space: medium_20x20
+    equipment: [ball, cones, goals]
+    duration_seconds: [180, 360]
+    intensity: moderate
+    methodology_tags: [both_feet]
+    physical_tags: [stability, power]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "existing_library"
+
+  - id: fin_receive_and_finish
+    name: "Receive Pass and Finish"
+    description: "Receive pass from various angles (frontal, diagonal left, diagonal right), take 1-2 touches, and finish. Game-realistic finishing."
+    category: finishing
+    coaching_points:
+      - "First touch sets up the shot"
+      - "Body shape opens toward goal on receiving"
+      - "Weak foot finishes: at least 50% of reps"
+    age_range: [7, 25]
+    min_players: 2
+    max_players: 8
+    space: medium_20x20
+    equipment: [ball, cones, goals]
+    duration_seconds: [240, 480]
+    intensity: moderate
+    methodology_tags: [game_realistic, both_feet]
+    physical_tags: [power]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "existing_library"
+
+  - id: fin_under_fatigue
+    name: "Finishing Under Fatigue"
+    description: "10 maximum-speed ball touches (10 seconds), then immediately shoot (1-2 seconds to strike). 10 reps with 20-second intervals. Both feet, 5 shots each."
+    category: finishing
+    coaching_points:
+      - "Fatigue is deliberate — this is match reality"
+      - "Composure when tired separates elite from good"
+      - "Technique doesn't change under fatigue"
+    age_range: [8, 25]
+    min_players: 1
+    max_players: 8
+    space: medium_20x20
+    equipment: [ball, cones, goals]
+    duration_seconds: [180, 300]
+    intensity: maximum
+    methodology_tags: [game_realistic, both_feet]
+    physical_tags: [endurance, power]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "persianball"
+
+  - id: fin_quick_move_and_shoot
+    name: "Quick Move + Shoot"
+    description: "Perform a skill move (step-over, cut, fake, 360 turn) then immediately shoot. 20-second work / 10-second rest. 5 different move-shot combos."
+    category: finishing
+    coaching_points:
+      - "Sell the move as if a defender is there"
+      - "Shot follows the move instantly — no pause"
+      - "Rotate through different moves"
+    age_range: [8, 25]
+    min_players: 1
+    max_players: 8
+    space: medium_20x20
+    equipment: [ball, cones, goals]
+    duration_seconds: [120, 240]
+    intensity: high
+    methodology_tags: [game_realistic, differential_learning, both_feet]
+    physical_tags: [acceleration, power]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "persianball"
+
+  - id: fin_pressure_situation
+    name: "Finishing Under Pressure"
+    description: "Coach creates disruption (calls, feints, light challenges) while player must still compose themselves and finish. Develops mental composure."
+    category: finishing
+    coaching_points:
+      - "Block out distractions — focus on the ball"
+      - "Routine: breathe, pick spot, strike"
+      - "Match day: crowd, noise, pressure. Train for it."
+    age_range: [8, 25]
+    min_players: 1
+    max_players: 8
+    space: medium_20x20
+    equipment: [ball, cones, goals]
+    duration_seconds: [180, 360]
+    intensity: high
+    methodology_tags: [game_realistic, constraints_led]
+    physical_tags: [power]
+    la_masia_principles: [technical_excellence]
+    source: "existing_library"
+
+  - id: fin_sprint_to_ball
+    name: "Sprint to Ball and Finish"
+    description: "Ball placed 15-20m away. Sprint to ball, control with first touch, finish immediately. Speed of arrival + composure. 8 reps."
+    category: finishing
+    coaching_points:
+      - "Sprint at 100% but slow down before the ball"
+      - "First touch already sets up the shot"
+      - "Don't snatch at the shot — be clinical"
+    age_range: [7, 25]
+    min_players: 1
+    max_players: 8
+    space: medium_20x20
+    equipment: [ball, cones, goals]
+    duration_seconds: [180, 360]
+    intensity: high
+    methodology_tags: [game_realistic, both_feet]
+    physical_tags: [acceleration, power]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "existing_library"
+
+  - id: fin_1v1_vs_keeper
+    name: "1v1 vs Goalkeeper"
+    description: "Player runs onto through ball and faces goalkeeper 1v1. Must read keeper's position and finish. Use keeper or cone-goal if no keeper."
+    category: finishing
+    coaching_points:
+      - "Read the keeper: where are they positioned?"
+      - "Low finish to the corner is highest percentage"
+      - "Chip if keeper rushes, side-foot if keeper stays"
+    age_range: [7, 25]
+    min_players: 1
+    max_players: 8
+    space: medium_20x20
+    equipment: [ball, cones, goals]
+    duration_seconds: [180, 360]
+    intensity: high
+    methodology_tags: [game_realistic, decision_making]
+    physical_tags: [acceleration]
+    la_masia_principles: [technical_excellence]
+    source: "existing_library"
+
+  - id: fin_weak_foot_only
+    name: "Weak Foot Finishing Only"
+    description: "All finishes with weak foot only. Various positions and distances. Force development of the non-dominant foot."
+    category: finishing
+    coaching_points:
+      - "Same technique as strong foot — don't change"
+      - "Plant foot position is key"
+      - "Start closer to goal if needed, build distance"
+    age_range: [7, 25]
+    min_players: 1
+    max_players: 8
+    space: medium_20x20
+    equipment: [ball, cones, goals]
+    duration_seconds: [180, 360]
+    intensity: moderate
+    methodology_tags: [both_feet]
+    physical_tags: [power]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "existing_library"
+
+  - id: fin_combination_exercise
+    name: "Complete Technical Chain Finish"
+    description: "Full sequence: receive, turn, dribble past cone (defender), finish. Combines all technical elements into one game-realistic action."
+    category: finishing
+    coaching_points:
+      - "Each phase connects — no pause between"
+      - "Quality at every step, not just the finish"
+      - "Decide your finishing technique during the dribble"
+    age_range: [8, 25]
+    min_players: 1
+    max_players: 8
+    space: medium_20x20
+    equipment: [ball, cones, goals]
+    duration_seconds: [240, 480]
+    intensity: high
+    methodology_tags: [game_realistic, both_feet, decision_making]
+    physical_tags: [acceleration, change_of_direction, power]
+    la_masia_principles: [technical_excellence, both_feet]
+    source: "existing_library"
