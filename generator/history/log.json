@@ -36,18 +36,15 @@
     "date": "2026-04-03",
     "template_name": "U9 Team Session (La Masia)",
     "exercise_ids": [
-      "warmup_tag_with_ball",
-      "warmup_partner_passing_movement",
-      "rondo_with_transition",
-      "rondo_directional",
-      "pp_possession_square",
-      "pp_third_man_combinations",
-      "ssg_mandatory_third_man",
-      "ssg_transition_game",
+      "warmup_possession_circle",
+      "rondo_with_neutral",
+      "pp_free_man_recognition",
+      "pp_3v3_plus_1",
+      "ssg_direction_gates",
       "ssg_free_play",
       "cd_gentle_dribble",
       "cd_reflection"
     ],
-    "notes": "7 players  elite intensity  all exercises fresh"
+    "notes": "7 players — Finding the free man in positional overloads"
   }
 ]
