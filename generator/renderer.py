@@ -6,7 +6,7 @@ from pathlib import Path
 
 from models import Exercise, SessionPlan
 
-OUTPUT_DIR = Path(__file__).parent / "output"
+OUTPUT_DIR = Path(__file__).parent.parent / "team" / "sessions"
 
 
 def render_session(
