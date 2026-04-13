@@ -46,5 +46,34 @@
       "cd_reflection"
     ],
     "notes": "7 players — Finding the free man in positional overloads"
+  },
+  {
+    "date": "2026-04-15",
+    "template_name": "U9 Team Session (La Masia)",
+    "exercise_ids": [
+      "recv_directional_first_touch",
+      "recv_step_through_cones_receive",
+      "rondo_3v1_basic",
+      "pp_possession_square",
+      "ssg_3v3_end_zones",
+      "ssg_free_play",
+      "cd_gentle_dribble",
+      "cd_static_stretching"
+    ],
+    "notes": "10-12 players — Receiving on the half-turn: hip rotation, open body, directional first touch, explode away from marker"
+  },
+  {
+    "date": "2026-04-22",
+    "template_name": "U9 Team Session (La Masia)",
+    "exercise_ids": [
+      "warmup_possession_circle",
+      "rondo_4v2",
+      "pp_width_and_depth",
+      "ssg_5v5_combination_goals",
+      "ssg_free_play",
+      "cd_gentle_dribble",
+      "cd_static_stretching"
+    ],
+    "notes": "10-12 players — Moving as a unit: off-the-ball movement creating space for teammates, scanning and decision-making"
   }
 ]
