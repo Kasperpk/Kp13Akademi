@@ -75,5 +75,21 @@
       "cd_static_stretching"
     ],
     "notes": "10-12 players — Moving as a unit: off-the-ball movement creating space for teammates, scanning and decision-making"
+  },
+  {
+    "date": "2026-04-15",
+    "template_name": "U9 Team Session (La Masia)",
+    "exercise_ids": [
+      "warmup_tag_with_ball",
+      "warmup_partner_passing_movement",
+      "rondo_directional",
+      "pp_third_man_combinations",
+      "pp_4v4_plus_2",
+      "ssg_mandatory_third_man",
+      "ssg_free_play",
+      "cd_juggling_fun",
+      "cd_reflection"
+    ],
+    "notes": "10 players — Third-man combinations to break lines"
   }
 ]
