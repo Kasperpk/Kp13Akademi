@@ -26,6 +26,18 @@ Pasning & modtagelse: Centrale midtbanespillerbevægelser, scanning og bold-cirk
 
 ---
 
+## 2026-04-15 — Team training observation
+
+Team session theme was receiving on the half-turn. Despite working on scanning and first-touch-forward in today's individual session, Sofus struggled to transfer it to the team environment. In the rondo and positional exercises he kept reverting to a square body shape, receiving the ball flat-footed rather than on the half-turn. When pressure came from a real defender (not just cones), his scanning dropped off — he stopped checking his shoulder before the ball arrived and defaulted to safe backwards passes instead of playing forward.
+
+Key takeaways:
+- The individual session concepts (scan → open body → first touch forward) are understood in isolation but not yet automatic under game pressure
+- Transfer gap is the main issue — need to create more pressure and unpredictability in individual sessions so the habits stick when defenders are live
+- Next individual session: add a passive/active defender element to the scanning and receiving exercises so Sofus practises under more realistic conditions
+- Physically he was fine — speed work from April 10 is showing, but the cognitive/decision side needs more reps under pressure
+
+---
+
 ## 2026-04-05
 
 Sofus is good technical but the development area that is most is speed. The reasons is you might be good at handling the ball but it's difficult to make finished product on it if you can't put it to productive use. So i think the most important thing to work on is. Sofus is also i think a decent 6 man so there is also some passing and recieving which is think is the second most important thing to work on. 
