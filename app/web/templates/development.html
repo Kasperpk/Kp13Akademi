@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}{{ first_name }}'s Development – KP13{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="mb-6">
+    <p class="text-kp-muted text-sm">KP13 Akademi</p>
+    <h1 class="text-2xl font-bold mt-1">{{ first_name }}'s Development</h1>
+</div>
+
+<!-- Focus areas (gaps) -->
+{% if gaps %}
+<div class="mb-8">
+    <h2 class="text-xs font-semibold text-kp-muted uppercase tracking-wider mb-3">Focus areas</h2>
+    <div class="space-y-2">
+        {% for g in gaps %}
+        {% set stage_label, stage_color = score_to_stage(g.score) %}
+        <div class="bg-kp-card border border-kp-border rounded-lg p-3">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-sm font-medium">{{ g.name }}</span>
+                <span class="text-xs {{ stage_color }} font-medium">{{ stage_label }}</span>
+            </div>
+            <div class="h-1.5 bg-kp-bg rounded-full overflow-hidden">
+                <div class="{{ bar_color(g.score) }} h-full rounded-full transition-all" style="width: {{ g.score * 10 }}%"></div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Strengths -->
+{% if strengths %}
+<div class="mb-8">
+    <h2 class="text-xs font-semibold text-kp-muted uppercase tracking-wider mb-3">Strengths</h2>
+    <div class="space-y-2">
+        {% for s in strengths %}
+        {% set stage_label, stage_color = score_to_stage(s.score) %}
+        <div class="bg-kp-card border border-kp-border rounded-lg p-3">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-sm font-medium">{{ s.name }}</span>
+                <span class="text-xs {{ stage_color }} font-medium">{{ stage_label }}</span>
+            </div>
+            <div class="h-1.5 bg-kp-bg rounded-full overflow-hidden">
+                <div class="{{ bar_color(s.score) }} h-full rounded-full transition-all" style="width: {{ s.score * 10 }}%"></div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- All dimensions by category -->
+{% for cat in categories %}
+<div class="mb-6">
+    <h2 class="text-xs font-semibold text-kp-muted uppercase tracking-wider mb-3">{{ cat.name }}</h2>
+    <div class="bg-kp-card border border-kp-border rounded-xl overflow-hidden divide-y divide-kp-border">
+        {% for dim in cat.dimensions %}
+        <div class="px-4 py-3">
+            <div class="flex justify-between items-center mb-1.5">
+                <span class="text-sm">{{ dim.name }}</span>
+                <span class="text-[11px] {{ dim.stage_color }} font-medium">{{ dim.stage_label }}</span>
+            </div>
+            <div class="h-1 bg-kp-bg rounded-full overflow-hidden">
+                <div class="{{ dim.bar_color }} h-full rounded-full" style="width: {{ dim.bar_width }}%"></div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endfor %}
+
+<!-- Stage legend -->
+<div class="mt-8 mb-4">
+    <h2 class="text-xs font-semibold text-kp-muted uppercase tracking-wider mb-3">Development stages</h2>
+    <div class="bg-kp-card border border-kp-border rounded-xl p-4 space-y-2">
+        <div class="flex items-center gap-2">
+            <div class="w-2 h-2 rounded-full bg-gray-500"></div>
+            <span class="text-xs text-gray-400">Discovering</span>
+            <span class="text-[10px] text-kp-muted ml-auto">Learning the basics</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+            <span class="text-xs text-blue-400">Developing</span>
+            <span class="text-[10px] text-kp-muted ml-auto">Building foundations</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <div class="w-2 h-2 rounded-full bg-green-500"></div>
+            <span class="text-xs text-green-400">Confident</span>
+            <span class="text-[10px] text-kp-muted ml-auto">Reliable in training</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <div class="w-2 h-2 rounded-full bg-amber-500"></div>
+            <span class="text-xs text-amber-400">Advanced</span>
+            <span class="text-[10px] text-kp-muted ml-auto">Transfers to matches</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <div class="w-2 h-2 rounded-full bg-red-500"></div>
+            <span class="text-xs text-red-400">Elite</span>
+            <span class="text-[10px] text-kp-muted ml-auto">Stands out at age group</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

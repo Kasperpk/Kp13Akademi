@@ -7,7 +7,10 @@ _ROOT = Path(__file__).resolve().parent.parent
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
-from core.database import init_db, upsert_player, save_observation, get_players
+from core.database import (
+    init_db, upsert_player, save_observation, get_players,
+    create_access_token, get_player_token,
+)
 from core.epm import initialise_player_epm, update_scores_from_observation
 
 def seed():
@@ -198,7 +201,11 @@ def seed():
 
     print("Seeding complete!")
     for p in get_players():
-        print(f"  ✓ {p['name']} ({p['id']})")
+        # Ensure every player has an access token
+        token = get_player_token(p["id"])
+        if not token:
+            token = create_access_token(p["id"], role="player")
+        print(f"  {p['name']} ({p['id']})  ->  /p/{token}")
 
 
 if __name__ == "__main__":

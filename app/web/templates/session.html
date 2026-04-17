@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}{{ session.day }} – {{ session.theme }}{% endblock %}
+
+{% block content %}
+<!-- Back -->
+<a href="/p/{{ token }}" class="inline-flex items-center gap-1 text-kp-muted text-sm mb-4 hover:text-kp-text">
+    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+    </svg>
+    Back
+</a>
+
+<!-- Session header -->
+<div class="mb-6">
+    <div class="flex items-center gap-2 mb-1">
+        <h1 class="text-xl font-bold">{{ session.day }}</h1>
+        {% if completed %}
+        <span class="text-[10px] bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full font-medium">DONE</span>
+        {% endif %}
+    </div>
+    <p class="text-kp-accent text-sm font-medium">{{ session.theme }}</p>
+    <p class="text-kp-muted text-xs mt-1">{{ session.duration_min }} minutes</p>
+</div>
+
+<!-- Warm-up -->
+{% if session.warm_up %}
+<div class="mb-6">
+    <h2 class="text-xs font-semibold text-kp-muted uppercase tracking-wider mb-3">Warm-up</h2>
+    <div class="space-y-2">
+        {% for ex in session.warm_up %}
+        <div class="bg-kp-card border border-kp-border rounded-lg p-4">
+            <div class="flex justify-between items-start">
+                <h3 class="font-semibold text-sm">{{ ex.name }}</h3>
+                {% if ex.duration_min %}
+                <span class="text-[10px] text-kp-muted bg-kp-bg px-2 py-0.5 rounded-full shrink-0 ml-2">{{ ex.duration_min }} min</span>
+                {% endif %}
+            </div>
+            <p class="text-kp-muted text-xs mt-2">{{ ex.description }}</p>
+            {% if ex.reps %}
+            <p class="text-kp-text text-xs mt-2 font-medium">{{ ex.reps }}</p>
+            {% endif %}
+            {% if ex.setup %}
+            <div class="mt-2 bg-kp-bg/50 rounded-md p-2.5">
+                <p class="text-[11px] text-kp-muted/90">{{ ex.setup }}</p>
+            </div>
+            {% endif %}
+            {% if ex.coaching_points %}
+            <div class="mt-2 flex items-start gap-1.5">
+                <span class="text-kp-accent text-[10px] font-bold mt-px shrink-0">KEY</span>
+                <p class="text-[11px] text-kp-text/80">{{ ex.coaching_points }}</p>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Main -->
+{% if session.main %}
+<div class="mb-6">
+    <h2 class="text-xs font-semibold text-kp-muted uppercase tracking-wider mb-3">Main session</h2>
+    <div class="space-y-2">
+        {% for ex in session.main %}
+        <div class="bg-kp-card border border-kp-border rounded-lg p-4">
+            <div class="flex justify-between items-start">
+                <h3 class="font-semibold text-sm">{{ ex.name }}</h3>
+                {% if ex.duration_min %}
+                <span class="text-[10px] text-kp-muted bg-kp-bg px-2 py-0.5 rounded-full shrink-0 ml-2">{{ ex.duration_min }} min</span>
+                {% endif %}
+            </div>
+            <p class="text-kp-muted text-xs mt-2">{{ ex.description }}</p>
+            {% if ex.reps %}
+            <p class="text-kp-text text-xs mt-2 font-medium">{{ ex.reps }}</p>
+            {% endif %}
+            {% if ex.setup %}
+            <div class="mt-2 bg-kp-bg/50 rounded-md p-2.5">
+                <p class="text-[11px] text-kp-muted/90">{{ ex.setup }}</p>
+            </div>
+            {% endif %}
+            {% if ex.coaching_points %}
+            <div class="mt-2 flex items-start gap-1.5">
+                <span class="text-kp-accent text-[10px] font-bold mt-px shrink-0">KEY</span>
+                <p class="text-[11px] text-kp-text/80">{{ ex.coaching_points }}</p>
+            </div>
+            {% endif %}
+            {% if ex.why_this_exercise %}
+            <div class="mt-3 border-t border-kp-border/50 pt-2.5">
+                <p class="text-[10px] text-kp-accent/70 italic">{{ ex.why_this_exercise }}</p>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Cool-down -->
+{% if session.cool_down %}
+<div class="mb-6">
+    <h2 class="text-xs font-semibold text-kp-muted uppercase tracking-wider mb-3">Cool-down</h2>
+    <div class="space-y-2">
+        {% for ex in session.cool_down %}
+        <div class="bg-kp-card border border-kp-border rounded-lg p-4">
+            <div class="flex justify-between items-start">
+                <h3 class="font-semibold text-sm">{{ ex.name }}</h3>
+                {% if ex.duration_min %}
+                <span class="text-[10px] text-kp-muted bg-kp-bg px-2 py-0.5 rounded-full shrink-0 ml-2">{{ ex.duration_min }} min</span>
+                {% endif %}
+            </div>
+            <p class="text-kp-muted text-xs mt-2">{{ ex.description }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Coach's note -->
+{% if session.coaches_note %}
+<div class="bg-kp-card border border-kp-accent/20 rounded-lg p-4 mb-6">
+    <h2 class="text-xs font-semibold text-kp-accent uppercase tracking-wider mb-2">Coach's note</h2>
+    <p class="text-sm text-kp-text/90 italic">{{ session.coaches_note }}</p>
+</div>
+{% endif %}
+
+<!-- Complete button -->
+{% if not completed %}
+<form action="/p/{{ token }}/complete/{{ day }}" method="post" class="mt-4">
+    <button type="submit"
+            class="w-full bg-kp-accent hover:bg-blue-600 text-white font-semibold py-3.5 rounded-xl transition-colors text-sm">
+        Mark session complete
+    </button>
+</form>
+{% else %}
+<div class="mt-4 text-center py-3 rounded-xl bg-green-900/20 border border-green-800/40">
+    <p class="text-green-400 text-sm font-medium">Session completed</p>
+</div>
+{% endif %}
+{% endblock %}

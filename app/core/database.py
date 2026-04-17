@@ -75,6 +75,35 @@ CREATE TABLE IF NOT EXISTS daily_plans (
     created_at      TEXT DEFAULT (datetime('now')),
     FOREIGN KEY (player_id) REFERENCES players(id)
 );
+
+CREATE TABLE IF NOT EXISTS access_tokens (
+    token      TEXT PRIMARY KEY,
+    player_id  TEXT,
+    role       TEXT NOT NULL DEFAULT 'player',
+    created_at TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY (player_id) REFERENCES players(id)
+);
+
+CREATE TABLE IF NOT EXISTS weekly_schedules (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    player_id  TEXT NOT NULL,
+    week_start TEXT NOT NULL,
+    schedule   TEXT NOT NULL,
+    created_at TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY (player_id) REFERENCES players(id),
+    UNIQUE(player_id, week_start)
+);
+
+CREATE TABLE IF NOT EXISTS session_completions (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    player_id    TEXT NOT NULL,
+    week_start   TEXT NOT NULL,
+    day          TEXT NOT NULL,
+    feedback     TEXT DEFAULT '',
+    completed_at TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY (player_id) REFERENCES players(id),
+    UNIQUE(player_id, week_start, day)
+);
 """
 
 # ---- connection helpers ------------------------------------------------------
@@ -310,3 +339,93 @@ def mark_plan_completed(plan_id: int, feedback: str = "") -> None:
             "UPDATE daily_plans SET completed = 1, player_feedback = ? WHERE id = ?",
             (feedback, plan_id),
         )
+
+
+# ---- access tokens -----------------------------------------------------------
+
+import secrets as _secrets
+
+
+def create_access_token(player_id: str | None = None, role: str = "player") -> str:
+    """Generate a short URL-safe token and store it."""
+    token = _secrets.token_urlsafe(12)
+    with get_db() as conn:
+        conn.execute(
+            "INSERT INTO access_tokens (token, player_id, role) VALUES (?, ?, ?)",
+            (token, player_id, role),
+        )
+    return token
+
+
+def verify_access_token(token: str) -> dict[str, Any] | None:
+    """Return {player_id, role} if valid, else None."""
+    with get_db() as conn:
+        row = conn.execute(
+            "SELECT player_id, role FROM access_tokens WHERE token = ?", (token,)
+        ).fetchone()
+    return dict(row) if row else None
+
+
+def get_player_token(player_id: str) -> str | None:
+    """Get existing token for a player, or None."""
+    with get_db() as conn:
+        row = conn.execute(
+            "SELECT token FROM access_tokens WHERE player_id = ? AND role = 'player'",
+            (player_id,),
+        ).fetchone()
+    return row["token"] if row else None
+
+
+# ---- weekly schedules --------------------------------------------------------
+
+
+def save_weekly_schedule(
+    player_id: str, week_start: str, schedule: dict[str, Any]
+) -> None:
+    with get_db() as conn:
+        conn.execute(
+            """INSERT INTO weekly_schedules (player_id, week_start, schedule)
+               VALUES (?, ?, ?)
+               ON CONFLICT(player_id, week_start) DO UPDATE SET
+                 schedule=excluded.schedule""",
+            (player_id, week_start, json.dumps(schedule, ensure_ascii=False)),
+        )
+
+
+def get_weekly_schedule(
+    player_id: str, week_start: str
+) -> dict[str, Any] | None:
+    with get_db() as conn:
+        row = conn.execute(
+            "SELECT schedule FROM weekly_schedules WHERE player_id = ? AND week_start = ?",
+            (player_id, week_start),
+        ).fetchone()
+    if not row:
+        return None
+    return json.loads(row["schedule"])
+
+
+# ---- session completions -----------------------------------------------------
+
+
+def mark_session_complete(
+    player_id: str, week_start: str, day: str, feedback: str = ""
+) -> None:
+    with get_db() as conn:
+        conn.execute(
+            """INSERT INTO session_completions (player_id, week_start, day, feedback)
+               VALUES (?, ?, ?, ?)
+               ON CONFLICT(player_id, week_start, day) DO UPDATE SET
+                 feedback=excluded.feedback""",
+            (player_id, week_start, day, feedback),
+        )
+
+
+def get_completions(player_id: str, week_start: str) -> dict[str, str]:
+    """Return {day: feedback} for completed sessions this week."""
+    with get_db() as conn:
+        rows = conn.execute(
+            "SELECT day, feedback FROM session_completions WHERE player_id = ? AND week_start = ?",
+            (player_id, week_start),
+        ).fetchall()
+    return {r["day"]: r["feedback"] for r in rows}

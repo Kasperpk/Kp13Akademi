@@ -246,6 +246,196 @@ If joy or engagement concerns exist, flag them clearly."""
     return response.content[0].text
 
 
+# ---- weekly schedule generation (structured) ---------------------------------
+
+_EXERCISE_IN_SESSION_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "exercise_id": {"type": "string", "description": "ID from the exercise library (e.g. bm_sole_taps)"},
+        "name": {"type": "string", "description": "Exercise name from the library"},
+        "description": {"type": "string", "description": "What the player does — rewritten for home context if needed"},
+        "duration_min": {"type": "integer", "description": "Minutes for this exercise"},
+        "reps": {"type": "string", "description": "Specific reps/sets/duration. e.g. '3 x 30 seconds each foot', '8 reps left, 8 reps right'"},
+        "setup": {"type": "string", "description": "Exact setup for home/garden: distances, equipment placement. A parent with zero football knowledge must understand this."},
+        "coaching_points": {"type": "string", "description": "2-3 key coaching cues from the library, phrased as observable actions"},
+        "why_this_exercise": {"type": "string", "description": "One sentence: why THIS exercise for THIS player right now (link to their EPM gap or strength)"},
+    },
+    "required": ["exercise_id", "name", "description", "duration_min", "reps", "setup", "coaching_points", "why_this_exercise"],
+}
+
+_WEEKLY_SCHEDULE_TOOL = {
+    "name": "create_weekly_schedule",
+    "description": "Create a structured weekly home training schedule using exercises from the library.",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "week_focus": {
+                "type": "string",
+                "description": "The main development theme for this week — stated as a footballing problem, not a vague label. e.g. 'Receiving on the half-turn to play forward under pressure'",
+            },
+            "week_rationale": {
+                "type": "string",
+                "description": "2-3 sentences: WHY this focus, based on EPM data. What gap are we closing? What did recent sessions reveal?",
+            },
+            "sessions": {
+                "type": "array",
+                "description": "Exactly 3 training sessions for the week",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "day": {"type": "string", "enum": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]},
+                        "theme": {"type": "string", "description": "Session's red thread — one specific footballing concept that connects all exercises"},
+                        "duration_min": {"type": "integer"},
+                        "warm_up": {"type": "array", "items": _EXERCISE_IN_SESSION_SCHEMA},
+                        "main": {"type": "array", "items": _EXERCISE_IN_SESSION_SCHEMA},
+                        "cool_down": {"type": "array", "items": _EXERCISE_IN_SESSION_SCHEMA},
+                        "coaches_note": {"type": "string", "description": "One sentence for the parent: what to watch for that shows progress. Phrased as an observable action."},
+                    },
+                    "required": ["day", "theme", "duration_min", "warm_up", "main", "cool_down", "coaches_note"],
+                },
+            },
+        },
+        "required": ["week_focus", "week_rationale", "sessions"],
+    },
+}
+
+
+def _format_exercise_for_prompt(ex: dict[str, Any]) -> str:
+    """Format a single exercise dict into a rich text block for the prompt."""
+    parts = [f"  ID: {ex['id']}"]
+    parts.append(f"  Name: {ex['name']}")
+    parts.append(f"  Category: {ex['category']}")
+    parts.append(f"  Description: {ex['description']}")
+    parts.append(f"  Duration: {ex['duration_min']} min | Intensity: {ex['intensity']} | Space: {ex['space']}")
+    parts.append(f"  Equipment: {', '.join(ex.get('equipment', ['ball']))}")
+    if ex.get('setup'):
+        parts.append(f"  Setup: {ex['setup']}")
+    if ex.get('coaching_points'):
+        if isinstance(ex['coaching_points'], list):
+            parts.append(f"  Coaching points: {' / '.join(ex['coaching_points'])}")
+        else:
+            parts.append(f"  Coaching points: {ex['coaching_points']}")
+    if ex.get('variations'):
+        var_text = "; ".join(f"{v['name']}: {v['description']}" for v in ex['variations'][:3])
+        parts.append(f"  Variations: {var_text}")
+    if ex.get('targets_dimensions'):
+        parts.append(f"  Targets EPM: {', '.join(ex['targets_dimensions'])}")
+    return "\n".join(parts)
+
+
+def generate_weekly_schedule(
+    player_profile: dict[str, Any],
+    gaps: list[dict[str, Any]],
+    strengths: list[dict[str, Any]],
+    recent_sessions: list[dict[str, Any]],
+    available_exercises: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """Generate a structured weekly home-training schedule using tool_use.
+
+    Uses the real exercise library — Claude selects, sequences, and
+    contextualises exercises for this specific player based on EPM data.
+    """
+    client = _client()
+    system = _build_system_prompt(player_profile)
+
+    player_name = player_profile["player"]["name"].split()[0]
+    player_info = player_profile["player"]
+
+    # Build rich gap/strength text with context
+    gaps_text = ""
+    for g in gaps:
+        gaps_text += f"\n  - {g['name']} ({g['key']}): {g['score']:.1f}/10"
+
+    strengths_text = ""
+    for s in strengths:
+        strengths_text += f"\n  - {s['name']} ({s['key']}): {s['score']:.1f}/10"
+
+    recent_text = ""
+    for s in recent_sessions[:5]:
+        recent_text += f"\n  - {s['date']} ({s['session_type']}): {s.get('theme', 'N/A')}"
+        if s.get("coach_notes"):
+            recent_text += f"\n    {s['coach_notes'][:200]}"
+
+    # Build full exercise library text with all details
+    exercises_text = ""
+    for ex in available_exercises:
+        exercises_text += f"\n\n{_format_exercise_for_prompt(ex)}"
+
+    player_notes = player_info.get("notes", "")
+
+    user_msg = f"""\
+Create {player_name}'s home training schedule for this week.
+
+PLAYER CONTEXT:
+  Name: {player_info['name']}
+  Age group: {player_info.get('age_group', 'U9')}
+  Position: {player_info.get('position', 'N/A')}
+  Dominant foot: {player_info.get('dominant_foot', 'right')}
+  Coach notes: {player_notes}
+
+EPM GAPS (priority areas):
+{gaps_text}
+
+EPM STRENGTHS (build on these):
+{strengths_text}
+
+RECENT SESSIONS:
+{recent_text if recent_text else "  None yet — this is a fresh start."}
+
+═══════════════════════════════════════════════
+EXERCISE LIBRARY — YOU MUST SELECT FROM THESE
+═══════════════════════════════════════════════
+{exercises_text}
+
+═══════════════════════════════════════════════
+RULES
+═══════════════════════════════════════════════
+
+1. SELECT exercises from the library above. Use the exact exercise_id and name. \
+You may adapt the description and setup for home/garden context (1 player, 1 ball, \
+optional wall/cones, small space).
+
+2. EACH SESSION needs a RED THREAD — a single footballing concept that connects \
+warm-up through main to cool-down. Not "ball mastery" (too vague) but \
+"Quick feet to create space for the first touch forward" (specific, game-connected).
+
+3. THREE SESSIONS that form a WEEKLY PROGRESSION:
+   - Session 1 (Monday/Tuesday): Foundation — slow, technical, build the pattern
+   - Session 2 (Wednesday/Thursday): Speed — same pattern at game speed, add pressure/decisions
+   - Session 3 (Friday/Saturday): Challenge — combine patterns, compete, test under fatigue
+
+4. Each session: 1-2 warm-up exercises, 2-3 main exercises, 1 cool-down. Total 15-20 minutes.
+
+5. The why_this_exercise field must reference the player's actual EPM data. \
+e.g. "Driving with Ball at 4.0 — this exercise builds the push-and-go rhythm \
+{player_name} needs to carry the ball forward instead of defaulting to the safe pass."
+
+6. Setup instructions must be crystal clear for a parent with ZERO football knowledge. \
+Include exact distances, cone placement, where to stand, what "success" looks like.
+
+7. Coaching points should be observable actions, not vague advice. \
+"Light touch — ball barely moves" not "Have good technique."
+
+8. Vary the exercises across sessions — don't repeat the same exercise in multiple sessions.
+
+Use the create_weekly_schedule tool to submit the complete schedule."""
+
+    response = client.messages.create(
+        model=ANTHROPIC_MODEL,
+        max_tokens=8000,
+        system=system,
+        tools=[_WEEKLY_SCHEDULE_TOOL],
+        tool_choice={"type": "tool", "name": "create_weekly_schedule"},
+        messages=[{"role": "user", "content": user_msg}],
+    )
+
+    for block in response.content:
+        if block.type == "tool_use" and block.name == "create_weekly_schedule":
+            return block.input
+
+    return {"week_focus": "General development", "sessions": []}
+
+
 # ---- coach session prep ------------------------------------------------------
 
 def generate_session_prep(
