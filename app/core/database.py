@@ -116,6 +116,18 @@ CREATE TABLE IF NOT EXISTS ugentlig_planer (
     FOREIGN KEY (player_id) REFERENCES players(id),
     UNIQUE(player_id, week_start)
 );
+
+CREATE TABLE IF NOT EXISTS player_sessions (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    player_id    TEXT NOT NULL,
+    week_start   TEXT NOT NULL,
+    day          TEXT NOT NULL,
+    session_type TEXT NOT NULL,
+    time_start   TEXT DEFAULT '',
+    notes        TEXT DEFAULT '',
+    created_at   TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY (player_id) REFERENCES players(id)
+);
 """
 
 # ---- connection helpers ------------------------------------------------------
@@ -554,3 +566,44 @@ def get_ugentlig_plan(player_id: str, week_start: str) -> dict[str, Any] | None:
             (player_id, week_start),
         ).fetchone()
     return dict(row) if row else None
+
+
+# ---- player-added sessions ---------------------------------------------------
+
+
+def add_player_session(
+    player_id: str,
+    week_start: str,
+    day: str,
+    session_type: str,
+    time_start: str = "",
+    notes: str = "",
+) -> None:
+    with get_db() as conn:
+        conn.execute(
+            """INSERT INTO player_sessions
+               (player_id, week_start, day, session_type, time_start, notes)
+               VALUES (?, ?, ?, ?, ?, ?)""",
+            (player_id, week_start, day, session_type, time_start, notes),
+        )
+
+
+def get_player_sessions(player_id: str, week_start: str) -> dict[str, list[dict[str, Any]]]:
+    """Return {day: [session, ...]} for the given week."""
+    with get_db() as conn:
+        rows = conn.execute(
+            """SELECT * FROM player_sessions
+               WHERE player_id = ? AND week_start = ?
+               ORDER BY time_start""",
+            (player_id, week_start),
+        ).fetchall()
+    result: dict[str, list] = {}
+    for r in rows:
+        d = dict(r)
+        result.setdefault(d["day"], []).append(d)
+    return result
+
+
+def delete_player_session(session_id: int) -> None:
+    with get_db() as conn:
+        conn.execute("DELETE FROM player_sessions WHERE id = ?", (session_id,))

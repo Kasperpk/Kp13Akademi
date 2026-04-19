@@ -15,6 +15,7 @@ from core.database import (
     get_players, get_observations, get_ugentlig_plan,
     save_ugentlig_plan, update_player_goals,
     mark_session_complete, get_completions,
+    add_player_session, get_player_sessions, delete_player_session,
 )
 from core.epm import get_player_profile, identify_gaps, identify_strengths
 from core.elm import generate_weekly_plan_danish
@@ -25,11 +26,49 @@ from core.auth import player_selector, get_player_id_from_url
 st.set_page_config(page_title="Ugentlig Plan – KP13", layout="wide")
 apply_theme()
 
+_ALL_DAYS = ["Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag", "Søndag"]
+_SHORT_DAYS = ["Man", "Tir", "Ons", "Tor", "Fre", "Lør", "Søn"]
+
 _DAYS = {
     2: ["Mandag", "Torsdag"],
     3: ["Mandag", "Onsdag", "Fredag"],
     4: ["Mandag", "Tirsdag", "Torsdag", "Lørdag"],
 }
+
+_SESSION_TYPES = [
+    "Hold Træning",
+    "Styrke Træning",
+    "Teknisk Træning",
+    "Taktisk Træning",
+    "Agilty Træning",
+    "Løb / Kondition",
+    "Kamp",
+    "Andet",
+]
+
+_SESSION_COLORS = {
+    "Hold Træning":    "#93C5FD",
+    "Styrke Træning":  "#FCA5A5",
+    "Teknisk Træning": "#C4B5FD",
+    "Taktisk Træning": "#6EE7B7",
+    "Agilty Træning":  "#FDE68A",
+    "Løb / Kondition": "#A5F3FC",
+    "Kamp":            "#FBB6CE",
+    "Andet":           "#D1D5DB",
+}
+
+_AKADEMI_COLOR      = "#3B82F6"
+_AKADEMI_DONE_COLOR = "#10B981"
+
+
+def _day_card(label: str, color: str, extra: str = "") -> str:
+    text_color = "#1a1a1a" if color not in ("#3B82F6",) else "#ffffff"
+    return (
+        f'<div style="background:{color};border-radius:6px;padding:5px 7px;'
+        f'margin-bottom:5px;font-size:0.72rem;color:{text_color};line-height:1.3;">'
+        f'{label}{extra}</div>'
+    )
+
 
 # ---- player selector ---------------------------------------------------------
 
@@ -39,7 +78,7 @@ if not players:
     st.stop()
 
 selected_id = player_selector(players)
-_, is_player = get_player_id_from_url(players)  # True = spiller/forælder adgang
+_, is_player = get_player_id_from_url(players)
 
 profile = get_player_profile(selected_id)
 if not profile:
@@ -82,6 +121,8 @@ st.markdown("---")
 # ---- hent eksisterende plan --------------------------------------------------
 
 plan_data = get_ugentlig_plan(selected_id, week_start)
+sessions_per_week_saved = (plan_data.get("sessions_per_week") or 3) if plan_data else 3
+planned_days = _DAYS.get(sessions_per_week_saved, _DAYS[3])
 
 # ---- TRÆNER-SEKTION: indstillinger og generering ----------------------------
 
@@ -93,7 +134,7 @@ if not is_player:
             "Spillerens mål og fokus",
             value=existing_goals,
             placeholder=f"Fx: {player['name'].split()[0]} vil forbedre sit svage ben og være mere modig i 1v1 situationer...",
-            height=90,
+            height=80,
         )
         if player_goals != existing_goals:
             update_player_goals(selected_id, player_goals)
@@ -135,43 +176,65 @@ if not is_player:
 
     st.markdown("---")
 
-# ---- VIS PLAN ---------------------------------------------------------------
+# ---- ingen plan for spiller --------------------------------------------------
 
 if not plan_data:
     st.info("Kasper har ikke genereret en plan for denne uge endnu. Kom tilbage snart!")
     st.stop()
 
-st.markdown(plan_data["content"])
-sessions_per_week_saved = plan_data.get("sessions_per_week") or 3
-planned_days = _DAYS.get(sessions_per_week_saved, _DAYS[3])
+# ---- UGENTLIG KALENDER -------------------------------------------------------
 
-# ---- GENNEMFØRELSES-TRACKER -------------------------------------------------
-
-st.markdown("---")
-st.markdown("### Ugens Træninger")
-st.caption("Tryk 'Gennemført' når du har lavet sessionen.")
+st.markdown("### Ugens Kalender")
 
 completions = get_completions(selected_id, week_start)
+player_sessions_by_day = get_player_sessions(selected_id, week_start)
 
-cols = st.columns(len(planned_days))
-for i, day in enumerate(planned_days):
+cols = st.columns(7)
+for i, (day, short) in enumerate(zip(_ALL_DAYS, _SHORT_DAYS)):
     with cols[i]:
-        if day in completions:
-            st.success(f"✓ {day}")
-            feedback = completions[day]
-            if feedback:
-                st.caption(feedback)
-        else:
-            st.markdown(f"**{day}**")
-            feedback = st.selectbox(
-                "Hvordan gik det?",
-                options=["Fantastisk", "Godt", "Hårdt", "Fik ikke gennemført"],
-                key=f"fb_{day}",
-                label_visibility="collapsed",
-            )
-            if st.button("Gennemført ✓", key=f"done_{day}", type="primary"):
-                mark_session_complete(selected_id, week_start, day, feedback)
+        st.markdown(f"**{short}**")
+
+        # Akademi session block
+        if day in planned_days:
+            if day in completions:
+                st.markdown(_day_card("✓ Akademi", _AKADEMI_DONE_COLOR), unsafe_allow_html=True)
+            else:
+                st.markdown(_day_card("📚 Akademi", _AKADEMI_COLOR), unsafe_allow_html=True)
+                if st.button("✓", key=f"done_{day}", use_container_width=True, help="Marker som gennemført"):
+                    mark_session_complete(selected_id, week_start, day, "")
+                    st.rerun()
+
+        # Player-added sessions
+        for sess in player_sessions_by_day.get(day, []):
+            color = _SESSION_COLORS.get(sess["session_type"], "#D1D5DB")
+            label = sess["session_type"]
+            time_str = f"<br>{sess['time_start']}" if sess.get("time_start") else ""
+            st.markdown(_day_card(label, color, time_str), unsafe_allow_html=True)
+            if st.button("×", key=f"del_{sess['id']}", use_container_width=True, help="Fjern"):
+                delete_player_session(sess["id"])
                 st.rerun()
+
+# ---- TILFØJ TRÆNING ----------------------------------------------------------
+
+st.markdown("")
+with st.expander("＋ Tilføj træning til ugen"):
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        add_day = st.selectbox("Dag", _ALL_DAYS, key="add_day")
+    with c2:
+        add_type = st.selectbox("Type", _SESSION_TYPES, key="add_type")
+    with c3:
+        add_time = st.text_input("Tidspunkt (valgfrit)", placeholder="14:00", key="add_time")
+    add_notes = st.text_input("Noter (valgfrit)", placeholder="Fx: med holdet i Randers Idrætspark", key="add_notes")
+    if st.button("Tilføj træning", type="primary", key="add_session_btn"):
+        add_player_session(selected_id, week_start, add_day, add_type, add_time.strip(), add_notes.strip())
+        st.rerun()
+
+# ---- PLAN DETALJER -----------------------------------------------------------
+
+st.markdown("---")
+with st.expander("📋 Ugens træningsplan (detaljer)", expanded=True):
+    st.markdown(plan_data["content"])
 
 # ---- TRÆNER: regenerer knap --------------------------------------------------
 
