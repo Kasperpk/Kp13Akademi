@@ -26,24 +26,33 @@ def require_coach() -> None:
 def get_player_id_from_url(players: list[dict]) -> tuple[str | None, bool]:
     """Returner (player_id, locked).
 
-    Hvis ?player=felix er i URL'en, låses visningen til den spiller (locked=True).
-    Ellers returneres None og locked=False (træner-tilstand med fri vælger).
+    Tjekker først URL-parameteret ?player=felix, derefter session_state.
+    Når en spiller er låst gemmes det i session_state så det overlever sideskift.
     """
     param = st.query_params.get("player", "")
+
     if param:
-        # Find matching player by id or by first name (lowercase)
         for p in players:
             if p["id"] == param or p["name"].split()[0].lower() == param.lower():
+                # Gem i session_state så det huskes ved sideskift
+                st.session_state["locked_player_id"] = p["id"]
                 return p["id"], True
         st.error(f"Spiller '{param}' ikke fundet. Kontakt Kasper.")
         st.stop()
+
+    # Ingen URL-param — tjek session_state
+    if "locked_player_id" in st.session_state:
+        locked_id = st.session_state["locked_player_id"]
+        if any(p["id"] == locked_id for p in players):
+            return locked_id, True
+
     return None, False
 
 
 def player_selector(players: list[dict]) -> str:
     """Vis spillervælger tilpasset adgangsniveau.
 
-    - Låst (URL-parameter): vis kun spillerens navn, ingen vælger.
+    - Låst (URL-parameter eller session): vis kun spillerens navn, ingen vælger.
     - Fri (træner): vis radio-vælger med alle spillere.
     """
     player_id, locked = get_player_id_from_url(players)
