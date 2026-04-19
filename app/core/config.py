@@ -35,6 +35,10 @@ ANTHROPIC_API_KEY: str = _get_secret("ANTHROPIC_API_KEY")
 ANTHROPIC_MODEL: str = _get_secret("ANTHROPIC_MODEL", "claude-sonnet-4-6")
 COACH_PASSWORD: str = _get_secret("COACH_PASSWORD", "kp13")
 
+CLOUDINARY_CLOUD_NAME: str = _get_secret("CLOUDINARY_CLOUD_NAME")
+CLOUDINARY_API_KEY: str = _get_secret("CLOUDINARY_API_KEY")
+CLOUDINARY_API_SECRET: str = _get_secret("CLOUDINARY_API_SECRET")
+
 # --- EPM tuning ---------------------------------------------------------------
 EPM_ALPHA: float = float(os.getenv("EPM_ALPHA", "0.3"))  # EMA learning rate
 EPM_MIN_SCORE: float = 1.0

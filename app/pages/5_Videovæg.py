@@ -15,6 +15,7 @@ from core.database import (
     get_players, get_videos, add_video,
     update_video_coach_notes, delete_video,
 )
+from core.cloudinary_upload import upload_video as cloudinary_upload, is_configured
 from core.theme import apply_theme
 from core.auth import player_selector, get_player_id_from_url
 
@@ -58,6 +59,7 @@ def _render_video(url: str) -> None:
             unsafe_allow_html=True,
         )
     else:
+        # Cloudinary or direct video URL
         st.video(url)
 
 
@@ -81,48 +83,83 @@ st.markdown("---")
 # ---- post new video ----------------------------------------------------------
 
 with st.expander("＋ Del en træningsvideo" if is_player else "＋ Tilføj video"):
-    col1, col2 = st.columns(2)
-    with col1:
-        new_title = st.text_input("Titel", placeholder="Fx: Sole rolls med venstre ben — uge 17")
-    with col2:
-        if is_player:
-            new_type = "player_training"
-            st.markdown("**Type:** Min træning")
-        else:
-            new_type = st.selectbox(
-                "Type",
-                options=list(_VIDEO_TYPE_LABELS.keys()),
-                format_func=lambda k: _VIDEO_TYPE_LABELS[k],
-            )
+    if not is_player:
+        new_type = st.selectbox(
+            "Type",
+            options=list(_VIDEO_TYPE_LABELS.keys()),
+            format_func=lambda k: _VIDEO_TYPE_LABELS[k],
+        )
+    else:
+        new_type = "player_training"
 
-    new_url = st.text_input(
-        "YouTube-link",
-        placeholder="https://www.youtube.com/watch?v=...",
+    new_title = st.text_input(
+        "Titel",
+        placeholder="Fx: Sole rolls med venstre ben — uge 17",
     )
     new_desc = st.text_area(
         "Beskrivelse (valgfrit)",
         placeholder="Fx: Fokus på at holde bolden tæt og skifte retning hurtigt",
-        height=80,
+        height=70,
     )
 
-    if st.button("Del video", type="primary"):
-        if not new_title.strip():
-            st.error("Giv videoen en titel.")
-        elif not new_url.strip():
-            st.error("Indsæt et YouTube-link.")
-        elif not _youtube_id(new_url.strip()) and not new_url.startswith("http"):
-            st.error("Linket ser ikke ud til at være gyldigt.")
-        else:
-            add_video(
-                player_id=selected_id,
-                title=new_title.strip(),
-                video_url=new_url.strip(),
-                posted_by="player" if is_player else "coach",
-                video_type=new_type,
-                description=new_desc.strip(),
+    tab_upload, tab_youtube = st.tabs(["⬆️ Upload direkte", "🔗 YouTube-link"])
+
+    with tab_upload:
+        if is_configured():
+            uploaded_file = st.file_uploader(
+                "Vælg videofil",
+                type=["mp4", "mov", "avi", "mkv"],
+                label_visibility="collapsed",
             )
-            st.success("Video tilføjet!")
-            st.rerun()
+            if st.button("Upload video", type="primary", key="btn_upload"):
+                if not new_title.strip():
+                    st.error("Giv videoen en titel.")
+                elif not uploaded_file:
+                    st.error("Vælg en videofil.")
+                else:
+                    with st.spinner("Uploader video..."):
+                        try:
+                            url = cloudinary_upload(
+                                uploaded_file.read(),
+                                player_id=selected_id,
+                                filename=uploaded_file.name,
+                            )
+                            add_video(
+                                player_id=selected_id,
+                                title=new_title.strip(),
+                                video_url=url,
+                                posted_by="player" if is_player else "coach",
+                                video_type=new_type,
+                                description=new_desc.strip(),
+                            )
+                            st.success("Video uploadet!")
+                            st.rerun()
+                        except Exception as e:
+                            st.error(f"Upload fejlede: {e}")
+        else:
+            st.warning("Cloudinary er ikke konfigureret. Tilføj CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY og CLOUDINARY_API_SECRET i secrets.")
+
+    with tab_youtube:
+        new_url = st.text_input(
+            "YouTube-link",
+            placeholder="https://www.youtube.com/watch?v=...",
+        )
+        if st.button("Tilføj video", type="primary", key="btn_youtube"):
+            if not new_title.strip():
+                st.error("Giv videoen en titel.")
+            elif not new_url.strip():
+                st.error("Indsæt et YouTube-link.")
+            else:
+                add_video(
+                    player_id=selected_id,
+                    title=new_title.strip(),
+                    video_url=new_url.strip(),
+                    posted_by="player" if is_player else "coach",
+                    video_type=new_type,
+                    description=new_desc.strip(),
+                )
+                st.success("Video tilføjet!")
+                st.rerun()
 
 st.markdown("---")
 
