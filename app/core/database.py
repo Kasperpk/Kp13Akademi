@@ -107,11 +107,12 @@ CREATE TABLE IF NOT EXISTS session_completions (
 );
 
 CREATE TABLE IF NOT EXISTS ugentlig_planer (
-    id         INTEGER PRIMARY KEY AUTOINCREMENT,
-    player_id  TEXT NOT NULL,
-    week_start TEXT NOT NULL,
-    content    TEXT NOT NULL,
-    created_at TEXT DEFAULT (datetime('now')),
+    id               INTEGER PRIMARY KEY AUTOINCREMENT,
+    player_id        TEXT NOT NULL,
+    week_start       TEXT NOT NULL,
+    content          TEXT NOT NULL,
+    sessions_per_week INTEGER DEFAULT 3,
+    created_at       TEXT DEFAULT (datetime('now')),
     FOREIGN KEY (player_id) REFERENCES players(id),
     UNIQUE(player_id, week_start)
 );
@@ -152,6 +153,11 @@ def init_db() -> None:
         }
         if "goals" not in existing_cols:
             conn.execute("ALTER TABLE players ADD COLUMN goals TEXT DEFAULT ''")
+        plan_cols = {
+            row[1] for row in conn.execute("PRAGMA table_info(ugentlig_planer)").fetchall()
+        }
+        if "sessions_per_week" not in plan_cols:
+            conn.execute("ALTER TABLE ugentlig_planer ADD COLUMN sessions_per_week INTEGER DEFAULT 3")
 
 
 # ---- players -----------------------------------------------------------------
@@ -528,22 +534,23 @@ def get_training_hours(player_id: str) -> dict[str, Any]:
 # ---- ugentlig planer (Danish weekly plans) -----------------------------------
 
 
-def save_ugentlig_plan(player_id: str, week_start: str, content: str) -> None:
+def save_ugentlig_plan(player_id: str, week_start: str, content: str, sessions_per_week: int = 3) -> None:
     with get_db() as conn:
         conn.execute(
-            """INSERT INTO ugentlig_planer (player_id, week_start, content)
-               VALUES (?, ?, ?)
+            """INSERT INTO ugentlig_planer (player_id, week_start, content, sessions_per_week)
+               VALUES (?, ?, ?, ?)
                ON CONFLICT(player_id, week_start) DO UPDATE SET
                  content=excluded.content,
+                 sessions_per_week=excluded.sessions_per_week,
                  created_at=datetime('now')""",
-            (player_id, week_start, content),
+            (player_id, week_start, content, sessions_per_week),
         )
 
 
-def get_ugentlig_plan(player_id: str, week_start: str) -> str | None:
+def get_ugentlig_plan(player_id: str, week_start: str) -> dict[str, Any] | None:
     with get_db() as conn:
         row = conn.execute(
-            "SELECT content FROM ugentlig_planer WHERE player_id = ? AND week_start = ?",
+            "SELECT content, sessions_per_week FROM ugentlig_planer WHERE player_id = ? AND week_start = ?",
             (player_id, week_start),
         ).fetchone()
-    return row["content"] if row else None
+    return dict(row) if row else None
