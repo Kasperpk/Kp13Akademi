@@ -514,19 +514,16 @@ def generate_weekly_plan_danish(
         if obs.get("coach_notes"):
             recent_text += f"\n  Kaspers noter: {obs['coach_notes'][:300]}"
 
-    # Exercise library for the prompt
+    # Exercise library for the prompt — IDs kept for reference only, never shown in output
     exercises_text = ""
     for ex in available_exercises[:25]:
-        exercises_text += (
-            f"\n- [{ex['id']}] {ex['name']} ({ex['duration_min']} min, {ex['intensity']}): "
-            f"{ex['description']}"
-        )
+        exercises_text += f"\n• {ex['name']} ({ex['duration_min']} min, {ex['intensity']}): {ex['description']}"
         if ex.get("setup"):
-            exercises_text += f" | Setup: {ex['setup']}"
+            exercises_text += f"\n  Setup: {ex['setup']}"
         if ex.get("coaching_points"):
             cps = ex["coaching_points"]
             if isinstance(cps, list):
-                exercises_text += f" | Fokuspunkter: {' / '.join(cps[:3])}"
+                exercises_text += f"\n  Fokuspunkter: {' / '.join(cps[:3])}"
 
     la_masia = _load_la_masia()
 
@@ -577,38 +574,45 @@ TILGÆNGELIGE ØVELSER:
 {exercises_text}
 
 PLAN-FORMAT:
-Lav {sessions_per_week} sessioner ({days_label}). For HVER session skal du inkludere:
+Lav {sessions_per_week} sessioner ({days_label}). Skriv planen som en sammenhængende, letlæselig tekst.
 
-1. **[UGEDAG] — Fokus: [Dimension]** (total tid i min)
+For HVER session:
 
-   *Opvarmning* (5 min)
-   - Øvelsesnavn: Beskrivelse. Setup: [præcis opstilling]. Reps/tid: [specifikke reps].
+---
+## [UGEDAG] — [Fokusområde] · ca. [X] min
 
-   *Hoveddel* (10-15 min)
-   - Øvelse 1: [som ovenfor]
-   - Øvelse 2: [som ovenfor]
+**Hvorfor denne session?**
+1-2 sætninger der forklarer hvad {player_name} skal lære i dag og hvorfor det gør ham bedre på banen.
 
-   *Nedvarmning* (2-3 min)
-   - Stræk eller bold-leg.
+**Opvarmning** (5 min)
+Beskriv 1-2 øvelser i naturligt dansk. Skriv det som en instruktion til {player_name} eller hans forælder.
+Angiv præcis setup (afstande, antal kegler, hvor man stiller sig) og reps/tid.
 
-   **Hvad gør de bedste spillere?**
-   [3-4 sætninger om hvad elite-spillere gør på dette specifikke område. Konkret og observerbart.]
+**Hoveddel** (10-15 min)
+Beskriv 2 øvelser på samme måde. Hvert øvelsesbeskrivelse på 3-5 sætninger.
+Afslut hver øvelse med: *Kasper kigger efter: [hvad der viser fremgang — observerbar handling]*
 
-   **Fodboldkoncept: [Konceptnavn]**
-   [4-5 sætninger der forklarer det fodboldkoncept de træner. Alderstilpasset sprog — enkelt for U9, \
-mere taktisk for U13+. Forklar HVORFOR det gør dem til bedre fodboldspillere.]
+**Nedvarmning** (2-3 min)
+Én kort aktivitet der runder sessionen af.
 
-   *Kaspers note:* "[Én sætning der forbinder dagens træning til spillerens spil og udvikling.]"
+**De bedste spillere gør sådan her:**
+2-3 sætninger om hvad elite-spillere på dette niveau konkret gør anderledes. Brug eksempler fra rigtige kampe eller træning.
+
+**Fodboldkoncept: [Navn på konceptet]**
+4-5 sætninger i enkelt, alderstilpasset sprog. Forklar HVORFOR dette koncept gør {player_name} sværere at stoppe på banen.
+
+*Kaspers note til {player_name}: "[Personlig, direkte sætning der motiverer og forbinder træningen til hans næste kamp."]"*
+
+---
 
 VIGTIGE REGLER:
-- Skriv ALT på dansk
-- Setup-beskrivelser skal være så præcise at en forælder uden fodboldkendskab kan gennemføre dem
-- Coaching-punkter skal beskrive observerbare handlinger ("Let berøring — bolden bevæger sig næsten ikke")
-- Hver session har en rød tråd (ét tema der går igennem alle faser)
-- Ugentlig progression: Session 1 = teknik og mønster, Session 2 = samme mønster ved spillehastighed, \
-Session 3 = kombination og udfordring
-- Brug ALDRIG ord som "vigtig" eller "god" alene — vær specifik om hvad der sker på banen
-- Max 400 ord per session
+- Skriv ALT på dansk — flydende, naturligt og direkte
+- ALDRIG brug øvelses-ID'er (koder som 'bm_sole_taps') — brug kun det rigtige øvelsesnavn
+- Sproget skal føles som en rigtig træner taler til en spiller og hans forælder, ikke som en teknisk manual
+- Setup-beskrivelser skal være så konkrete at en forælder uden fodboldkendskab kan sætte det op
+- Ugentlig progression: Session 1 = lær mønsteret langsomt, Session 2 = samme mønster ved spillehastighed, Session 3 = kombiner og udfordr
+- Vær specifik: ikke "spil godt" men "skub bolden 2 meter frem med vristen og sprint efter den"
+- Max 450 ord per session
 """
 
     response = client.messages.create(

@@ -32,7 +32,7 @@ def _get_secret(key: str, default: str = "") -> str:
         return default
 
 ANTHROPIC_API_KEY: str = _get_secret("ANTHROPIC_API_KEY")
-ANTHROPIC_MODEL: str = _get_secret("ANTHROPIC_MODEL", "claude-sonnet-4-20250514")
+ANTHROPIC_MODEL: str = _get_secret("ANTHROPIC_MODEL", "claude-sonnet-4-6")
 COACH_PASSWORD: str = _get_secret("COACH_PASSWORD", "kp13")
 
 # --- EPM tuning ---------------------------------------------------------------
