@@ -128,6 +128,19 @@ CREATE TABLE IF NOT EXISTS player_sessions (
     created_at   TEXT DEFAULT (datetime('now')),
     FOREIGN KEY (player_id) REFERENCES players(id)
 );
+
+CREATE TABLE IF NOT EXISTS player_videos (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    player_id    TEXT NOT NULL,
+    posted_by    TEXT NOT NULL DEFAULT 'coach',
+    video_type   TEXT NOT NULL DEFAULT 'player_training',
+    title        TEXT NOT NULL DEFAULT '',
+    video_url    TEXT NOT NULL,
+    description  TEXT DEFAULT '',
+    coach_notes  TEXT DEFAULT '',
+    created_at   TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY (player_id) REFERENCES players(id)
+);
 """
 
 # ---- connection helpers ------------------------------------------------------
@@ -170,6 +183,8 @@ def init_db() -> None:
         }
         if "sessions_per_week" not in plan_cols:
             conn.execute("ALTER TABLE ugentlig_planer ADD COLUMN sessions_per_week INTEGER DEFAULT 3")
+        if "profile_image" not in existing_cols:
+            conn.execute("ALTER TABLE players ADD COLUMN profile_image TEXT DEFAULT ''")
 
 
 # ---- players -----------------------------------------------------------------
@@ -607,3 +622,66 @@ def get_player_sessions(player_id: str, week_start: str) -> dict[str, list[dict[
 def delete_player_session(session_id: int) -> None:
     with get_db() as conn:
         conn.execute("DELETE FROM player_sessions WHERE id = ?", (session_id,))
+
+
+# ---- profile image -----------------------------------------------------------
+
+
+def update_player_image(player_id: str, image_b64: str) -> None:
+    with get_db() as conn:
+        conn.execute(
+            "UPDATE players SET profile_image = ? WHERE id = ?",
+            (image_b64, player_id),
+        )
+
+
+def get_player_image(player_id: str) -> str:
+    """Return base64-encoded image string, or '' if none."""
+    with get_db() as conn:
+        row = conn.execute(
+            "SELECT profile_image FROM players WHERE id = ?", (player_id,)
+        ).fetchone()
+    return row["profile_image"] if row and row["profile_image"] else ""
+
+
+# ---- video wall --------------------------------------------------------------
+
+
+def add_video(
+    player_id: str,
+    title: str,
+    video_url: str,
+    posted_by: str = "coach",
+    video_type: str = "player_training",
+    description: str = "",
+) -> int:
+    with get_db() as conn:
+        cur = conn.execute(
+            """INSERT INTO player_videos
+               (player_id, posted_by, video_type, title, video_url, description)
+               VALUES (?, ?, ?, ?, ?, ?)""",
+            (player_id, posted_by, video_type, title, video_url, description),
+        )
+        return cur.lastrowid  # type: ignore[return-value]
+
+
+def get_videos(player_id: str) -> list[dict[str, Any]]:
+    with get_db() as conn:
+        rows = conn.execute(
+            "SELECT * FROM player_videos WHERE player_id = ? ORDER BY created_at DESC",
+            (player_id,),
+        ).fetchall()
+    return [dict(r) for r in rows]
+
+
+def update_video_coach_notes(video_id: int, coach_notes: str) -> None:
+    with get_db() as conn:
+        conn.execute(
+            "UPDATE player_videos SET coach_notes = ? WHERE id = ?",
+            (coach_notes, video_id),
+        )
+
+
+def delete_video(video_id: int) -> None:
+    with get_db() as conn:
+        conn.execute("DELETE FROM player_videos WHERE id = ?", (video_id,))

@@ -1,6 +1,7 @@
-"""My Development – Player progress view with development stages."""
+"""Min Udvikling — Spillerens udviklingsview med rubrics, foto og træningsdashboard."""
 
 import sys
+import base64
 from pathlib import Path
 from datetime import date, timedelta
 
@@ -11,20 +12,80 @@ if str(_ROOT) not in sys.path:
 import streamlit as st
 
 from core.config import ANTHROPIC_API_KEY
-from core.database import get_players, get_observations, get_epm_history, get_training_hours
+from core.database import (
+    get_players, get_observations, get_epm_history, get_training_hours,
+    update_player_image, get_player_image,
+)
 from core.epm import (
     get_player_profile, identify_gaps, identify_strengths,
     DIMENSIONS, DIM_BY_KEY, CATEGORIES, CATEGORY_DIMS,
 )
 from core.elm import generate_weekly_summary
-from core.theme import (
-    apply_theme, dimension_bar, category_header,
-    score_to_stage, focus_badge, card,
-)
-from core.auth import player_selector
+from core.rubrics import RUBRICS
+from core.theme import apply_theme, score_to_stage, focus_badge
+from core.auth import player_selector, get_player_id_from_url
 
 st.set_page_config(page_title="Min Udvikling – KP13", layout="wide")
 apply_theme()
+
+_STAGE_COLORS = {
+    "Opdageren":       "#6B7280",
+    "Under Udvikling": "#3B82F6",
+    "Sikker":          "#10B981",
+    "Avanceret":       "#F59E0B",
+    "Elite":           "#EF4444",
+}
+
+_CATEGORY_LABELS = {
+    "technical": "Teknisk",
+    "physical":  "Fysisk",
+    "cognitive": "Spilforståelse",
+    "mental":    "Mentalitet",
+}
+
+_CATEGORY_ICONS = {
+    "technical": "⚽",
+    "physical":  "💪",
+    "cognitive": "🧠",
+    "mental":    "🔥",
+}
+
+
+def _score_to_rubric_key(score: float) -> str:
+    if score <= 2: return "1-2"
+    if score <= 5: return "3-5"
+    if score <= 7: return "6-7"
+    if score <= 9: return "8-9"
+    return "10"
+
+
+def _next_rubric_key(key: str) -> str | None:
+    order = ["1-2", "3-5", "6-7", "8-9", "10"]
+    try:
+        idx = order.index(key)
+        return order[idx + 1] if idx < len(order) - 1 else None
+    except ValueError:
+        return None
+
+
+def _stage_badge_html(stage: str) -> str:
+    color = _STAGE_COLORS.get(stage, "#6B7280")
+    return (
+        f'<span style="background:{color};color:white;border-radius:4px;'
+        f'padding:2px 8px;font-size:0.72rem;font-weight:600;">{stage}</span>'
+    )
+
+
+def _score_bar_html(score: float) -> str:
+    pct = (score / 10) * 100
+    stage = score_to_stage(score)
+    color = _STAGE_COLORS.get(stage, "#3B82F6")
+    return (
+        f'<div style="background:#1F2937;border-radius:4px;height:6px;margin:4px 0 8px 0;">'
+        f'<div style="background:{color};width:{pct:.0f}%;height:100%;border-radius:4px;"></div>'
+        f'</div>'
+    )
+
 
 # ---- player selector ---------------------------------------------------------
 
@@ -34,6 +95,7 @@ if not players:
     st.stop()
 
 selected_id = player_selector(players)
+_, is_player = get_player_id_from_url(players)
 
 profile = get_player_profile(selected_id)
 if not profile:
@@ -43,74 +105,114 @@ if not profile:
 player = profile["player"]
 flat = profile["flat_scores"]
 
-# ---- header ------------------------------------------------------------------
+# ---- header with profile photo -----------------------------------------------
 
-st.title(f"{player['name']}")
-parts = [player.get("age_group", ""), player.get("position", ""), player.get("club", "")]
-subtitle = " · ".join(p for p in parts if p)
-if subtitle:
-    st.caption(subtitle)
+img_b64 = get_player_image(selected_id)
+
+header_col, photo_col = st.columns([5, 1])
+with header_col:
+    st.title(player["name"])
+    parts = [player.get("age_group", ""), player.get("position", ""), player.get("club", "")]
+    subtitle = " · ".join(p for p in parts if p)
+    if subtitle:
+        st.caption(subtitle)
+
+with photo_col:
+    if img_b64:
+        st.markdown(
+            f'<img src="data:image/jpeg;base64,{img_b64}" '
+            f'style="width:90px;height:90px;border-radius:50%;border:3px solid #3B82F6;object-fit:cover;" />',
+            unsafe_allow_html=True,
+        )
+    else:
+        st.markdown(
+            '<div style="width:90px;height:90px;border-radius:50%;background:#1A1D27;'
+            'border:3px solid #374151;display:flex;align-items:center;justify-content:center;'
+            'font-size:2.5rem;text-align:center;">⚽</div>',
+            unsafe_allow_html=True,
+        )
+    with st.expander("📷"):
+        up = st.file_uploader("Profilbillede", type=["jpg", "jpeg", "png"], label_visibility="collapsed")
+        if up:
+            b64 = base64.b64encode(up.read()).decode()
+            update_player_image(selected_id, b64)
+            st.rerun()
 
 st.markdown("")
 
-# ---- current focus -----------------------------------------------------------
+# ---- gaps + strengths --------------------------------------------------------
 
 gaps = identify_gaps(selected_id, top_n=3)
 strengths = identify_strengths(selected_id, top_n=3)
 
-if gaps:
-    st.markdown("### Aktuelle Fokusområder")
-    bars_html = ""
-    for g in gaps:
-        bars_html += dimension_bar(g["name"], g["score"])
-    st.markdown(card(bars_html, accent=True), unsafe_allow_html=True)
+col_gaps, col_str = st.columns(2)
+with col_gaps:
+    if gaps:
+        st.markdown("**Fokusområder**")
+        badges = " ".join(focus_badge(f"{g['name']} {g['score']:.1f}") for g in gaps)
+        st.markdown(badges, unsafe_allow_html=True)
+with col_str:
+    if strengths:
+        st.markdown("**Styrker**")
+        badges = " ".join(focus_badge(f"{s['name']} {s['score']:.1f}") for s in strengths)
+        st.markdown(badges, unsafe_allow_html=True)
 
-# ---- strengths ---------------------------------------------------------------
+st.markdown("---")
 
-if strengths:
-    st.markdown("### Styrker")
-    bars_html = ""
-    for s in strengths:
-        bars_html += dimension_bar(s["name"], s["score"])
-    st.markdown(card(bars_html), unsafe_allow_html=True)
+# ---- rubrics view ------------------------------------------------------------
 
-# ---- all development areas ---------------------------------------------------
+st.markdown("### Dit niveau")
+st.caption("Klik på en dimension for at se præcis hvad dit nuværende niveau betyder — og hvad næste trin kræver.")
 
-st.markdown("### Alle Udviklingsområder")
-
-CATEGORY_LABELS = {
-    "technical": "Teknisk",
-    "physical": "Fysisk",
-    "cognitive": "Spilforståelse",
-    "mental": "Mentalitet",
-}
-
-all_bars_html = ""
 for cat in CATEGORIES:
     dims = CATEGORY_DIMS[cat]
-    all_bars_html += category_header(CATEGORY_LABELS.get(cat, cat.capitalize()))
-    for d in dims:
-        score = flat.get(d.key, 5.0)
-        all_bars_html += dimension_bar(d.name, score)
+    icon = _CATEGORY_ICONS.get(cat, "")
+    label = _CATEGORY_LABELS.get(cat, cat.capitalize())
+    st.markdown(f"#### {icon} {label}")
 
-st.markdown(card(all_bars_html), unsafe_allow_html=True)
+    cols = st.columns(len(dims))
+    for i, d in enumerate(dims):
+        score = flat.get(d.key, 5.0)
+        stage = score_to_stage(score)
+        rubric_key = _score_to_rubric_key(score)
+        rubric = RUBRICS.get(d.key, {})
+        current_desc = rubric.get(rubric_key, "")
+        next_key = _next_rubric_key(rubric_key)
+        next_desc = rubric.get(next_key, "") if next_key else ""
+
+        with cols[i]:
+            st.markdown(
+                f'<div style="background:#1A1D27;border-radius:8px;padding:12px 14px;margin-bottom:6px;">'
+                f'<div style="font-size:0.8rem;font-weight:600;color:#E5E7EB;margin-bottom:2px;">{d.name}</div>'
+                f'<div style="font-size:1.5rem;font-weight:700;color:#F9FAFB;">{score:.1f}</div>'
+                f'{_score_bar_html(score)}'
+                f'{_stage_badge_html(stage)}'
+                f'</div>',
+                unsafe_allow_html=True,
+            )
+            if current_desc:
+                with st.expander("Se niveau"):
+                    st.markdown(f"**Nu — {score:.1f}/10**")
+                    st.info(current_desc)
+                    if next_desc and next_key:
+                        st.markdown(f"**Næste trin ({next_key}/10):**")
+                        st.success(next_desc)
+
+    st.markdown("")
+
+st.markdown("---")
 
 # ---- training dashboard ------------------------------------------------------
 
-st.divider()
 st.markdown("### Trænings-Dashboard")
 
 hours = get_training_hours(selected_id)
 
-dash_col1, dash_col2, dash_col3 = st.columns(3)
-with dash_col1:
-    st.metric("Timer i alt", f"{hours['total_hours']} t")
-with dash_col2:
-    st.metric("Timer denne måned", f"{hours['month_hours']} t")
-with dash_col3:
-    st.metric("Sessions denne uge", hours["week_sessions"])
+c1, c2, c3 = st.columns(3)
+c1.metric("Timer i alt", f"{hours['total_hours']} t")
+c2.metric("Timer denne måned", f"{hours['month_hours']} t")
+c3.metric("Sessions denne uge", hours["week_sessions"])
 
-# Progress toward top EPM goals
 if gaps:
     st.markdown("**Mål at nå**")
     for g in gaps[:3]:
@@ -130,7 +232,11 @@ week_start = today - timedelta(days=today.weekday())
 all_obs = get_observations(selected_id, limit=100)
 week_obs = [obs for obs in all_obs if obs["date"] >= week_start.isoformat()]
 
-st.markdown(f'<p class="kp-muted">Uge der starter {week_start.day}. {week_start.strftime("%B %Y")} — {len(week_obs)} session(er) logget</p>', unsafe_allow_html=True)
+st.markdown(
+    f'<p style="color:#9CA3AF;font-size:0.85rem;">Uge der starter {week_start.day}. '
+    f'{week_start.strftime("%B %Y")} — {len(week_obs)} session(er) logget</p>',
+    unsafe_allow_html=True,
+)
 
 if not ANTHROPIC_API_KEY:
     st.caption("Tilføj API-nøgle i .env for at generere ugentlige rapporter.")
