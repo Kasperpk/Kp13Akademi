@@ -440,6 +440,7 @@ Use the create_weekly_schedule tool to submit the complete schedule."""
 # ---- Danish weekly training plan ---------------------------------------------
 
 _LA_MASIA_PATH = Path(__file__).resolve().parents[2] / "generator" / "principles" / "la_masia.md"
+_KP13_METHODOLOGY_PATH = Path(__file__).resolve().parents[2] / "generator" / "principles" / "kp13_methodology.md"
 
 # Age-group dimension priorities: higher weight = more important at this stage
 _AGE_DIM_WEIGHTS: dict[str, dict[str, float]] = {
@@ -469,6 +470,13 @@ def _age_weighted_gaps(gaps: list[dict[str, Any]], age_group: str) -> list[dict[
 def _load_la_masia() -> str:
     try:
         return _LA_MASIA_PATH.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        return ""
+
+
+def _load_kp13_methodology() -> str:
+    try:
+        return _KP13_METHODOLOGY_PATH.read_text(encoding="utf-8")
     except FileNotFoundError:
         return ""
 
@@ -526,41 +534,38 @@ def generate_weekly_plan_danish(
                 exercises_text += f"\n  Fokuspunkter: {' / '.join(cps[:3])}"
 
     la_masia = _load_la_masia()
+    kp13_methodology = _load_kp13_methodology()
 
     day_names = {2: "Mandag og Torsdag", 3: "Mandag, Onsdag og Fredag", 4: "Mandag, Tirsdag, Torsdag og Lørdag"}
     days_label = day_names.get(sessions_per_week, f"{sessions_per_week} gange om ugen")
 
     system = f"""\
-Du er KP13 Akademiets AI-træningsmester. Du designer ugentlige HJEMMETRÆNINGSPLANER til fodboldspillere.
+Du er KP13 Akademiets AI-træningsmester. Du designer ugentlige HJEMMETRÆNINGSPLANER.
 
-VIGTIGT: Disse træninger laves HJEMME i løbet af ugen — UDEN Kasper til stede. \
-Kasper har sine egne akademi-sessioner (1 time) som han har planlagt selv. \
-Hjemmetræningerne skal spilleren (og eventuelt en forælder) selv gennemføre. \
-Skriv ALDRIG "Kasper siger", "Kasper råber", "Kasper kigger efter" eller lignende — \
-Kasper er ikke der. Henvend dig direkte til spilleren og til forælderen.
+━━━ KONTEKST ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Kasper har sine egne akademi-sessioner (1 time, planlagt af ham selv). \
+Disse hjemmeplaner er det {player_name} laver ALENE i løbet af ugen — ingen træner, ingen forælder nødvendigvis. \
+Spilleren er alene med sin bold. Design ALLE øvelser så de kan laves 100% solo.
 
-I stedet for "Kasper kigger efter" brug: "Forældre: hold øje med..." eller "Tjek dig selv:..."
-Hvis der er brug for en der råber et signal, er det forælderen eller en søskende — eller \
-brug en timer/app.
+ALDRIG skriv "Kasper siger/råber/kigger/tæller" — han er ikke der. \
+ALDRIG forudsæt at der er en forælder til stede. \
+Brug "du" til {player_name} direkte. \
+Selvtjek skrives som: "Tjek: [hvad du selv kan mærke eller se]"
+Hvis der skal bruges et signal: "sæt en timer på [X] sekunder" eller "tæl selv til [X]".
 
-Din vigtigste opgave: maksimer spillerens forbedring på de vigtigste udviklingsområder \
-med øvelser der er klare nok til at en forælder uden fodboldkendskab kan sætte dem op og følge dem.
+━━━ KP13 TRÆNINGSFILOSOFI ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{kp13_methodology}
 
-PRIORITETSRÆKKEFØLGE for valg af fokusområder:
-1. Hvad Kasper eksplicit har nævnt i sine noter (HØJESTE prioritet)
-2. Alderstilpassede EPM-huller (hvad er vigtigst at forbedre ved denne alder?)
-3. Spillerens egne mål, hvis de stemmer overens med EPM-data
+━━━ LA MASIA PRINCIPPER ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{la_masia[:800]}
 
-KVALITETSNIVEAU: La Masia-standard. Øvelserne skal have en klar rød tråd, \
-bygge på constraints-led learning (spilleren opdager løsningen selv), og føre direkte \
-til bedre beslutninger og bevægelser i kampsituationer. Ingen generiske fitnesøvelser — \
-alt skal handle om bolden og spillet.
-
-FILOSOFI:
-{la_masia[:1500]}
-
-EVALUERINGSRUBRIKER FOR FOKUSOMRÅDER:
+━━━ EVALUERINGSRUBRIKER FOR FOKUSOMRÅDER ━━━━━━━━━━━━━━━━━━
 {rubric_blocks}
+
+PRIORITETSRÆKKEFØLGE for fokus:
+1. Hvad Kasper eksplicit har nævnt i sine noter (HØJESTE prioritet)
+2. Alderstilpassede EPM-huller
+3. Spillerens egne mål
 """
 
     user_msg = f"""\
@@ -624,16 +629,20 @@ Forklar HVORFOR dette koncept gør ham sværere at stoppe i kampen.
 ---
 
 VIGTIGE REGLER:
-- Skriv ALT på dansk — flydende, naturligt og direkte
+- Skriv ALT på dansk — flydende, naturligt, direkte. Tal til {player_name} som en rigtig træner.
 - ALDRIG brug øvelses-ID'er (koder som 'bm_sole_taps') — brug kun det rigtige øvelsesnavn
-- ALDRIG skriv "Kasper siger/råber/tæller/kigger" — Kasper er ikke til stede
-- Hvis en øvelse kræver et eksternt signal, skriv "forælderen råber" eller "brug en timer"
-- Sproget skal føles som en rigtig træner der taler direkte til spilleren og forælderen
-- Setup skal være så konkret at en forælder uden fodboldkendskab kan sætte det op på 2 minutter
-- Øvelserne skal have La Masia-kvalitet: constraint-baseret, bold-centreret, spilrelateret
-- Ugentlig progression: Session 1 = lær mønsteret langsomt, Session 2 = samme mønster ved spillehastighed, Session 3 = kombiner og udfordr under pres
-- Vær specifik: ikke "spil godt" men "skub bolden 2 meter frem med vristen og sprint efter den"
-- Max 450 ord per session
+- ALDRIG skriv "Kasper siger/råber/tæller/kigger" — han er ikke der
+- ALDRIG forudsæt en forælder er til stede — alle øvelser laves solo med én bold
+- Signaler erstattes af: "sæt en timer på X sekunder" eller "tæl selv til X"
+- Selvtjek skrives som: "Tjek: bolden skal blive inden for armlængde"
+- KP13-intensitet (Persian Ball-stil): kort, skarp, høj tempo. Ikke langsomme øvelser.
+- Brug KP13's øvelsesvokabular: sole rolls, V-drag, L-drag, inside-outside, toe-taps, push-and-go
+- Alle sessioner starter med bold mastery — det er fundamentet
+- Begge fødder trænes i ALLE sessioner — dette er ikke til forhandling
+- Hver øvelse kobles til en konkret kampsituation
+- Ugentlig progression: Session 1 = lær mønsteret langsomt med fokus, Session 2 = samme mønster ved spillehastighed, Session 3 = udfordring og kombination under pres
+- Vær hyper-specifik: ikke "øv first touch" men "modtag bolden og lad den rulle 45 grader fra dig — aldrig bagud, altid fremad i spilretningen"
+- Max 420 ord per session
 """
 
     response = client.messages.create(
