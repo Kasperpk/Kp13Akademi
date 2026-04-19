@@ -149,7 +149,7 @@ if not is_player:
         st.markdown(badges_html, unsafe_allow_html=True)
         st.markdown("")
 
-    if not plan_data:
+    if not plan_data or not plan_data.get("content"):
         if not ANTHROPIC_API_KEY:
             st.warning("Tilføj din Anthropic API-nøgle i .env for at generere planer.")
             st.stop()
@@ -178,7 +178,7 @@ if not is_player:
 
 # ---- ingen plan for spiller --------------------------------------------------
 
-if not plan_data:
+if not plan_data or not plan_data.get("content"):
     st.info("Kasper har ikke genereret en plan for denne uge endnu. Kom tilbage snart!")
     st.stop()
 
