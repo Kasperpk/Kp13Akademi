@@ -1,5 +1,7 @@
 """Min Udvikling — Spillerens udviklingsview med rubrics, foto og træningsdashboard."""
 
+from __future__ import annotations
+
 import sys
 import base64
 from pathlib import Path
