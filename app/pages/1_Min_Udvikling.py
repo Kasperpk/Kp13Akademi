@@ -11,7 +11,7 @@ if str(_ROOT) not in sys.path:
 import streamlit as st
 
 from core.config import ANTHROPIC_API_KEY
-from core.database import get_players, get_observations, get_epm_history
+from core.database import get_players, get_observations, get_epm_history, get_training_hours
 from core.epm import (
     get_player_profile, identify_gaps, identify_strengths,
     DIMENSIONS, DIM_BY_KEY, CATEGORIES, CATEGORY_DIMS,
@@ -22,19 +22,19 @@ from core.theme import (
     score_to_stage, focus_badge, card,
 )
 
-st.set_page_config(page_title="My Development – KP13", layout="wide")
+st.set_page_config(page_title="Min Udvikling – KP13", layout="wide")
 apply_theme()
 
 # ---- player selector ---------------------------------------------------------
 
 players = get_players()
 if not players:
-    st.info("No players registered yet.")
+    st.info("Ingen spillere registreret endnu.")
     st.stop()
 
 player_options = {p["id"]: p["name"] for p in players}
 selected_id = st.sidebar.radio(
-    "Player",
+    "Spiller",
     options=[p["id"] for p in players],
     format_func=lambda pid: player_options[pid],
 )
@@ -63,7 +63,7 @@ gaps = identify_gaps(selected_id, top_n=3)
 strengths = identify_strengths(selected_id, top_n=3)
 
 if gaps:
-    st.markdown("### Current Focus")
+    st.markdown("### Aktuelle Fokusområder")
     bars_html = ""
     for g in gaps:
         bars_html += dimension_bar(g["name"], g["score"])
@@ -72,7 +72,7 @@ if gaps:
 # ---- strengths ---------------------------------------------------------------
 
 if strengths:
-    st.markdown("### Strengths")
+    st.markdown("### Styrker")
     bars_html = ""
     for s in strengths:
         bars_html += dimension_bar(s["name"], s["score"])
@@ -80,13 +80,13 @@ if strengths:
 
 # ---- all development areas ---------------------------------------------------
 
-st.markdown("### All Development Areas")
+st.markdown("### Alle Udviklingsområder")
 
 CATEGORY_LABELS = {
-    "technical": "Technical",
-    "physical": "Physical",
-    "cognitive": "Game Intelligence",
-    "mental": "Mentality",
+    "technical": "Teknisk",
+    "physical": "Fysisk",
+    "cognitive": "Spilforståelse",
+    "mental": "Mentalitet",
 }
 
 all_bars_html = ""
@@ -99,23 +99,48 @@ for cat in CATEGORIES:
 
 st.markdown(card(all_bars_html), unsafe_allow_html=True)
 
+# ---- training dashboard ------------------------------------------------------
+
+st.divider()
+st.markdown("### Trænings-Dashboard")
+
+hours = get_training_hours(selected_id)
+
+dash_col1, dash_col2, dash_col3 = st.columns(3)
+with dash_col1:
+    st.metric("Timer i alt", f"{hours['total_hours']} t")
+with dash_col2:
+    st.metric("Timer denne måned", f"{hours['month_hours']} t")
+with dash_col3:
+    st.metric("Sessions denne uge", hours["week_sessions"])
+
+# Progress toward top EPM goals
+if gaps:
+    st.markdown("**Mål at nå**")
+    for g in gaps[:3]:
+        target = 5.0 if g["score"] < 5 else (7.5 if g["score"] < 7.5 else 9.0)
+        progress = min((g["score"] - 1.0) / (target - 1.0), 1.0)
+        stage_target = score_to_stage(target)
+        goal_label = f"{g['name']}: {g['score']:.1f} → {target:.0f} ({stage_target})"
+        st.progress(max(0.0, progress), text=goal_label)
+
 # ---- weekly summary ----------------------------------------------------------
 
 st.divider()
-st.markdown("### Weekly Report")
+st.markdown("### Ugentlig Rapport")
 
 today = date.today()
 week_start = today - timedelta(days=today.weekday())
 all_obs = get_observations(selected_id, limit=100)
 week_obs = [obs for obs in all_obs if obs["date"] >= week_start.isoformat()]
 
-st.markdown(f'<p class="kp-muted">Week of {week_start.strftime("%B %d, %Y")} — {len(week_obs)} session(s) logged</p>', unsafe_allow_html=True)
+st.markdown(f'<p class="kp-muted">Uge der starter {week_start.day}. {week_start.strftime("%B %Y")} — {len(week_obs)} session(er) logget</p>', unsafe_allow_html=True)
 
 if not ANTHROPIC_API_KEY:
-    st.caption("Configure API key in .env to generate weekly reports.")
+    st.caption("Tilføj API-nøgle i .env for at generere ugentlige rapporter.")
 else:
-    if st.button("Generate weekly report", type="primary"):
-        with st.spinner("Writing report..."):
+    if st.button("Generer ugentlig rapport", type="primary"):
+        with st.spinner("Skriver rapport..."):
             try:
                 epm_hist = []
                 for d in DIMENSIONS:
@@ -130,4 +155,4 @@ else:
                 )
                 st.markdown(summary)
             except Exception as e:
-                st.error(f"Report generation failed: {e}")
+                st.error(f"Rapport-generering fejlede: {e}")

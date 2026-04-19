@@ -7,19 +7,19 @@ import streamlit as st
 # ---- development stages (replace raw scores in player-facing UI) -----------
 
 _STAGES = [
-    (0.0, "Discovering"),
-    (3.0, "Developing"),
-    (5.5, "Confident"),
-    (7.5, "Advanced"),
+    (0.0, "Opdageren"),
+    (3.0, "Under Udvikling"),
+    (5.5, "Sikker"),
+    (7.5, "Avanceret"),
     (9.0, "Elite"),
 ]
 
 STAGE_COLOURS = {
-    "Discovering": "#6B7280",
-    "Developing":  "#3B82F6",
-    "Confident":   "#10B981",
-    "Advanced":    "#F59E0B",
-    "Elite":       "#EF4444",
+    "Opdageren":       "#6B7280",
+    "Under Udvikling": "#3B82F6",
+    "Sikker":          "#10B981",
+    "Avanceret":       "#F59E0B",
+    "Elite":           "#EF4444",
 }
 
 
@@ -35,21 +35,10 @@ def score_to_stage(score: float) -> str:
 
 _CSS = """
 <style>
-    /* --- dark football theme --- */
-    .stApp {
-        background-color: #0F1116;
-        color: #E5E7EB;
-    }
-    [data-testid="stSidebar"] {
-        background-color: #161920;
-    }
-    [data-testid="stSidebar"] .stMarkdown {
-        color: #D1D5DB;
-    }
+    /* --- custom card components only (theme colors set via config.toml) --- */
 
     /* headers */
-    h1, h2, h3, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
-        color: #F9FAFB !important;
+    h1, h2, h3 {
         font-weight: 600;
     }
 
@@ -187,7 +176,7 @@ def card(content: str, accent: bool = False) -> str:
 
 
 def completed_badge() -> str:
-    return '<span class="completed-badge">Completed</span>'
+    return '<span class="completed-badge">Gennemført</span>'
 
 
 def category_header(name: str) -> str:

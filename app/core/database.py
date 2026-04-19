@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS players (
     started_date  TEXT,
     parent_name   TEXT,
     notes         TEXT DEFAULT '',
+    goals         TEXT DEFAULT '',
     created_at    TEXT DEFAULT (datetime('now')),
     active        INTEGER DEFAULT 1
 );
@@ -104,6 +105,16 @@ CREATE TABLE IF NOT EXISTS session_completions (
     FOREIGN KEY (player_id) REFERENCES players(id),
     UNIQUE(player_id, week_start, day)
 );
+
+CREATE TABLE IF NOT EXISTS ugentlig_planer (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    player_id  TEXT NOT NULL,
+    week_start TEXT NOT NULL,
+    content    TEXT NOT NULL,
+    created_at TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY (player_id) REFERENCES players(id),
+    UNIQUE(player_id, week_start)
+);
 """
 
 # ---- connection helpers ------------------------------------------------------
@@ -132,9 +143,15 @@ def get_db() -> Generator[sqlite3.Connection, None, None]:
 
 
 def init_db() -> None:
-    """Create all tables if they don't exist."""
+    """Create all tables if they don't exist, and run column migrations."""
     with get_db() as conn:
         conn.executescript(_SCHEMA)
+        # Migrations for existing databases
+        existing_cols = {
+            row[1] for row in conn.execute("PRAGMA table_info(players)").fetchall()
+        }
+        if "goals" not in existing_cols:
+            conn.execute("ALTER TABLE players ADD COLUMN goals TEXT DEFAULT ''")
 
 
 # ---- players -----------------------------------------------------------------
@@ -151,12 +168,13 @@ def upsert_player(
     started_date: str = "",
     parent_name: str = "",
     notes: str = "",
+    goals: str = "",
 ) -> None:
     with get_db() as conn:
         conn.execute(
             """INSERT INTO players (id, name, age_group, position, club,
-                                    dominant_foot, started_date, parent_name, notes)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                    dominant_foot, started_date, parent_name, notes, goals)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                ON CONFLICT(id) DO UPDATE SET
                  name=excluded.name, age_group=excluded.age_group,
                  position=excluded.position, club=excluded.club,
@@ -165,7 +183,7 @@ def upsert_player(
                  parent_name=excluded.parent_name,
                  notes=excluded.notes""",
             (player_id, name, age_group, position, club, dominant_foot,
-             started_date, parent_name, notes),
+             started_date, parent_name, notes, goals),
         )
 
 
@@ -429,3 +447,103 @@ def get_completions(player_id: str, week_start: str) -> dict[str, str]:
             (player_id, week_start),
         ).fetchall()
     return {r["day"]: r["feedback"] for r in rows}
+
+
+# ---- player goals ------------------------------------------------------------
+
+
+def update_player_goals(player_id: str, goals: str) -> None:
+    with get_db() as conn:
+        conn.execute(
+            "UPDATE players SET goals = ? WHERE id = ?",
+            (goals, player_id),
+        )
+
+
+# ---- training hours ----------------------------------------------------------
+
+_SESSION_TYPE_MINUTES = {
+    "coached": 60,
+    "team": 90,
+    "match": 90,
+    "home": 30,
+}
+_DAILY_PLAN_MINUTES = 25
+
+
+def get_training_hours(player_id: str) -> dict[str, Any]:
+    """Return training hour stats: total, this month, this week session count."""
+    from datetime import date as _date, timedelta as _timedelta
+    today = _date.today()
+    month_start = today.replace(day=1).isoformat()
+    week_start = (today - _timedelta(days=today.weekday())).isoformat()
+
+    with get_db() as conn:
+        obs_rows = conn.execute(
+            "SELECT date, session_type FROM session_observations WHERE player_id = ?",
+            (player_id,),
+        ).fetchall()
+        completion_rows = conn.execute(
+            "SELECT completed_at FROM session_completions WHERE player_id = ?",
+            (player_id,),
+        ).fetchall()
+        plan_rows = conn.execute(
+            "SELECT date FROM daily_plans WHERE player_id = ? AND completed = 1",
+            (player_id,),
+        ).fetchall()
+
+    total_minutes = 0
+    month_minutes = 0
+    week_sessions = 0
+
+    for r in obs_rows:
+        mins = _SESSION_TYPE_MINUTES.get(r["session_type"], 45)
+        total_minutes += mins
+        if r["date"] >= month_start:
+            month_minutes += mins
+        if r["date"] >= week_start:
+            week_sessions += 1
+
+    completed_dates = set()
+    for r in completion_rows:
+        d = r["completed_at"][:10]
+        completed_dates.add(d)
+    for r in plan_rows:
+        completed_dates.add(r["date"])
+
+    for d in completed_dates:
+        total_minutes += _DAILY_PLAN_MINUTES
+        if d >= month_start:
+            month_minutes += _DAILY_PLAN_MINUTES
+        if d >= week_start:
+            week_sessions += 1
+
+    return {
+        "total_hours": round(total_minutes / 60, 1),
+        "month_hours": round(month_minutes / 60, 1),
+        "week_sessions": week_sessions,
+    }
+
+
+# ---- ugentlig planer (Danish weekly plans) -----------------------------------
+
+
+def save_ugentlig_plan(player_id: str, week_start: str, content: str) -> None:
+    with get_db() as conn:
+        conn.execute(
+            """INSERT INTO ugentlig_planer (player_id, week_start, content)
+               VALUES (?, ?, ?)
+               ON CONFLICT(player_id, week_start) DO UPDATE SET
+                 content=excluded.content,
+                 created_at=datetime('now')""",
+            (player_id, week_start, content),
+        )
+
+
+def get_ugentlig_plan(player_id: str, week_start: str) -> str | None:
+    with get_db() as conn:
+        row = conn.execute(
+            "SELECT content FROM ugentlig_planer WHERE player_id = ? AND week_start = ?",
+            (player_id, week_start),
+        ).fetchone()
+    return row["content"] if row else None

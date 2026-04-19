@@ -43,18 +43,18 @@ apply_theme()
 # ---- sidebar: player selector -----------------------------------------------
 
 st.sidebar.title(APP_TITLE)
-st.sidebar.caption("Player Development System")
+st.sidebar.caption("Spillerudviklings-system")
 st.sidebar.divider()
 
 players = get_players()
 if not players:
     st.title("KP13 Akademi")
-    st.info("No players registered yet. Add your first player from the Player Overview page.")
+    st.info("Ingen spillere registreret endnu. Tilføj din første spiller fra spilleroversigten.")
     st.stop()
 
 player_options = {p["id"]: p["name"] for p in players}
 selected_id = st.sidebar.radio(
-    "Player",
+    "Spiller",
     options=[p["id"] for p in players],
     format_func=lambda pid: player_options[pid],
 )
@@ -72,11 +72,11 @@ today = date.today().isoformat()
 import datetime
 hour = datetime.datetime.now().hour
 if hour < 12:
-    greeting = "Good morning"
+    greeting = "Godmorgen"
 elif hour < 17:
-    greeting = "Good afternoon"
+    greeting = "Godeftermiddag"
 else:
-    greeting = "Good evening"
+    greeting = "Godaften"
 
 st.title(f"{greeting}, {player['name']}")
 
@@ -87,7 +87,7 @@ strengths = identify_strengths(selected_id, top_n=3)
 
 if gaps:
     badges_html = " ".join(focus_badge(g["name"]) for g in gaps[:2])
-    st.markdown(f"Today's focus &nbsp; {badges_html}", unsafe_allow_html=True)
+    st.markdown(f"Dagens fokus &nbsp; {badges_html}", unsafe_allow_html=True)
 
 st.markdown("")
 
@@ -110,18 +110,18 @@ if existing_plan and existing_plan.get("plan_content"):
 
     # Completion tracking
     if not existing_plan.get("completed"):
-        st.markdown("### How did it go?")
+        st.markdown("### Hvordan gik det?")
         feedback_option = st.radio(
-            "Rate your session",
-            options=["Great", "Good", "Tough", "Didn't finish"],
+            "Vurder din session",
+            options=["Fantastisk", "Godt", "Hårdt", "Fik ikke gennemført"],
             horizontal=True,
             label_visibility="collapsed",
         )
         feedback_text = st.text_input(
-            "Anything to add?",
-            placeholder="Optional — what felt easy, what was hard",
+            "Noget at tilføje?",
+            placeholder="Valgfrit — hvad var nemt, hvad var svært",
         )
-        if st.button("Mark session complete", type="primary"):
+        if st.button("Marker session som gennemført", type="primary"):
             full_feedback = feedback_option
             if feedback_text:
                 full_feedback += f" — {feedback_text}"
@@ -135,18 +135,18 @@ else:
     # No plan yet — offer to generate
     st.markdown(
         card(
-            "<h3 style='margin:0 0 0.5rem 0;color:#F9FAFB'>No session planned for today</h3>"
-            "<p style='color:#9CA3AF;margin:0'>Generate a personalised training session based on your current development profile.</p>",
+            "<h3 style='margin:0 0 0.5rem 0;color:#F9FAFB'>Ingen session planlagt for i dag</h3>"
+            "<p style='color:#9CA3AF;margin:0'>Generer en personlig træningssession baseret på din aktuelle udviklingsprofil.</p>",
         ),
         unsafe_allow_html=True,
     )
 
     if not ANTHROPIC_API_KEY:
-        st.warning("Configure your API key in .env to generate training plans.")
+        st.warning("Tilføj din API-nøgle i .env for at generere træningsplaner.")
         st.stop()
 
-    if st.button("Generate today's session", type="primary"):
-        with st.spinner("Building your session..."):
+    if st.button("Generer dagens session", type="primary"):
+        with st.spinner("Bygger din session..."):
             try:
                 recent = get_observations(selected_id, limit=5)
                 recommended = recommend_for_gaps(gaps, max_results=8, age=9, max_players=2)
@@ -168,13 +168,13 @@ else:
                 )
                 st.rerun()
             except Exception as e:
-                st.error(f"Generation failed: {e}")
+                st.error(f"Generering fejlede: {e}")
 
 # ---- why this matters (connects today to development) ------------------------
 
 if gaps:
     st.divider()
-    st.markdown("### Why this matters")
+    st.markdown("### Hvorfor dette er vigtigt")
     for g in gaps[:2]:
         meta = DIM_BY_KEY[g["key"]]
         st.markdown(f"**{meta.name}** — {meta.description}")

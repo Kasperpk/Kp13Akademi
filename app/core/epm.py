@@ -20,25 +20,25 @@ class DimensionMeta:
 
 DIMENSIONS: list[DimensionMeta] = [
     # Technical
-    DimensionMeta("first_touch",     "First Touch",       "technical", "Receiving quality — controlling into space, on the half-turn, under pressure"),
-    DimensionMeta("passing",         "Passing",           "technical", "Weight, accuracy, and decision-making in distribution"),
-    DimensionMeta("ball_mastery",    "Ball Mastery",      "technical", "Close control, comfort on the ball, moves repertoire"),
-    DimensionMeta("dribbling_speed", "Driving with Ball", "technical", "Carrying the ball at pace, push-and-go, dynamic ball carrying"),
-    DimensionMeta("finishing",       "Finishing",         "technical", "Shooting technique, composure in front of goal"),
-    DimensionMeta("weak_foot",       "Weak Foot",         "technical", "Proficiency with non-dominant foot across all skills"),
+    DimensionMeta("first_touch",     "Første Touch",        "technical", "Modtagerkvalitet — kontrol i rum, på halvvending, under pres"),
+    DimensionMeta("passing",         "Pasning",             "technical", "Vægt, præcision og beslutningstagning i aflevering"),
+    DimensionMeta("ball_mastery",    "Boldbeherskelse",     "technical", "Tæt boldkontrol, komfort på bolden, teknisk repertoire"),
+    DimensionMeta("dribbling_speed", "Dribling med Fart",   "technical", "Bære bolden i tempo, skub-og-løb, dynamisk boldføring"),
+    DimensionMeta("finishing",       "Afslutning",          "technical", "Skudteknik, ro og præcision foran mål"),
+    DimensionMeta("weak_foot",       "Svagt Ben",           "technical", "Færdigheder med ikke-dominante fod på tværs af alle teknikker"),
     # Physical
-    DimensionMeta("acceleration",    "Acceleration",      "physical",  "First 3–5 steps, explosive starts, reactive speed"),
-    DimensionMeta("agility",         "Agility",           "physical",  "Change of direction, lateral movement, body control"),
-    DimensionMeta("endurance",       "Endurance",         "physical",  "Sustained intensity across session or match"),
+    DimensionMeta("acceleration",    "Acceleration",        "physical",  "Første 3-5 skridt, eksplosive starter, reaktiv hastighed"),
+    DimensionMeta("agility",         "Smidighed",           "physical",  "Retningsskift, lateral bevægelse, kropskoordination"),
+    DimensionMeta("endurance",       "Udholdenhed",         "physical",  "Vedvarende intensitet gennem session eller kamp"),
     # Cognitive
-    DimensionMeta("game_reading",    "Game Reading",      "cognitive", "Positional awareness, scanning, anticipation"),
-    DimensionMeta("decision_speed",  "Decision Speed",    "cognitive", "Choosing the right action under pressure"),
-    DimensionMeta("positional_play", "Positional Play",   "cognitive", "Understanding of space, movement off the ball"),
+    DimensionMeta("game_reading",    "Spilforståelse",      "cognitive", "Positionsbevidsthed, scanning, forudseenhed på banen"),
+    DimensionMeta("decision_speed",  "Beslutningshastighed","cognitive", "Valg af den rigtige handling under pres"),
+    DimensionMeta("positional_play", "Positionsspil",       "cognitive", "Forståelse af rum og bevægelse uden bold"),
     # Mental
-    DimensionMeta("resilience",      "Resilience",        "mental",    "Response to setbacks, mistakes, tournament pressure"),
-    DimensionMeta("intensity",       "Intensity",         "mental",    "Effort, tempo, urgency in training"),
-    DimensionMeta("coachability",    "Coachability",      "mental",    "Willingness to try new things, response to feedback"),
-    DimensionMeta("joy",             "Joy",               "mental",    "Engagement, enthusiasm, fun level"),
+    DimensionMeta("resilience",      "Robusthed",           "mental",    "Reaktion på modgang, fejl og turneringspres"),
+    DimensionMeta("intensity",       "Intensitet",          "mental",    "Indsats, tempo og urgency i træning"),
+    DimensionMeta("coachability",    "Trænarbarhed",        "mental",    "Villighed til at prøve nyt og reagere på feedback"),
+    DimensionMeta("joy",             "Glæde",               "mental",    "Engagement, entusiasme og glæde ved spillet"),
 ]
 
 DIM_BY_KEY: dict[str, DimensionMeta] = {d.key: d for d in DIMENSIONS}

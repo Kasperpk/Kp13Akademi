@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from typing import Any, Generator
 
 import anthropic
 
 from .config import ANTHROPIC_API_KEY, ANTHROPIC_MODEL
 from .epm import DIMENSIONS, DIM_BY_KEY, CATEGORIES, CATEGORY_DIMS
-from .rubrics import all_rubrics_text
+from .rubrics import all_rubrics_text, rubric_for_dimension
 
 # ---- client ------------------------------------------------------------------
 
@@ -434,6 +435,189 @@ Use the create_weekly_schedule tool to submit the complete schedule."""
             return block.input
 
     return {"week_focus": "General development", "sessions": []}
+
+
+# ---- Danish weekly training plan ---------------------------------------------
+
+_LA_MASIA_PATH = Path(__file__).resolve().parents[2] / "generator" / "principles" / "la_masia.md"
+
+# Age-group dimension priorities: higher weight = more important at this stage
+_AGE_DIM_WEIGHTS: dict[str, dict[str, float]] = {
+    "U7": {"ball_mastery": 2.0, "first_touch": 2.0, "weak_foot": 2.0, "joy": 2.0, "agility": 1.5},
+    "U8": {"ball_mastery": 2.0, "first_touch": 2.0, "weak_foot": 2.0, "joy": 2.0, "agility": 1.5},
+    "U9": {"ball_mastery": 2.0, "first_touch": 2.0, "weak_foot": 2.0, "joy": 1.5, "dribbling_speed": 1.5, "agility": 1.5},
+    "U10": {"ball_mastery": 1.8, "first_touch": 1.8, "weak_foot": 1.8, "dribbling_speed": 1.5, "passing": 1.3},
+    "U11": {"first_touch": 1.5, "passing": 1.5, "game_reading": 1.5, "decision_speed": 1.5, "ball_mastery": 1.3},
+    "U12": {"passing": 1.5, "game_reading": 1.5, "decision_speed": 1.5, "positional_play": 1.3, "finishing": 1.3},
+    "U13": {"game_reading": 1.5, "decision_speed": 1.5, "positional_play": 1.5, "passing": 1.3, "finishing": 1.3},
+    "U14": {"game_reading": 1.5, "positional_play": 1.5, "finishing": 1.5, "resilience": 1.3, "intensity": 1.3},
+    "U15": {"positional_play": 1.5, "game_reading": 1.5, "resilience": 1.5, "intensity": 1.5, "finishing": 1.3},
+}
+
+
+def _age_weighted_gaps(gaps: list[dict[str, Any]], age_group: str) -> list[dict[str, Any]]:
+    """Re-rank gaps by multiplying gap size by age-group developmental weight."""
+    weights = _AGE_DIM_WEIGHTS.get(age_group, {})
+    scored = []
+    for g in gaps:
+        w = weights.get(g["key"], 1.0)
+        scored.append((g, (10.0 - g["score"]) * w))
+    scored.sort(key=lambda x: x[1], reverse=True)
+    return [g for g, _ in scored]
+
+
+def _load_la_masia() -> str:
+    try:
+        return _LA_MASIA_PATH.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        return ""
+
+
+def generate_weekly_plan_danish(
+    player: dict[str, Any],
+    gaps: list[dict[str, Any]],
+    strengths: list[dict[str, Any]],
+    recent_observations: list[dict[str, Any]],
+    sessions_per_week: int,
+    available_exercises: list[dict[str, Any]],
+    player_goals: str = "",
+) -> str:
+    """Generate a full weekly training plan in Danish.
+
+    Priority for focus selection:
+    1. Coach notes from recent sessions (explicit flags override everything)
+    2. Age-weighted EPM gaps (most impactful dimension to improve right now)
+    3. Player goals if they align with EPM data
+    """
+    client = _client()
+
+    age_group = player.get("age_group", "U9")
+    player_name = player["name"].split()[0]
+    dominant_foot = player.get("dominant_foot", "højre")
+    position = player.get("position", "N/A")
+    coach_notes_on_player = player.get("notes", "")
+
+    # Age-weighted gap priority
+    prioritized_gaps = _age_weighted_gaps(gaps, age_group)
+    focus_dims = prioritized_gaps[:2]
+
+    # Build rubric blocks for the top focus dimensions
+    rubric_blocks = ""
+    for g in focus_dims:
+        rubric_blocks += f"\n\n### {g['name']} (nuværende score: {g['score']:.1f}/10)\n"
+        rubric_blocks += rubric_for_dimension(g["key"])
+
+    # Build recent session text
+    recent_text = ""
+    for obs in recent_observations[:3]:
+        recent_text += f"\n- {obs['date']} ({obs.get('session_type', 'N/A')}): {obs.get('theme', 'N/A')}"
+        if obs.get("coach_notes"):
+            recent_text += f"\n  Kaspers noter: {obs['coach_notes'][:300]}"
+
+    # Exercise library for the prompt
+    exercises_text = ""
+    for ex in available_exercises[:25]:
+        exercises_text += (
+            f"\n- [{ex['id']}] {ex['name']} ({ex['duration_min']} min, {ex['intensity']}): "
+            f"{ex['description']}"
+        )
+        if ex.get("setup"):
+            exercises_text += f" | Setup: {ex['setup']}"
+        if ex.get("coaching_points"):
+            cps = ex["coaching_points"]
+            if isinstance(cps, list):
+                exercises_text += f" | Fokuspunkter: {' / '.join(cps[:3])}"
+
+    la_masia = _load_la_masia()
+
+    day_names = {2: "Mandag og Torsdag", 3: "Mandag, Onsdag og Fredag", 4: "Mandag, Tirsdag, Torsdag og Lørdag"}
+    days_label = day_names.get(sessions_per_week, f"{sessions_per_week} gange om ugen")
+
+    system = f"""\
+Du er KP13 Akademiets AI-træningsmester. Du designer ugentlige træningsplaner til fodboldspillere \
+der træner individuelt med træneren Kasper. Alle svar skal skrives på dansk.
+
+Din vigtigste opgave: maksimer spillerens forbedring på de vigtigste udviklingsområder.
+
+PRIORITETSRÆKKEFØLGE for valg af fokusområder:
+1. Hvad Kasper eksplicit har nævnt i sine noter (HØJESTE prioritet)
+2. Alderstilpassede EPM-huller (hvad er vigtigst at forbedre ved denne alder?)
+3. Spillerens egne mål, hvis de stemmer overens med EPM-data
+
+FILOSOFI:
+{la_masia[:1500]}
+
+EVALUERINGSRUBRIKER FOR FOKUSOMRÅDER:
+{rubric_blocks}
+"""
+
+    user_msg = f"""\
+Lav en komplet ugentlig træningsplan for {player_name}.
+
+SPILLER-PROFIL:
+  Navn: {player["name"]}
+  Aldersgruppe: {age_group}
+  Position: {position}
+  Dominerende fod: {dominant_foot}
+  Kaspers noter om spilleren: {coach_notes_on_player or "Ingen specifikke noter."}
+
+SPILLERENS MÅL:
+{player_goals or "Ingen specifikke mål angivet — brug EPM-data til at sætte fokus."}
+
+AKTUELLE EPM-HULLER (prioriteret efter alder og vigtighed):
+{chr(10).join(f"  - {g['name']}: {g['score']:.1f}/10" for g in prioritized_gaps[:4])}
+
+STYRKER (byg videre på disse):
+{chr(10).join(f"  - {s['name']}: {s['score']:.1f}/10" for s in strengths[:3])}
+
+SENESTE SESSIONER:
+{recent_text if recent_text else "  Ingen tidligere sessioner registreret — dette er en frisk start."}
+
+TILGÆNGELIGE ØVELSER:
+{exercises_text}
+
+PLAN-FORMAT:
+Lav {sessions_per_week} sessioner ({days_label}). For HVER session skal du inkludere:
+
+1. **[UGEDAG] — Fokus: [Dimension]** (total tid i min)
+
+   *Opvarmning* (5 min)
+   - Øvelsesnavn: Beskrivelse. Setup: [præcis opstilling]. Reps/tid: [specifikke reps].
+
+   *Hoveddel* (10-15 min)
+   - Øvelse 1: [som ovenfor]
+   - Øvelse 2: [som ovenfor]
+
+   *Nedvarmning* (2-3 min)
+   - Stræk eller bold-leg.
+
+   **Hvad gør de bedste spillere?**
+   [3-4 sætninger om hvad elite-spillere gør på dette specifikke område. Konkret og observerbart.]
+
+   **Fodboldkoncept: [Konceptnavn]**
+   [4-5 sætninger der forklarer det fodboldkoncept de træner. Alderstilpasset sprog — enkelt for U9, \
+mere taktisk for U13+. Forklar HVORFOR det gør dem til bedre fodboldspillere.]
+
+   *Kaspers note:* "[Én sætning der forbinder dagens træning til spillerens spil og udvikling.]"
+
+VIGTIGE REGLER:
+- Skriv ALT på dansk
+- Setup-beskrivelser skal være så præcise at en forælder uden fodboldkendskab kan gennemføre dem
+- Coaching-punkter skal beskrive observerbare handlinger ("Let berøring — bolden bevæger sig næsten ikke")
+- Hver session har en rød tråd (ét tema der går igennem alle faser)
+- Ugentlig progression: Session 1 = teknik og mønster, Session 2 = samme mønster ved spillehastighed, \
+Session 3 = kombination og udfordring
+- Brug ALDRIG ord som "vigtig" eller "god" alene — vær specifik om hvad der sker på banen
+- Max 400 ord per session
+"""
+
+    response = client.messages.create(
+        model=ANTHROPIC_MODEL,
+        max_tokens=6000,
+        system=system,
+        messages=[{"role": "user", "content": user_msg}],
+    )
+    return response.content[0].text
 
 
 # ---- coach session prep ------------------------------------------------------
