@@ -21,6 +21,7 @@ from core.theme import (
     apply_theme, dimension_bar, category_header,
     score_to_stage, focus_badge, card,
 )
+from core.auth import player_selector
 
 st.set_page_config(page_title="Min Udvikling – KP13", layout="wide")
 apply_theme()
@@ -32,16 +33,11 @@ if not players:
     st.info("Ingen spillere registreret endnu.")
     st.stop()
 
-player_options = {p["id"]: p["name"] for p in players}
-selected_id = st.sidebar.radio(
-    "Spiller",
-    options=[p["id"] for p in players],
-    format_func=lambda pid: player_options[pid],
-)
+selected_id = player_selector(players)
 
 profile = get_player_profile(selected_id)
 if not profile:
-    st.error("Player not found.")
+    st.error("Spiller ikke fundet.")
     st.stop()
 
 player = profile["player"]

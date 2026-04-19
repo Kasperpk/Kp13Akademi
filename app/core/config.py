@@ -33,6 +33,7 @@ def _get_secret(key: str, default: str = "") -> str:
 
 ANTHROPIC_API_KEY: str = _get_secret("ANTHROPIC_API_KEY")
 ANTHROPIC_MODEL: str = _get_secret("ANTHROPIC_MODEL", "claude-sonnet-4-20250514")
+COACH_PASSWORD: str = _get_secret("COACH_PASSWORD", "kp13")
 
 # --- EPM tuning ---------------------------------------------------------------
 EPM_ALPHA: float = float(os.getenv("EPM_ALPHA", "0.3"))  # EMA learning rate

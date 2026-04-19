@@ -19,6 +19,7 @@ from core.epm import get_player_profile, identify_gaps, identify_strengths
 from core.elm import generate_weekly_plan_danish
 from core.recommender import recommend_for_gaps
 from core.theme import apply_theme, card, focus_badge
+from core.auth import player_selector
 
 st.set_page_config(page_title="Ugentlig Plan – KP13", layout="wide")
 apply_theme()
@@ -30,12 +31,7 @@ if not players:
     st.info("Ingen spillere registreret endnu.")
     st.stop()
 
-player_options = {p["id"]: p["name"] for p in players}
-selected_id = st.sidebar.radio(
-    "Spiller",
-    options=[p["id"] for p in players],
-    format_func=lambda pid: player_options[pid],
-)
+selected_id = player_selector(players)
 
 profile = get_player_profile(selected_id)
 if not profile:

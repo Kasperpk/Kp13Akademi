@@ -16,9 +16,11 @@ from core.epm import (
 )
 from core.charts import epm_radar, category_bars, multi_trend
 from core.theme import apply_theme
+from core.auth import require_coach
 
 st.set_page_config(page_title="Spilleroversigt – KP13", layout="wide")
 apply_theme()
+require_coach()
 st.title("Spilleroversigt")
 
 # ---- sidebar: player selector ------------------------------------------------

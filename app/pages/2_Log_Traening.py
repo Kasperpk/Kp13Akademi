@@ -18,10 +18,12 @@ from core.epm import (
 )
 from core.elm import extract_scores_from_notes
 from core.theme import apply_theme
+from core.auth import require_coach
 from core.rubrics import RUBRICS
 
 st.set_page_config(page_title="Log Træning – KP13", layout="wide")
 apply_theme()
+require_coach()
 st.title("Log Træning")
 
 # ---- player selector ---------------------------------------------------------
