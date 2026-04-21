@@ -210,7 +210,7 @@ def generate_daily_plan(
         )
 
     user_msg = f"""\
-Lav en hjemmetræningssession for i dag (15-25 minutter).
+Lav en hjemmetræningssession for i dag (15-25 minutter) for {player_profile['player']['name']}.
 
 STØRSTE UDVIKLINGSOMRÅDER: {gaps_text}
 STYRKER AT BYGGE VIDERE PÅ: {strengths_text}
@@ -220,31 +220,15 @@ SENESTE SESSIONER: {recent_text}
 TILGÆNGELIGE ØVELSER:
 {exercises_text}
 
-Skriv sessionen i direkte, tydeligt fodboldsprog. Tiltal {player_profile['player']['name']} ved navn.
-Struktur:
+Følg principperne og output-formatet i player-daily-plan skill'en (system prompt)."""
 
-1. **FOKUS** — En sætning: hvad vi arbejder med, og hvorfor det betyder noget i kamp.
-2. **OPVARMNING** (3-5 min) — Simpelt boldarbejde, så kroppen og touch bliver skarp.
-3. **HOVEDBLOK** (10-15 min) — 2-3 øvelser med konkrete gentagelser, varighed og opsætning. Vær præcis, så en forælder uden fodboldbaggrund kan gennemføre det.
-4. **NEDKØLING** (2-3 min) — Let udstrækning eller jonglering.
-5. **KASPERS BESKED** — En sætning, der kobler dagens arbejde til spillerens spil.
-
-Ekstra krav for hver øvelse i HOVEDBLOK:
-- Medtag en kort linje: "Sådan gør I" (2-4 konkrete trin)
-- Medtag en kort linje: "Det skal du kigge efter" (1-2 coaching cues)
-- Medtag en linje med "Video" og brug kun links fra øvelseslisten ovenfor
-
-Vigtigt formatkrav:
-- Start direkte ved punkt 1 (FOKUS)
-- Skriv IKKE titel, overskrift med spillernavn eller en "Dato:"-linje
-
-Skriv ALT på dansk. Maks 350 ord. Ingen emojis. Ren markdown. Fodboldsprog, ikke fitness-jargon."""
+    system_with_skill = system + "\n\n" + load_skill("player-daily-plan")
 
     try:
         response = client.messages.create(
             model=ANTHROPIC_MODEL,
             max_tokens=2048,
-            system=system,
+            system=system_with_skill,
             messages=[{"role": "user", "content": user_msg}],
         )
         return response.content[0].text
@@ -278,32 +262,24 @@ def generate_weekly_summary(
     gaps_text = ", ".join(f"{g['name']} ({g['score']:.1f})" for g in gaps)
     strengths_text = ", ".join(f"{s['name']} ({s['score']:.1f})" for s in strengths)
 
+    player_name = player_profile["player"]["name"].split()[0]
     user_msg = f"""\
-Write a weekly progress report for {player_profile['player']['name']}'s parent.
+Skriv den ugentlige forældrebesked for {player_name} ({player_profile['player']['name']}).
 
-THIS WEEK'S SESSIONS:
-{obs_text if obs_text else "No sessions logged this week."}
+UGENS SESSIONER:
+{obs_text if obs_text else "Ingen sessioner registreret i denne uge."}
 
-CURRENT STRENGTHS: {strengths_text}
-CURRENT GAPS: {gaps_text}
+NUVÆRENDE STYRKER: {strengths_text}
+NUVÆRENDE UDVIKLINGSOMRÅDER: {gaps_text}
 
-Write in a warm but direct tone. Use the player's first name throughout.
-Use development stage language where possible — for example, "{player_profile['player']['name']} is \
-moving from Developing to Confident in first touch" rather than raw numbers.
+Følg principperne, registret og strukturen i parent-comms skill'en (system prompt)."""
 
-Include:
-1. WHAT WE WORKED ON — brief summary of the week's sessions
-2. WHAT I SAW — key observations, specific moments, improvements
-3. WHAT'S NEXT — where we're heading next week
-4. HOW YOU CAN HELP — one specific, easy thing the parent can do at home
-
-Keep it concise (250-350 words). Be honest but encouraging. No emojis. \
-If joy or engagement concerns exist, flag them clearly."""
+    system_with_skill = system + "\n\n" + load_skill("parent-comms")
 
     response = client.messages.create(
         model=ANTHROPIC_MODEL,
         max_tokens=1500,
-        system=system,
+        system=system_with_skill,
         messages=[{"role": "user", "content": user_msg}],
     )
     return response.content[0].text
@@ -433,6 +409,8 @@ def generate_weekly_schedule(
 
     user_msg = f"""\
 Create {player_name}'s home training schedule for this week.
+Follow the principles, the three-session arc, and the per-exercise quality bar from the \
+weekly-progression skill (system prompt).
 
 PLAYER CONTEXT:
   Name: {player_info['name']}
@@ -455,39 +433,12 @@ EXERCISE LIBRARY — YOU MUST SELECT FROM THESE
 ═══════════════════════════════════════════════
 {exercises_text}
 
-═══════════════════════════════════════════════
-RULES
-═══════════════════════════════════════════════
+Use the exact exercise_id and name from the library. You may adapt the description and setup \
+for the solo home/garden context. The why_this_exercise field must reference {player_name}'s \
+actual EPM data (e.g. naming the gap dimension and current score).
 
-1. SELECT exercises from the library above. Use the exact exercise_id and name. \
-You may adapt the description and setup for home/garden context (1 player, 1 ball, \
-optional wall/cones, small space).
-
-2. EACH SESSION needs a RED THREAD — a single footballing concept that connects \
-warm-up through main to cool-down. Not "ball mastery" (too vague) but \
-"Quick feet to create space for the first touch forward" (specific, game-connected).
-
-3. THREE SESSIONS that form a WEEKLY PROGRESSION:
-   - Session 1 (Monday/Tuesday): Foundation — slow, technical, build the pattern
-   - Session 2 (Wednesday/Thursday): Speed — same pattern at game speed, add pressure/decisions
-   - Session 3 (Friday/Saturday): Challenge — combine patterns, compete, test under fatigue
-
-4. Each session: 1-2 warm-up exercises, 2-3 main exercises, 1 cool-down. Total 15-20 minutes.
-
-5. The why_this_exercise field must reference the player's actual EPM data. \
-e.g. "Driving with Ball at 4.0 — this exercise builds the push-and-go rhythm \
-{player_name} needs to carry the ball forward instead of defaulting to the safe pass."
-
-6. Setup instructions must be crystal clear for a parent with ZERO football knowledge. \
-Include exact distances, cone placement, where to stand, what "success" looks like.
-
-7. Coaching points should be observable actions, not vague advice. \
-"Light touch — ball barely moves" not "Have good technique."
-
-8. Include a video_url for EVERY exercise. Use "Video URL" from the exercise card if present; \
-otherwise use "Video Search URL" from the same card.
-
-9. Vary the exercises across sessions — don't repeat the same exercise in multiple sessions.
+For video_url: use the "Video URL" from the exercise card when present; otherwise use the \
+"Video Search URL". Never invent links.
 
 Use the create_weekly_schedule tool to submit the complete schedule."""
 
@@ -554,11 +505,13 @@ Use the create_weekly_schedule tool to submit the complete schedule."""
             ],
         }
 
+    system_with_skill = system + "\n\n" + load_skill("weekly-progression")
+
     try:
         response = client.messages.create(
             model=ANTHROPIC_MODEL,
             max_tokens=8000,
-            system=system,
+            system=system_with_skill,
             tools=[_WEEKLY_SCHEDULE_TOOL],
             tool_choice={"type": "tool", "name": "create_weekly_schedule"},
             messages=[{"role": "user", "content": user_msg}],
@@ -673,20 +626,12 @@ def generate_weekly_plan_danish(
     days_label = day_names.get(sessions_per_week, f"{sessions_per_week} gange om ugen")
 
     system = f"""\
-Du er KP13 Akademiets AI-træningsmester. Du designer ugentlige HJEMMETRÆNINGSPLANER.
+Du er KP13 Akademiets AI-træningsmester. Du designer ugentlige HJEMMETRÆNINGSPLANER \
+som {player_name} laver ALENE i løbet af ugen.
 
-━━━ KONTEKST ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Kasper har sine egne akademi-sessioner (1 time, planlagt af ham selv). \
-Disse hjemmeplaner er det {player_name} laver ALENE i løbet af ugen — ingen træner, ingen forælder nødvendigvis. \
-Spilleren er alene med sin bold. Design ALLE øvelser så de kan laves 100% solo.
+{load_skill("weekly-progression")}
 
-ALDRIG skriv "Kasper siger/råber/kigger/tæller" — han er ikke der. \
-ALDRIG forudsæt at der er en forælder til stede. \
-Brug "du" til {player_name} direkte. \
-Selvtjek skrives som: "Tjek: [hvad du selv kan mærke eller se]"
-Hvis der skal bruges et signal: "sæt en timer på [X] sekunder" eller "tæl selv til [X]".
-
-━━━ KP13 TRÆNINGSFILOSOFI ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━ KP13 TRÆNINGSFILOSOFI (fuld reference) ━━━━━━━━━━━━━━━━
 {kp13_methodology}
 
 ━━━ LA MASIA PRINCIPPER ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -694,11 +639,6 @@ Hvis der skal bruges et signal: "sæt en timer på [X] sekunder" eller "tæl sel
 
 ━━━ EVALUERINGSRUBRIKER FOR FOKUSOMRÅDER ━━━━━━━━━━━━━━━━━━
 {rubric_blocks}
-
-PRIORITETSRÆKKEFØLGE for fokus:
-1. Hvad Kasper eksplicit har nævnt i sine noter (HØJESTE prioritet)
-2. Alderstilpassede EPM-huller
-3. Spillerens egne mål
 """
 
     user_msg = f"""\
@@ -761,21 +701,14 @@ Forklar HVORFOR dette koncept gør ham sværere at stoppe i kampen.
 
 ---
 
-VIGTIGE REGLER:
-- Skriv ALT på dansk — flydende, naturligt, direkte. Tal til {player_name} som en rigtig træner.
-- ALDRIG brug øvelses-ID'er (koder som 'bm_sole_taps') — brug kun det rigtige øvelsesnavn
-- ALDRIG skriv "Kasper siger/råber/tæller/kigger" — han er ikke der
-- ALDRIG forudsæt en forælder er til stede — alle øvelser laves solo med én bold
-- Signaler erstattes af: "sæt en timer på X sekunder" eller "tæl selv til X"
-- Selvtjek skrives som: "Tjek: bolden skal blive inden for armlængde"
-- KP13-intensitet (Persian Ball-stil): kort, skarp, høj tempo. Ikke langsomme øvelser.
-- Brug KP13's øvelsesvokabular: sole rolls, V-drag, L-drag, inside-outside, toe-taps, push-and-go
-- Alle sessioner starter med bold mastery — det er fundamentet
-- Begge fødder trænes i ALLE sessioner — dette er ikke til forhandling
-- Hver øvelse kobles til en konkret kampsituation
-- Ugentlig progression: Session 1 = lær mønsteret langsomt med fokus, Session 2 = samme mønster ved spillehastighed, Session 3 = udfordring og kombination under pres
-- Vær hyper-specifik: ikke "øv first touch" men "modtag bolden og lad den rulle 45 grader fra dig — aldrig bagud, altid fremad i spilretningen"
-- Max 420 ord per session
+OUTPUT-SPECIFIKKE REGLER:
+- Skriv ALT på dansk, henvendt direkte til {player_name} ("du") og hans forælder hvor relevant.
+- ALDRIG brug øvelses-ID'er (koder som 'bm_sole_taps') — brug kun det rigtige øvelsesnavn.
+- Vær hyper-specifik: ikke "øv first touch" men "modtag bolden og lad den rulle 45 grader fra dig".
+- Max 420 ord per session.
+
+(Hårde principper — solo-træning, Persian Ball-intensitet, begge fødder, ball-mastery foundation, \
+KP13-vokabular, tre-sessioners progression — er beskrevet i weekly-progression skill'en ovenfor.)
 """
 
     response = client.messages.create(
