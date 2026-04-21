@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 from typing import Any, Generator
 
 import anthropic
@@ -11,6 +10,7 @@ import anthropic
 from .config import ANTHROPIC_API_KEY, ANTHROPIC_MODEL
 from .epm import DIMENSIONS, DIM_BY_KEY, CATEGORIES, CATEGORY_DIMS
 from .rubrics import all_rubrics_text, rubric_for_dimension
+from .skill_loader import load_reference, load_skill
 
 # ---- client ------------------------------------------------------------------
 
@@ -20,23 +20,8 @@ def _client() -> anthropic.Anthropic:
 
 # ---- system prompt -----------------------------------------------------------
 
-_ACADEMY_CONTEXT = """\
-You are the intelligence engine for KP13 Akademi, an elite private football academy \
-coaching young players (ages 7-12) individually and in small groups.
-
-Coaching philosophy:
-- La Masia principles: possession as identity, positional play, rondo as foundation, \
-  both-feet development, game-realistic decision-making, small-sided games.
-- Constraints-Led Approach: manipulate task/environment constraints so players discover \
-  solutions instead of being told.
-- Ecological dynamics: representative learning design, nonlinear pedagogy.
-- Every session has a "red thread" — a single theme progressing through all phases.
-
-The EPM (Entity Propensity Model) tracks 16 dimensions per player:
-"""
-
 def _build_system_prompt(player_profile: dict[str, Any] | None = None) -> str:
-    parts = [_ACADEMY_CONTEXT]
+    parts = [load_reference("session-design", "academy_context")]
 
     # List all dimensions
     for cat in CATEGORIES:
@@ -590,9 +575,6 @@ Use the create_weekly_schedule tool to submit the complete schedule."""
 
 # ---- Danish weekly training plan ---------------------------------------------
 
-_LA_MASIA_PATH = Path(__file__).resolve().parents[2] / "generator" / "principles" / "la_masia.md"
-_KP13_METHODOLOGY_PATH = Path(__file__).resolve().parents[2] / "generator" / "principles" / "kp13_methodology.md"
-
 # Age-group dimension priorities: higher weight = more important at this stage
 _AGE_DIM_WEIGHTS: dict[str, dict[str, float]] = {
     "U7": {"ball_mastery": 2.0, "first_touch": 2.0, "weak_foot": 2.0, "joy": 2.0, "agility": 1.5},
@@ -620,14 +602,14 @@ def _age_weighted_gaps(gaps: list[dict[str, Any]], age_group: str) -> list[dict[
 
 def _load_la_masia() -> str:
     try:
-        return _LA_MASIA_PATH.read_text(encoding="utf-8")
+        return load_reference("session-design", "la_masia")
     except FileNotFoundError:
         return ""
 
 
 def _load_kp13_methodology() -> str:
     try:
-        return _KP13_METHODOLOGY_PATH.read_text(encoding="utf-8")
+        return load_reference("session-design", "kp13_methodology")
     except FileNotFoundError:
         return ""
 
