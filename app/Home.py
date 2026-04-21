@@ -11,7 +11,7 @@ if str(_ROOT) not in sys.path:
 
 import streamlit as st
 
-from core.config import APP_TITLE, ANTHROPIC_API_KEY
+from core.config import APP_TITLE, ANTHROPIC_API_KEY, AUTO_SEED_ON_EMPTY_DB
 from core.database import init_db, get_players, get_observations, get_daily_plan, save_daily_plan, mark_plan_completed
 from core.epm import get_player_profile, identify_gaps, identify_strengths, DIM_BY_KEY
 from core.elm import generate_daily_plan
@@ -31,9 +31,9 @@ st.set_page_config(
 
 init_db()
 
-# Auto-seed if database is empty (first run / fresh deploy)
+# Optional auto-seed if database is empty (local/dev only)
 from core.database import get_players as _check_players
-if not _check_players():
+if AUTO_SEED_ON_EMPTY_DB and not _check_players():
     from seed import seed
     seed()
 

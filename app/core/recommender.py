@@ -5,6 +5,7 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote_plus
 
 # Allow importing the generator package from project root
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -86,6 +87,9 @@ def recommend_exercises(
         # Compute which target dimensions this exercise addresses
         ex_dims = EXERCISE_CATEGORY_TO_EPM.get(ex.category.value, [])
         matching_dims = [d for d in ex_dims if d in target_dimensions]
+        video_url = getattr(ex, "video_url", None)
+        video_query = f"{ex.name} football drill"
+        video_search_url = f"https://www.youtube.com/results?search_query={quote_plus(video_query)}"
 
         results.append({
             "id": ex.id,
@@ -101,6 +105,9 @@ def recommend_exercises(
             "variations": [{"name": v.name, "description": v.description} for v in ex.variations],
             "targets_dimensions": matching_dims,
             "days_since_used": days_since,
+            "video_url": video_url,
+            "video_search_query": video_query,
+            "video_search_url": video_search_url,
         })
 
     return results

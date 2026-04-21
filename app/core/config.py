@@ -13,10 +13,17 @@ load_dotenv(_ENV_PATH)
 
 # --- Paths -------------------------------------------------------------------
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-DB_PATH = PROJECT_ROOT / "app" / "data" / "kp13.db"
+_DB_PATH_ENV = os.getenv("KP13_DB_PATH", "").strip()
+DB_PATH = Path(_DB_PATH_ENV) if _DB_PATH_ENV else (PROJECT_ROOT / "app" / "data" / "kp13.db")
 EXERCISES_DIR = PROJECT_ROOT / "generator" / "exercises"
 TEMPLATES_DIR = PROJECT_ROOT / "generator" / "templates"
 HISTORY_FILE = PROJECT_ROOT / "generator" / "history" / "log.json"
+
+# Auto-seeding is convenient for local first-run, but dangerous in production
+# when storage is ephemeral. Keep it opt-in.
+AUTO_SEED_ON_EMPTY_DB: bool = os.getenv("AUTO_SEED_ON_EMPTY_DB", "false").lower() in {
+    "1", "true", "yes", "on"
+}
 
 # --- Claude / Anthropic -------------------------------------------------------
 # Support both local .env and Streamlit Cloud secrets
