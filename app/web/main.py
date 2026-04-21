@@ -145,6 +145,17 @@ def startup():
     db.init_db()
 
 
+@app.get("/healthz")
+async def healthz() -> dict[str, Any]:
+    """Liveness/readiness probe with lightweight DB check."""
+    try:
+        with db.get_db() as conn:
+            conn.execute("SELECT 1").fetchone()
+        return {"status": "ok", "db": "ok"}
+    except Exception:
+        raise HTTPException(status_code=503, detail="unhealthy")
+
+
 # ---------------------------------------------------------------------------
 # player routes
 # ---------------------------------------------------------------------------

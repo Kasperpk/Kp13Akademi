@@ -145,6 +145,61 @@ def generate_daily_plan(
     """Generate a personalised daily home-training plan in Danish."""
     client = _client()
     system = _build_system_prompt(player_profile)
+    player_name = player_profile["player"]["name"]
+
+    def _fallback_daily_plan() -> str:
+        chosen = available_exercises[:3]
+        if not chosen:
+            return (
+                f"## Dagens træning for {player_name}\n\n"
+                "### FOKUS\n"
+                "Vi arbejder med førsteberøring, orientering og tempo i boldbehandling, så det bliver nemmere at spille fremad i kamp.\n\n"
+                "### OPVARMNING (4 min)\n"
+                "- 2 x 45 sek toe taps + 15 sek pause\n"
+                "- 2 x 45 sek inside-outside touches + 15 sek pause\n\n"
+                "### HOVEDBLOK (14 min)\n"
+                "- 3 runder: 90 sek arbejde / 30 sek pause\n"
+                "- Fokus: første touch væk fra pres, hovedet oppe før hver aktion\n\n"
+                "### NEDKØLING (3 min)\n"
+                "- Let jonglering og rolig mobilitet for ankler/hofter\n\n"
+                "### KASPERS BESKED\n"
+                f"{player_name}, gør det i kampfart i korte perioder - kvalitet først, så tempo.\n"
+            )
+
+        lines: list[str] = [
+            f"## Dagens træning for {player_name}",
+            "",
+            "### FOKUS",
+            "Vi træner konkrete kamphandlinger med høj kvalitet i førsteberøring, orientering og beslutning i fart.",
+            "",
+            "### OPVARMNING (4-5 min)",
+            "- 2 x 45 sek let boldarbejde (inside/outside, toe taps) + 15 sek pause",
+            "",
+            "### HOVEDBLOK (12-15 min)",
+        ]
+
+        for idx, ex in enumerate(chosen, start=1):
+            coaching_points = ex.get("coaching_points") or []
+            cp_preview = "; ".join(coaching_points[:2]) if coaching_points else "Fokus pa timing, kontrol og retning i første touch"
+            video_line = ex.get("video_url") or ex.get("video_search_url") or ""
+            lines.extend([
+                f"{idx}. **{ex.get('name', 'Øvelse')}** ({ex.get('duration_min', 5)} min)",
+                f"   - Hvorfor: {ex.get('description', '')}",
+                f"   - Setup: {ex.get('setup') or 'Lav en enkel bane med kegler og 1 bold'}",
+                f"   - Coaching: {cp_preview}",
+            ])
+            if video_line:
+                lines.append(f"   - Video: {video_line}")
+
+        lines.extend([
+            "",
+            "### NEDKØLING (2-3 min)",
+            "- Let udstrækning og 30-50 rolige jongleringer",
+            "",
+            "### KASPERS BESKED",
+            f"{player_name}, hold kvaliteten i alle berøringer - det er sådan træning flytter sig til kamp.",
+        ])
+        return "\n".join(lines)
 
     recent_text = ""
     for s in recent_sessions[:5]:
@@ -158,7 +213,16 @@ def generate_daily_plan(
 
     exercises_text = ""
     for ex in available_exercises[:20]:
-        exercises_text += f"\n- {ex['name']}: {ex['description']} ({ex['duration_min']}min, {ex['intensity']})"
+        cp = ex.get("coaching_points") or []
+        cp_text = "; ".join(cp[:3]) if cp else ""
+        setup_text = ex.get("setup") or ""
+        video_line = ex.get("video_url") or ex.get("video_search_url") or ""
+        exercises_text += (
+            f"\n- {ex['name']}: {ex['description']} ({ex['duration_min']}min, {ex['intensity']})"
+            f"\n  Setup: {setup_text}"
+            f"\n  Coaching points: {cp_text}"
+            f"\n  Video: {video_line}"
+        )
 
     user_msg = f"""\
 Lav en hjemmetræningssession for i dag (15-25 minutter).
@@ -180,15 +244,28 @@ Struktur:
 4. **NEDKØLING** (2-3 min) — Let udstrækning eller jonglering.
 5. **KASPERS BESKED** — En sætning, der kobler dagens arbejde til spillerens spil.
 
+Ekstra krav for hver øvelse i HOVEDBLOK:
+- Medtag en kort linje: "Sådan gør I" (2-4 konkrete trin)
+- Medtag en kort linje: "Det skal du kigge efter" (1-2 coaching cues)
+- Medtag en linje med "Video" og brug kun links fra øvelseslisten ovenfor
+
+Vigtigt formatkrav:
+- Start direkte ved punkt 1 (FOKUS)
+- Skriv IKKE titel, overskrift med spillernavn eller en "Dato:"-linje
+
 Skriv ALT på dansk. Maks 350 ord. Ingen emojis. Ren markdown. Fodboldsprog, ikke fitness-jargon."""
 
-    response = client.messages.create(
-        model=ANTHROPIC_MODEL,
-        max_tokens=2048,
-        system=system,
-        messages=[{"role": "user", "content": user_msg}],
-    )
-    return response.content[0].text
+    try:
+        response = client.messages.create(
+            model=ANTHROPIC_MODEL,
+            max_tokens=2048,
+            system=system,
+            messages=[{"role": "user", "content": user_msg}],
+        )
+        return response.content[0].text
+    except Exception:
+        # Fallback keeps the app usable even if LLM provider/network is unavailable.
+        return _fallback_daily_plan()
 
 
 # ---- weekly parent summary ---------------------------------------------------
@@ -260,8 +337,9 @@ _EXERCISE_IN_SESSION_SCHEMA = {
         "setup": {"type": "string", "description": "Exact setup for home/garden: distances, equipment placement. A parent with zero football knowledge must understand this."},
         "coaching_points": {"type": "string", "description": "2-3 key coaching cues from the library, phrased as observable actions"},
         "why_this_exercise": {"type": "string", "description": "One sentence: why THIS exercise for THIS player right now (link to their EPM gap or strength)"},
+        "video_url": {"type": "string", "description": "Video URL for parent/player reference. Prefer direct exercise video; fallback to provided search URL."},
     },
-    "required": ["exercise_id", "name", "description", "duration_min", "reps", "setup", "coaching_points", "why_this_exercise"],
+    "required": ["exercise_id", "name", "description", "duration_min", "reps", "setup", "coaching_points", "why_this_exercise", "video_url"],
 }
 
 _WEEKLY_SCHEDULE_TOOL = {
@@ -321,6 +399,10 @@ def _format_exercise_for_prompt(ex: dict[str, Any]) -> str:
         parts.append(f"  Variations: {var_text}")
     if ex.get('targets_dimensions'):
         parts.append(f"  Targets EPM: {', '.join(ex['targets_dimensions'])}")
+    if ex.get('video_url'):
+        parts.append(f"  Video URL: {ex['video_url']}")
+    if ex.get('video_search_url'):
+        parts.append(f"  Video Search URL: {ex['video_search_url']}")
     return "\n".join(parts)
 
 
@@ -417,24 +499,93 @@ Include exact distances, cone placement, where to stand, what "success" looks li
 7. Coaching points should be observable actions, not vague advice. \
 "Light touch — ball barely moves" not "Have good technique."
 
-8. Vary the exercises across sessions — don't repeat the same exercise in multiple sessions.
+8. Include a video_url for EVERY exercise. Use "Video URL" from the exercise card if present; \
+otherwise use "Video Search URL" from the same card.
+
+9. Vary the exercises across sessions — don't repeat the same exercise in multiple sessions.
 
 Use the create_weekly_schedule tool to submit the complete schedule."""
 
-    response = client.messages.create(
-        model=ANTHROPIC_MODEL,
-        max_tokens=8000,
-        system=system,
-        tools=[_WEEKLY_SCHEDULE_TOOL],
-        tool_choice={"type": "tool", "name": "create_weekly_schedule"},
-        messages=[{"role": "user", "content": user_msg}],
-    )
+    def _fallback_weekly_schedule() -> dict[str, Any]:
+        # Deterministic fallback if LLM is unavailable: keeps player app usable.
+        picked = available_exercises[:12]
 
-    for block in response.content:
-        if block.type == "tool_use" and block.name == "create_weekly_schedule":
-            return block.input
+        def _mk_ex(ex: dict[str, Any], default_min: int = 5) -> dict[str, Any]:
+            cps = ex.get("coaching_points") or []
+            cp_text = " / ".join(cps[:2]) if isinstance(cps, list) else str(cps)
+            return {
+                "exercise_id": ex.get("id", "manual_drill"),
+                "name": ex.get("name", "Teknisk øvelse"),
+                "description": ex.get("description", "Teknisk træning med fokus på kvalitet i førsteberøring."),
+                "duration_min": int(ex.get("duration_min", default_min)),
+                "reps": "3 x 45 sek arbejde / 20 sek pause",
+                "setup": ex.get("setup") or "Sæt 4 kegler i et kvadrat på ca. 4x4 meter med 1 bold.",
+                "coaching_points": cp_text or "Små kontrollerede berøringer og hovedet oppe før næste aktion.",
+                "why_this_exercise": f"Matcher {player_name}s nuværende fokusområder og styrker beslutning og udførelse i fart.",
+                "video_url": ex.get("video_url") or ex.get("video_search_url") or "",
+            }
 
-    return {"week_focus": "General development", "sessions": []}
+        # Build 3 short sessions from available pool.
+        def _slice(i: int) -> list[dict[str, Any]]:
+            chunk = picked[i:i + 4]
+            if not chunk:
+                chunk = [{"id": "fallback", "name": "Ball mastery basis", "description": "Kontrol i små områder.", "duration_min": 5}]
+            return chunk
+
+        s1 = _slice(0)
+        s2 = _slice(4)
+        s3 = _slice(8)
+        return {
+            "week_focus": "Førsteberøring, orientering og tempo i boldbehandling",
+            "week_rationale": f"Planen holder {player_name} i gang med kvalitetstræning, også når AI-tjenesten er utilgængelig.",
+            "sessions": [
+                {
+                    "day": "Monday",
+                    "theme": "Grundmønstre med høj kvalitet",
+                    "duration_min": 18,
+                    "warm_up": [_mk_ex(s1[0])],
+                    "main": [_mk_ex(ex) for ex in s1[1:3]],
+                    "cool_down": [_mk_ex(s1[3] if len(s1) > 3 else s1[0], default_min=3)],
+                    "coaches_note": "Se efter rolig førsteberøring og øjne oppe før næste handling.",
+                },
+                {
+                    "day": "Wednesday",
+                    "theme": "Samme mønstre i højere tempo",
+                    "duration_min": 18,
+                    "warm_up": [_mk_ex(s2[0])],
+                    "main": [_mk_ex(ex) for ex in s2[1:3]],
+                    "cool_down": [_mk_ex(s2[3] if len(s2) > 3 else s2[0], default_min=3)],
+                    "coaches_note": "Se efter at kvaliteten holdes, selv når tempoet stiger.",
+                },
+                {
+                    "day": "Friday",
+                    "theme": "Kombination under træthed",
+                    "duration_min": 18,
+                    "warm_up": [_mk_ex(s3[0])],
+                    "main": [_mk_ex(ex) for ex in s3[1:3]],
+                    "cool_down": [_mk_ex(s3[3] if len(s3) > 3 else s3[0], default_min=3)],
+                    "coaches_note": "Se efter beslutninger i fart: første gode løsning, udført rent.",
+                },
+            ],
+        }
+
+    try:
+        response = client.messages.create(
+            model=ANTHROPIC_MODEL,
+            max_tokens=8000,
+            system=system,
+            tools=[_WEEKLY_SCHEDULE_TOOL],
+            tool_choice={"type": "tool", "name": "create_weekly_schedule"},
+            messages=[{"role": "user", "content": user_msg}],
+        )
+
+        for block in response.content:
+            if block.type == "tool_use" and block.name == "create_weekly_schedule":
+                return block.input
+    except Exception:
+        return _fallback_weekly_schedule()
+
+    return _fallback_weekly_schedule()
 
 
 # ---- Danish weekly training plan ---------------------------------------------

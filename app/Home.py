@@ -1,6 +1,7 @@
 """KP13 Akademi – Today's Training."""
 
 import sys
+import re
 from pathlib import Path
 from datetime import date
 
@@ -18,6 +19,44 @@ from core.elm import generate_daily_plan
 from core.recommender import recommend_for_gaps
 from core.theme import apply_theme, focus_badge, card, completed_badge
 from core.auth import player_selector
+
+
+_DK_MONTHS = {
+    1: "januar",
+    2: "februar",
+    3: "marts",
+    4: "april",
+    5: "maj",
+    6: "juni",
+    7: "juli",
+    8: "august",
+    9: "september",
+    10: "oktober",
+    11: "november",
+    12: "december",
+}
+
+
+def _format_date_danish(d: date) -> str:
+    return f"{d.day}. {_DK_MONTHS[d.month]} {d.year}"
+
+
+def _strip_ai_title_and_date(md: str) -> str:
+    """Remove leading AI-generated title/date lines so UI controls the header/date."""
+    if not md:
+        return md
+    lines = md.splitlines()
+    while lines and not lines[0].strip():
+        lines.pop(0)
+    if lines and re.match(r"^#{1,6}\s+", lines[0].strip()):
+        lines.pop(0)
+    while lines and not lines[0].strip():
+        lines.pop(0)
+    if lines and re.match(r"^(dato|date)\s*:\s*", lines[0].strip(), flags=re.IGNORECASE):
+        lines.pop(0)
+    while lines and not lines[0].strip():
+        lines.pop(0)
+    return "\n".join(lines)
 
 # ---- page config -------------------------------------------------------------
 
@@ -94,13 +133,18 @@ existing_plan = get_daily_plan(selected_id, today)
 if existing_plan and existing_plan.get("plan_content"):
     plan_content = existing_plan["plan_content"]
     plan_md = plan_content.get("markdown", plan_content) if isinstance(plan_content, dict) else plan_content
+    clean_plan_md = _strip_ai_title_and_date(plan_md)
+
+    st.markdown(f"### Hjemmetræning — {player['name']}")
+    st.markdown(f"**Dato:** {_format_date_danish(date.fromisoformat(today))}")
+    st.markdown("")
 
     if existing_plan.get("completed"):
         st.markdown(completed_badge(), unsafe_allow_html=True)
         st.markdown("")
 
     # Render the plan
-    st.markdown(plan_md)
+    st.markdown(clean_plan_md)
 
     st.divider()
 
@@ -154,6 +198,7 @@ else:
                     recent_sessions=recent,
                     available_exercises=recommended,
                 )
+                plan_md = _strip_ai_title_and_date(plan_md)
 
                 focus_dim = gaps[0]["key"] if gaps else "general"
                 save_daily_plan(

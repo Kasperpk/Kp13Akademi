@@ -50,6 +50,14 @@
                 <p class="text-[11px] text-kp-text/80">{{ ex.coaching_points }}</p>
             </div>
             {% endif %}
+            {% if ex.video_url %}
+            <div class="mt-2">
+                <a href="{{ ex.video_url }}" target="_blank" rel="noopener noreferrer"
+                   class="inline-flex items-center gap-1 text-[11px] text-kp-accent hover:underline">
+                    Se video
+                </a>
+            </div>
+            {% endif %}
         </div>
         {% endfor %}
     </div>
@@ -89,6 +97,14 @@
                 <p class="text-[10px] text-kp-accent/70 italic">{{ ex.why_this_exercise }}</p>
             </div>
             {% endif %}
+            {% if ex.video_url %}
+            <div class="mt-2">
+                <a href="{{ ex.video_url }}" target="_blank" rel="noopener noreferrer"
+                   class="inline-flex items-center gap-1 text-[11px] text-kp-accent hover:underline">
+                    Se video
+                </a>
+            </div>
+            {% endif %}
         </div>
         {% endfor %}
     </div>
@@ -109,6 +125,14 @@
                 {% endif %}
             </div>
             <p class="text-kp-muted text-xs mt-2">{{ ex.description }}</p>
+            {% if ex.video_url %}
+            <div class="mt-2">
+                <a href="{{ ex.video_url }}" target="_blank" rel="noopener noreferrer"
+                   class="inline-flex items-center gap-1 text-[11px] text-kp-accent hover:underline">
+                    Se video
+                </a>
+            </div>
+            {% endif %}
         </div>
         {% endfor %}
     </div>
