@@ -142,7 +142,7 @@ def generate_daily_plan(
     recent_sessions: list[dict[str, Any]],
     available_exercises: list[dict[str, Any]],
 ) -> str:
-    """Generate a personalised daily home-training plan."""
+    """Generate a personalised daily home-training plan in Danish."""
     client = _client()
     system = _build_system_prompt(player_profile)
 
@@ -161,26 +161,26 @@ def generate_daily_plan(
         exercises_text += f"\n- {ex['name']}: {ex['description']} ({ex['duration_min']}min, {ex['intensity']})"
 
     user_msg = f"""\
-Generate a home training session for today (15-25 minutes).
+Lav en hjemmetræningssession for i dag (15-25 minutter).
 
-TOP GAPS to address: {gaps_text}
-STRENGTHS to build on: {strengths_text}
+STØRSTE UDVIKLINGSOMRÅDER: {gaps_text}
+STYRKER AT BYGGE VIDERE PÅ: {strengths_text}
 
-RECENT SESSIONS: {recent_text}
+SENESTE SESSIONER: {recent_text}
 
-AVAILABLE EXERCISES:
+TILGÆNGELIGE ØVELSER:
 {exercises_text}
 
-Write the session plan in direct, football language. Address {player_profile['player']['name']} by name.
-Structure:
+Skriv sessionen i direkte, tydeligt fodboldsprog. Tiltal {player_profile['player']['name']} ved navn.
+Struktur:
 
-1. **FOCUS** — One sentence: what we're working on and why it matters in the game.
-2. **WARM-UP** (3-5 min) — Simple ball work to get sharp.
-3. **MAIN BLOCK** (10-15 min) — 2-3 exercises with specific reps, durations, and setup. Be precise — a parent with zero football knowledge should be able to run this.
-4. **COOL-DOWN** (2-3 min) — Stretching or juggling.
-5. **COACH'S NOTE** — One sentence connecting today's work to the player's game.
+1. **FOKUS** — En sætning: hvad vi arbejder med, og hvorfor det betyder noget i kamp.
+2. **OPVARMNING** (3-5 min) — Simpelt boldarbejde, så kroppen og touch bliver skarp.
+3. **HOVEDBLOK** (10-15 min) — 2-3 øvelser med konkrete gentagelser, varighed og opsætning. Vær præcis, så en forælder uden fodboldbaggrund kan gennemføre det.
+4. **NEDKØLING** (2-3 min) — Let udstrækning eller jonglering.
+5. **KASPERS BESKED** — En sætning, der kobler dagens arbejde til spillerens spil.
 
-Keep it under 350 words. No emojis. Clean markdown. Football language, not fitness jargon."""
+Skriv ALT på dansk. Maks 350 ord. Ingen emojis. Ren markdown. Fodboldsprog, ikke fitness-jargon."""
 
     response = client.messages.create(
         model=ANTHROPIC_MODEL,

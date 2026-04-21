@@ -2,7 +2,13 @@
   "permissions": {
     "allow": [
       "Bash(python -c ' *)",
-      "Bash(git mv *)"
+      "Bash(git mv *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(python -c \"from app.core.database import update_player_image, get_player_image\")",
+      "Bash(python -c \"from core.database import update_player_image, get_player_image, get_training_hours; print\\('OK'\\)\")",
+      "Bash(git commit *)"
     ]
   }
 }
