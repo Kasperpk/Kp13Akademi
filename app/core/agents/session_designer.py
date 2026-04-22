@@ -273,14 +273,26 @@ actual EPM data (e.g. naming the gap dimension and current score).
 For video_url: use the "Video URL" from the exercise card when present; otherwise use the \
 "Video Search URL". Never invent links.
 
-TARGET RULE (vigtigt for motivation):
+TARGET RULE (sekundært — motivationslag):
 For HVER øvelse med målbar udgang skal du sætte feltet `target` som et konkret tal+enhed \
 på dansk — fx "85 toe taps", "30 sekunder", "10 vægpas i træk". Hvis spilleren har et \
 tidligere resultat for samme exercise_id (se PERSONLIGE REKORDER ovenfor), skal `target` \
 ligge lige over det — typisk +5–10 %. Hvis der ikke er noget tidligere resultat, sæt et \
 realistisk udgangspunkt for U9. For øvelser uden målbar udgang (udstrækning, ren teknik-fokus \
 uden tælling), sæt `target` til null. Reps-feltet er stadig "sådan udfører du øvelsen"; \
-target er overskriften "her er tallet du skal slå".
+target er kun overskriftstallet ovenpå.
+
+KVALITETSBAR (DETTE ER VIGTIGST):
+Træningens kvalitet og dybde er det primære mål. Gamification (target-tallet) er et tyndt \
+motivationslag ovenpå — det må ALDRIG erstatte indholdet. For HVER øvelse skal du levere:
+  - `setup`: konkret opstilling med afstande, antal kegler, hvor bolden ligger. En forælder \
+uden fodboldviden skal kunne sætte det op på 30 sekunder.
+  - `coaching_points`: 2-3 specifikke cues skrevet som observerbare handlinger \
+("kig op før du tager bolden", "blød første berøring væk fra modstanderen") — ikke vage råd.
+  - `description`: hvad spilleren faktisk gør, omskrevet til solo hjemmekontekst.
+  - `why_this_exercise`: én sætning der nævner spillerens konkrete EPM-dimension og score.
+Korte, generiske beskrivelser er en fejl. Tre sessioner med dybde slår seks sessioner med \
+overflade. Hvis du er i tvivl, gå dybere.
 
 Use the create_weekly_schedule tool to submit the complete schedule."""
 
