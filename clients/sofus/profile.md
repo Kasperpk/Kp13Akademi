@@ -20,4 +20,16 @@ Sofus is playing at AAFA
 ## Physical Notes
 
 <!-- Dominant foot, physical strengths, areas needing development -->
-Dominant foot is right food, physical strong because he is quite phyiscal for his age. He needs to work a lot on speed and explosiveness as well as confidence
+Dominant foot: right
+
+Biggest strengths: 
+- Sofus has strength and physical size for his age which is helpful. 
+
+- He is comfortable with the ball at his feet and he is a good teammate who cheer on his teammates.
+
+Development areas: 
+- Speed, 
+- explosiveness, 
+- speed of play, 
+- mental strength, learning mindset and confidence, 
+- scanning and game-intelligence 

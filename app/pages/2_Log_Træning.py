@@ -20,6 +20,12 @@ from core.elm import extract_scores_from_notes
 from core.theme import apply_theme
 from core.auth import require_coach
 from core.rubrics import RUBRICS
+from core.clients_loader import (
+    build_player_context, load_profile, load_goals, load_benchmarks,
+    load_history, load_ongoing_notes, load_recent_session_observations,
+    append_to_ongoing,
+)
+from core.eval_writer import write_eval_case
 
 st.set_page_config(page_title="Log Træning – KP13", layout="wide")
 apply_theme()
@@ -41,6 +47,49 @@ selected_id = st.selectbox(
 )
 
 profile = get_player_profile(selected_id)
+
+# ---- player narrative context (markdown source-of-truth) ---------------------
+
+with st.expander("Spillerens fortællekontekst — profile, goals, benchmarks, history, ongoing, seneste sessioner", expanded=False):
+    st.caption(
+        "Dette er kildematerialet AI'en bruger til at kalibrere scores mod spillerens "
+        "historik. Rediger filerne direkte i din editor under `clients/" + selected_id + "/`."
+    )
+    profile_md = load_profile(selected_id)
+    goals_md = load_goals(selected_id)
+    benchmarks_md = load_benchmarks(selected_id)
+    history_md = load_history(selected_id)
+    ongoing_md = load_ongoing_notes(selected_id, max_entries=5)
+    recent_sessions = load_recent_session_observations(selected_id, n=3)
+
+    if profile_md.strip():
+        st.markdown("**profile.md** — hvem spilleren er")
+        st.markdown(profile_md)
+    else:
+        st.info(f"Ingen profile.md endnu. Opret `clients/{selected_id}/profile.md` for at give AI'en baggrund.")
+
+    if goals_md.strip():
+        st.markdown("**goals.md** — hvad vi arbejder hen imod")
+        st.markdown(goals_md)
+
+    if benchmarks_md.strip():
+        st.markdown("**benchmarks.md** — målte tal over tid")
+        st.markdown(benchmarks_md)
+
+    if history_md.strip():
+        st.markdown("**history.md** — milepæle og progression")
+        st.markdown(history_md)
+
+    if ongoing_md.strip():
+        st.markdown("**Seneste coaching-noter (ongoing.md)**")
+        st.markdown(ongoing_md)
+
+    if recent_sessions:
+        st.markdown("**Seneste sessionsobservationer**")
+        for date_iso, theme, obs in recent_sessions:
+            label = f"{date_iso} — {theme}" if theme else date_iso
+            with st.expander(label):
+                st.markdown(obs)
 
 # ---- session metadata --------------------------------------------------------
 
@@ -138,15 +187,18 @@ with st.expander("Scoreguide — hvad ser hvert niveau ud som?"):
 if extract_btn and coach_notes.strip():
     with st.spinner("Analyserer dine noter..."):
         try:
+            player_context = build_player_context(selected_id)
             extracted = extract_scores_from_notes(
                 coach_notes=coach_notes,
                 session_theme=session_theme,
                 session_type=session_type,
                 player_profile=profile,
+                player_context=player_context,
             )
             st.session_state.extracted = extracted
             st.session_state.extraction_done = True
-            st.success(f"Udtrukket {len(extracted)} dimensionscores.")
+            ctx_note = " (kalibreret mod spillerens fortællekontekst)" if player_context.strip() else ""
+            st.success(f"Udtrukket {len(extracted)} dimensionscores{ctx_note}.")
         except Exception as e:
             st.error(f"Udtrækning fejlede: {e}")
             st.session_state.extraction_done = False
@@ -158,29 +210,32 @@ if manual_btn:
 # ---- review & adjust scores -------------------------------------------------
 
 if st.session_state.extraction_done:
-    st.markdown("### Gennemse og justér scores")
+    st.markdown("### Gennemse, justér og kalibrér scores")
     st.caption(
-        "Gennemse de AI-udtrukne scores nedenfor. Justér dem der ikke stemmer overens med din vurdering. "
-        "Lad dimensioner stå på 0 hvis de ikke blev observeret i denne session."
+        "Justér de AI-udtrukne scores. Skriv en **forankring** ud for hver dimension du vil "
+        "kalibrere som ground truth (fx *\"7/10 rene halvvendinger under live pres\"*). "
+        "Dimensioner med en forankring gemmes som eval-cases og bliver fremtidigt sandhedsdata."
     )
 
     extracted = st.session_state.extracted
     adjusted_scores: dict[str, float] = {}
+    rationales: dict[str, str] = {}
     CATEGORY_LABELS = {"technical": "Teknisk", "physical": "Fysisk", "cognitive": "Spilforståelse", "mental": "Mentalitet"}
 
     with st.form("review_scores"):
         for cat in CATEGORIES:
             st.markdown(f"**{CATEGORY_LABELS.get(cat, cat.capitalize())}**")
             dims = CATEGORY_DIMS[cat]
-            cols = st.columns(len(dims))
-            for i, d in enumerate(dims):
+            for d in dims:
                 ai_score = extracted.get(d.key, 0.0)
                 current_epm = profile["flat_scores"].get(d.key, 5.0)
+                rubric = RUBRICS.get(d.key, {})
                 help_text = f"Nuværende EPM: {current_epm:.1f}"
                 if ai_score > 0:
                     help_text += f" | AI foreslog: {ai_score:.1f}"
 
-                val = cols[i].number_input(
+                score_col, rationale_col = st.columns([1, 3])
+                val = score_col.number_input(
                     f"{d.name}",
                     min_value=0.0, max_value=10.0,
                     value=round(ai_score, 1),
@@ -188,20 +243,31 @@ if st.session_state.extraction_done:
                     help=help_text,
                     key=f"score_{d.key}",
                 )
+                rationale = rationale_col.text_input(
+                    f"Forankring for {d.name}",
+                    key=f"rationale_{d.key}",
+                    label_visibility="collapsed",
+                    placeholder="Forankring (valgfri) — fx \"10m sprint 2,5s = niveau 6\"",
+                )
                 if val > 0:
                     adjusted_scores[d.key] = val
-
-        st.divider()
+                if rationale.strip():
+                    rationales[d.key] = rationale.strip()
+            st.markdown("---")
 
         if adjusted_scores:
-            st.markdown(f"**Scorer {len(adjusted_scores)} dimensioner** fra denne session.")
+            grounded_n = sum(1 for k in adjusted_scores if k in rationales)
+            st.markdown(
+                f"**Scorer {len(adjusted_scores)} dimensioner**, "
+                f"hvoraf **{grounded_n}** er forankret som ground truth."
+            )
 
         coach_adjusted = any(
             adjusted_scores.get(k, 0) != extracted.get(k, 0)
             for k in set(list(adjusted_scores.keys()) + list(extracted.keys()))
         )
 
-        save_btn = st.form_submit_button("Gem session og opdater scores", type="primary")
+        save_btn = st.form_submit_button("Gem session, opdatér EPM og kalibrér", type="primary")
 
         if save_btn:
             if not adjusted_scores:
@@ -225,7 +291,48 @@ if st.session_state.extraction_done:
                 )
 
                 updates = update_scores_from_observation(selected_id, adjusted_scores)
-                st.success("Session gemt og EPM opdateret!")
+                st.success("Session gemt og EPM opdateret.")
+
+                # Append a dated entry to ongoing.md so the markdown stays canonical
+                ongoing_lines = [coach_notes.strip()]
+                if rationales:
+                    ongoing_lines.append("\n**EPM-kalibrering:**")
+                    for dim_key, score in adjusted_scores.items():
+                        if dim_key not in rationales:
+                            continue
+                        meta = DIM_BY_KEY[dim_key]
+                        prev = updates.get(dim_key, {}).get("previous", current_epm)
+                        ongoing_lines.append(
+                            f"- {meta.name}: {prev:.1f} → {score:.1f} — {rationales[dim_key]}"
+                        )
+                ongoing_title = session_theme or session_type
+                try:
+                    ongoing_path = append_to_ongoing(
+                        player_id=selected_id,
+                        entry_date=session_date,
+                        title=ongoing_title,
+                        body="\n".join(ongoing_lines),
+                    )
+                    st.caption(f"Tilføjet til `{ongoing_path.relative_to(_ROOT)}`")
+                except Exception as e:
+                    st.warning(f"Kunne ikke skrive til ongoing.md: {e}")
+
+                # Write eval case if any dimension has a rationale
+                try:
+                    case_path = write_eval_case(
+                        player_id=selected_id,
+                        session_date=session_date,
+                        session_type=session_type,
+                        session_theme=session_theme,
+                        coach_notes=coach_notes,
+                        player_profile_snapshot=profile["player"],
+                        expected_scores=adjusted_scores,
+                        rationales=rationales,
+                    )
+                    if case_path:
+                        st.caption(f"Eval-case skrevet til `{case_path.relative_to(_ROOT)}`")
+                except Exception as e:
+                    st.warning(f"Kunne ikke skrive eval-case: {e}")
 
                 st.markdown("### EPM-opdateringer")
                 for dim_key, info in updates.items():

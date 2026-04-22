@@ -78,28 +78,38 @@ def extract_scores_from_notes(
     session_theme: str,
     session_type: str,
     player_profile: dict[str, Any],
+    player_context: str = "",
 ) -> dict[str, float]:
     """Use Claude tool_use to extract structured EPM scores from free-text notes.
+
+    `player_context` is the narrative material from the player's markdown files
+    (profile + ongoing notes + recent session observations). When provided, the
+    AI calibrates against the player's history rather than scoring in a vacuum.
 
     Returns dict of {dimension_key: score} for observed dimensions only.
     """
     client = _client()
     system = _build_system_prompt(player_profile)
+    if player_context.strip():
+        system += "\n\n=== PLAYER NARRATIVE CONTEXT ===\n" + player_context.strip()
 
     user_msg = f"""\
 Session type: {session_type}
 Session theme: {session_theme}
 
-Coach notes:
+Coach notes (today's session):
 {coach_notes}
 
 SCORING RUBRIC — use these observable behaviours to calibrate your scores:
 {all_rubrics_text()}
 
-Based on the coaching observations above, extract scores (1-10) for every dimension \
-where the notes provide clear behavioural evidence. Match what you read in the notes \
-to the rubric levels above. Only score dimensions you can confidently rate. \
-Use the record_session_scores tool to submit your ratings."""
+Score the player based on TODAY'S coach notes, calibrated against the player's \
+narrative context (profile, ongoing notes, recent session observations) provided \
+in the system prompt. The narrative tells you the player's baseline and trajectory; \
+today's notes tell you what changed.
+
+Only score dimensions where today's notes provide clear behavioural evidence. \
+Match what you read to the rubric levels. Use the record_session_scores tool."""
 
     response = client.messages.create(
         model=ANTHROPIC_MODEL,
