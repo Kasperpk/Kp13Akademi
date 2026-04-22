@@ -15,6 +15,7 @@ from typing import Any, Generator
 
 import psycopg
 from psycopg.rows import dict_row
+from psycopg_pool import ConnectionPool
 
 from .config import DATABASE_URL
 
@@ -146,28 +147,47 @@ _SCHEMA_STATEMENTS = [
         note          TEXT DEFAULT '',
         recorded_at   TEXT DEFAULT ({_ISO_DEFAULT})
     )""",
+    "CREATE INDEX IF NOT EXISTS idx_epm_scores_player ON epm_scores(player_id)",
+    "CREATE INDEX IF NOT EXISTS idx_epm_history_player_time ON epm_history(player_id, recorded_at DESC)",
+    "CREATE INDEX IF NOT EXISTS idx_session_obs_player_date ON session_observations(player_id, date DESC)",
+    "CREATE INDEX IF NOT EXISTS idx_exercise_results_player_ex ON exercise_results(player_id, exercise_id)",
+    "CREATE INDEX IF NOT EXISTS idx_session_completions_player_week ON session_completions(player_id, week_start)",
 ]
 
 # ---- connection helpers ------------------------------------------------------
 
 
+_POOL: ConnectionPool | None = None
+
+
+def _get_pool() -> ConnectionPool:
+    global _POOL
+    if _POOL is None:
+        if not DATABASE_URL:
+            raise RuntimeError(
+                "DATABASE_URL is not set. Add it to your .env (local) and "
+                "Streamlit Cloud secrets (production)."
+            )
+        _POOL = ConnectionPool(
+            DATABASE_URL,
+            min_size=1,
+            max_size=5,
+            kwargs={"row_factory": dict_row},
+            open=True,
+        )
+    return _POOL
+
+
 @contextmanager
 def get_db() -> Generator[psycopg.Connection, None, None]:
-    """Yield a psycopg connection configured to return dict rows."""
-    if not DATABASE_URL:
-        raise RuntimeError(
-            "DATABASE_URL is not set. Add it to your .env (local) and "
-            "Streamlit Cloud secrets (production)."
-        )
-    conn = psycopg.connect(DATABASE_URL, row_factory=dict_row)
-    try:
-        yield conn
-        conn.commit()
-    except Exception:
-        conn.rollback()
-        raise
-    finally:
-        conn.close()
+    """Yield a pooled psycopg connection configured to return dict rows."""
+    with _get_pool().connection() as conn:
+        try:
+            yield conn
+            conn.commit()
+        except Exception:
+            conn.rollback()
+            raise
 
 
 def init_db() -> None:
