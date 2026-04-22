@@ -133,6 +133,19 @@ _SCHEMA_STATEMENTS = [
         coach_notes TEXT DEFAULT '',
         created_at  TEXT DEFAULT ({_ISO_DEFAULT})
     )""",
+    f"""CREATE TABLE IF NOT EXISTS exercise_results (
+        id            SERIAL PRIMARY KEY,
+        player_id     TEXT NOT NULL REFERENCES players(id),
+        week_start    TEXT NOT NULL,
+        day           TEXT NOT NULL,
+        exercise_id   TEXT NOT NULL,
+        exercise_name TEXT NOT NULL,
+        target        TEXT,
+        result_value  REAL,
+        result_unit   TEXT,
+        note          TEXT DEFAULT '',
+        recorded_at   TEXT DEFAULT ({_ISO_DEFAULT})
+    )""",
 ]
 
 # ---- connection helpers ------------------------------------------------------
@@ -658,3 +671,74 @@ def update_video_coach_notes(video_id: int, coach_notes: str) -> None:
 def delete_video(video_id: int) -> None:
     with get_db() as conn:
         conn.execute("DELETE FROM player_videos WHERE id = %s", (video_id,))
+
+
+# ---- exercise results --------------------------------------------------------
+
+
+def save_exercise_result(
+    player_id: str,
+    week_start: str,
+    day: str,
+    exercise_id: str,
+    exercise_name: str,
+    target: str | None,
+    result_value: float,
+    result_unit: str = "",
+    note: str = "",
+) -> int:
+    with get_db() as conn:
+        row = conn.execute(
+            """INSERT INTO exercise_results
+               (player_id, week_start, day, exercise_id, exercise_name,
+                target, result_value, result_unit, note)
+               VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+               RETURNING id""",
+            (player_id, week_start, day, exercise_id, exercise_name,
+             target, result_value, result_unit, note),
+        ).fetchone()
+        return row["id"]
+
+
+def get_recent_results(
+    player_id: str,
+    exercise_ids: list[str] | None = None,
+    limit_per_exercise: int = 1,
+) -> dict[str, list[dict[str, Any]]]:
+    """Return the last N results per exercise_id for a player.
+
+    If exercise_ids is None or empty, return the player's most recent results
+    across all exercises (still grouped by exercise_id).
+    """
+    with get_db() as conn:
+        if exercise_ids:
+            rows = conn.execute(
+                """SELECT * FROM (
+                       SELECT *, ROW_NUMBER() OVER (
+                           PARTITION BY exercise_id ORDER BY recorded_at DESC
+                       ) AS rn
+                       FROM exercise_results
+                       WHERE player_id = %s AND exercise_id = ANY(%s)
+                   ) t
+                   WHERE rn <= %s
+                   ORDER BY exercise_id, recorded_at DESC""",
+                (player_id, exercise_ids, limit_per_exercise),
+            ).fetchall()
+        else:
+            rows = conn.execute(
+                """SELECT * FROM (
+                       SELECT *, ROW_NUMBER() OVER (
+                           PARTITION BY exercise_id ORDER BY recorded_at DESC
+                       ) AS rn
+                       FROM exercise_results
+                       WHERE player_id = %s
+                   ) t
+                   WHERE rn <= %s
+                   ORDER BY exercise_id, recorded_at DESC""",
+                (player_id, limit_per_exercise),
+            ).fetchall()
+    grouped: dict[str, list[dict[str, Any]]] = {}
+    for r in rows:
+        r.pop("rn", None)
+        grouped.setdefault(r["exercise_id"], []).append(r)
+    return grouped

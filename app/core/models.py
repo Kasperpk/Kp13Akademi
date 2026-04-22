@@ -23,6 +23,16 @@ class ScheduledExercise(BaseModel):
     description: str = Field(description="What the player does — rewritten for home context if needed")
     duration_min: int = Field(description="Minutes for this exercise")
     reps: str = Field(description="Specific reps/sets/duration. e.g. '3 x 30 seconds each foot', '8 reps left, 8 reps right'")
+    target: str | None = Field(
+        default=None,
+        description=(
+            "Concrete beatable number+unit when the exercise has a measurable goal — "
+            "e.g. '85 toe taps', '30 sekunder', '10 vægpas i træk'. Set to null for "
+            "exercises where 'beating' makes no sense (stretching, technique-focus drills "
+            "with no countable outcome). When the player has a previous result for the "
+            "same exercise_id, set the target slightly above it (typically +5–10%)."
+        ),
+    )
     setup: str = Field(description="Exact setup for home/garden: distances, equipment placement. A parent with zero football knowledge must understand this.")
     coaching_points: str = Field(description="2-3 key coaching cues from the library, phrased as observable actions")
     why_this_exercise: str = Field(description="One sentence: why THIS exercise for THIS player right now (link to their EPM gap or strength)")

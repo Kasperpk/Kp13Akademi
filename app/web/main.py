@@ -12,7 +12,7 @@ _APP_DIR = Path(__file__).resolve().parent.parent
 if str(_APP_DIR) not in sys.path:
     sys.path.insert(0, str(_APP_DIR))
 
-from fastapi import FastAPI, Request, HTTPException, Form
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -219,13 +219,48 @@ async def player_session(request: Request, token: str, day: str):
 
 
 @app.post("/p/{token}/complete/{day}")
-async def complete_session(
-    request: Request, token: str, day: str, feedback: str = Form("")
-):
+async def complete_session(request: Request, token: str, day: str):
     info = _verify(token)
     player_id = info["player_id"]
     week_start = _monday(date.today()).isoformat()
+
+    form = await request.form()
+    feedback = str(form.get("feedback", ""))
     db.mark_session_complete(player_id, week_start, day, feedback)
+
+    schedule = load_schedule(player_id, week_start)
+    if schedule:
+        session = next((s for s in schedule.sessions if s.day == day), None)
+        if session:
+            by_id = {
+                ex.exercise_id: ex
+                for group in (session.warm_up, session.main, session.cool_down)
+                for ex in group
+            }
+            for key, raw in form.items():
+                if not key.startswith("result_"):
+                    continue
+                value = str(raw).strip().replace(",", ".")
+                if not value:
+                    continue
+                try:
+                    result_value = float(value)
+                except ValueError:
+                    continue
+                exercise_id = key[len("result_"):]
+                ex = by_id.get(exercise_id)
+                if ex is None:
+                    continue
+                db.save_exercise_result(
+                    player_id=player_id,
+                    week_start=week_start,
+                    day=day,
+                    exercise_id=exercise_id,
+                    exercise_name=ex.name,
+                    target=ex.target,
+                    result_value=result_value,
+                )
+
     return RedirectResponse(url=f"/p/{token}", status_code=303)
 
 

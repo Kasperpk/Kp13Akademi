@@ -174,12 +174,18 @@ def _load_context(player_id: str) -> dict[str, Any]:
     gap_dims = [g["key"] for g in gaps]
     exercises = recommend_exercises(gap_dims, max_results=40, age=age_int, max_players=2)
 
+    # Personal bests for the exercises in scope this week, so the LLM can
+    # set targets just above what the player already managed.
+    exercise_ids = [ex["id"] for ex in exercises if ex.get("id")]
+    recent_results = db.get_recent_results(player_id, exercise_ids=exercise_ids)
+
     return {
         "profile": profile,
         "gaps": gaps,
         "strengths": strengths,
         "recent": recent,
         "exercises": exercises,
+        "recent_results": recent_results,
     }
 
 
@@ -196,6 +202,7 @@ def design_week(player_id: str, week_start: str) -> WeeklySchedule:
     strengths = ctx["strengths"]
     recent = ctx["recent"]
     exercises = ctx["exercises"]
+    recent_results = ctx["recent_results"]
 
     player_info = profile["player"]
     player_name = player_info["name"].split()[0]
@@ -214,6 +221,21 @@ def design_week(player_id: str, week_start: str) -> WeeklySchedule:
         recent_text += f"\n  - {s['date']} ({s['session_type']}): {s.get('theme', 'N/A')}"
         if s.get("coach_notes"):
             recent_text += f"\n    {s['coach_notes'][:200]}"
+
+    if recent_results:
+        records_lines = []
+        for ex_id, results in recent_results.items():
+            last = results[0]
+            target_part = f" (mål var {last['target']})" if last.get("target") else ""
+            unit = (last.get("result_unit") or "").strip()
+            value = last.get("result_value")
+            value_str = f"{value:g}" if value is not None else "?"
+            records_lines.append(
+                f"  - {ex_id} ({last['exercise_name']}): seneste resultat {value_str} {unit}{target_part}"
+            )
+        records_text = "\n".join(records_lines)
+    else:
+        records_text = "  (ingen tidligere resultater registreret endnu)"
 
     exercises_text = "\n\n".join(_format_exercise(ex) for ex in exercises)
 
@@ -236,6 +258,9 @@ EPM STRENGTHS (build on these):{strengths_text or '  (baseline)'}
 RECENT SESSIONS:
 {recent_text if recent_text else '  None yet — this is a fresh start.'}
 
+PERSONLIGE REKORDER (seneste målbare resultater pr. øvelse):
+{records_text}
+
 ═══════════════════════════════════════════════
 EXERCISE LIBRARY — YOU MUST SELECT FROM THESE
 ═══════════════════════════════════════════════
@@ -247,6 +272,15 @@ actual EPM data (e.g. naming the gap dimension and current score).
 
 For video_url: use the "Video URL" from the exercise card when present; otherwise use the \
 "Video Search URL". Never invent links.
+
+TARGET RULE (vigtigt for motivation):
+For HVER øvelse med målbar udgang skal du sætte feltet `target` som et konkret tal+enhed \
+på dansk — fx "85 toe taps", "30 sekunder", "10 vægpas i træk". Hvis spilleren har et \
+tidligere resultat for samme exercise_id (se PERSONLIGE REKORDER ovenfor), skal `target` \
+ligge lige over det — typisk +5–10 %. Hvis der ikke er noget tidligere resultat, sæt et \
+realistisk udgangspunkt for U9. For øvelser uden målbar udgang (udstrækning, ren teknik-fokus \
+uden tælling), sæt `target` til null. Reps-feltet er stadig "sådan udfører du øvelsen"; \
+target er overskriften "her er tallet du skal slå".
 
 Use the create_weekly_schedule tool to submit the complete schedule."""
 

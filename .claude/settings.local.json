@@ -12,7 +12,8 @@
       "Bash(python -m app.core.agents.session_designer --help)",
       "Bash(git check-ignore *)",
       "Bash(echo \"---exit:$?---\")",
-      "Bash(.venv/Scripts/python.exe -m pip install \"psycopg[binary]>=3.2.0\")"
+      "Bash(.venv/Scripts/python.exe -m pip install \"psycopg[binary]>=3.2.0\")",
+      "Bash(.venv/Scripts/python.exe -c ' *)"
     ]
   }
 }
