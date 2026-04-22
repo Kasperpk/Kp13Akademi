@@ -336,11 +336,14 @@ def _cli(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     schedule = design_week(args.player, args.week)
-    print(json.dumps(schedule.model_dump(), indent=2, ensure_ascii=False))
 
     if args.save:
         save_schedule(args.player, args.week, schedule)
-        print(f"\nSaved to weekly_schedules for ({args.player}, {args.week}).", file=sys.stderr)
+        print(f"Saved to weekly_schedules for ({args.player}, {args.week}).", file=sys.stderr)
+
+    payload = json.dumps(schedule.model_dump(), indent=2, ensure_ascii=False)
+    sys.stdout.buffer.write(payload.encode("utf-8"))
+    sys.stdout.buffer.write(b"\n")
 
     return 0
 
