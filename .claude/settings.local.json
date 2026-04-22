@@ -8,7 +8,10 @@
       "Bash(git push *)",
       "Bash(python -c \"from app.core.database import update_player_image, get_player_image\")",
       "Bash(python -c \"from core.database import update_player_image, get_player_image, get_training_hours; print\\('OK'\\)\")",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(python -m app.core.agents.session_designer --help)",
+      "Bash(git check-ignore *)",
+      "Bash(echo \"---exit:$?---\")"
     ]
   }
 }

@@ -27,8 +27,8 @@ from core.epm import (
     CATEGORIES,
     CATEGORY_DIMS,
 )
-from core.elm import generate_weekly_schedule
-from core.recommender import recommend_exercises
+from core.agents.session_designer import design_week, load_schedule, save_schedule
+from core.models import WeeklySchedule
 
 # ---------------------------------------------------------------------------
 
@@ -104,33 +104,17 @@ def _verify(token: str) -> dict[str, Any]:
     return info
 
 
-def _get_or_generate_schedule(player_id: str, week_start: str) -> dict[str, Any] | None:
-    """Return schedule from DB or generate via ELM and save."""
-    schedule = db.get_weekly_schedule(player_id, week_start)
-    if schedule:
-        return schedule
+def _get_or_generate_schedule(player_id: str, week_start: str) -> WeeklySchedule | None:
+    """Return schedule from DB or generate via the session_designer agent and save."""
+    existing = load_schedule(player_id, week_start)
+    if existing is not None:
+        return existing
 
-    # Generate
     try:
-        profile = get_player_profile(player_id)
-        gaps = identify_gaps(player_id, top_n=5)
-        strengths = identify_strengths(player_id, top_n=3)
-        observations = db.get_observations(player_id, limit=5)
-
-        # Get exercise candidates from library — more exercises = richer selection
-        gap_dims = [g["key"] for g in gaps]
-        exercises = recommend_exercises(gap_dims, max_results=40, age=9, max_players=2)
-
-        schedule = generate_weekly_schedule(
-            player_profile=profile,
-            gaps=gaps,
-            strengths=strengths,
-            recent_sessions=observations,
-            available_exercises=exercises,
-        )
-        db.save_weekly_schedule(player_id, week_start, schedule)
+        schedule = design_week(player_id, week_start)
+        save_schedule(player_id, week_start, schedule)
         return schedule
-    except Exception as e:
+    except Exception:
         import traceback
         traceback.print_exc()
         return None
@@ -186,9 +170,9 @@ async def player_home(request: Request, token: str):
 
     today_name = today.strftime("%A")
     today_session = None
-    if schedule and schedule.get("sessions"):
+    if schedule and schedule.sessions:
         today_session = next(
-            (s for s in schedule["sessions"] if s["day"] == today_name), None
+            (s for s in schedule.sessions if s.day == today_name), None
         )
 
     first_name = player["name"].split()[0]
@@ -214,13 +198,11 @@ async def player_session(request: Request, token: str, day: str):
         raise HTTPException(404)
 
     week_start = _monday(date.today()).isoformat()
-    schedule = db.get_weekly_schedule(player_id, week_start)
+    schedule = load_schedule(player_id, week_start)
     if not schedule:
         return RedirectResponse(url=f"/p/{token}")
 
-    session = next(
-        (s for s in schedule.get("sessions", []) if s["day"] == day), None
-    )
+    session = next((s for s in schedule.sessions if s.day == day), None)
     if not session:
         raise HTTPException(404, detail="Session not found")
 

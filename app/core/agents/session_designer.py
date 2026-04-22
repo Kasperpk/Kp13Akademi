@@ -268,6 +268,26 @@ Use the create_weekly_schedule tool to submit the complete schedule."""
     return _fallback_schedule(player_name, exercises)
 
 
+# ---- persistence boundary ---------------------------------------------------
+
+
+def load_schedule(player_id: str, week_start: str) -> WeeklySchedule | None:
+    """Return the stored schedule for (player, week) as a validated model.
+
+    The DB stores the JSON dict; validation happens here so callers get a
+    typed `WeeklySchedule` instead of a loose dict.
+    """
+    raw = db.get_weekly_schedule(player_id, week_start)
+    if raw is None:
+        return None
+    return WeeklySchedule.model_validate(raw)
+
+
+def save_schedule(player_id: str, week_start: str, schedule: WeeklySchedule) -> None:
+    """Persist a schedule model as JSON in the `weekly_schedules` table."""
+    db.save_weekly_schedule(player_id, week_start, schedule.model_dump())
+
+
 # ---- CLI ---------------------------------------------------------------------
 
 
@@ -285,7 +305,7 @@ def _cli(argv: list[str] | None = None) -> int:
     print(json.dumps(schedule.model_dump(), indent=2, ensure_ascii=False))
 
     if args.save:
-        db.save_weekly_schedule(args.player, args.week, schedule.model_dump())
+        save_schedule(args.player, args.week, schedule)
         print(f"\nSaved to weekly_schedules for ({args.player}, {args.week}).", file=sys.stderr)
 
     return 0
