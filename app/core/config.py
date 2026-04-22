@@ -13,22 +13,13 @@ load_dotenv(_ENV_PATH)
 
 # --- Paths -------------------------------------------------------------------
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-_DB_PATH_ENV = os.getenv("KP13_DB_PATH", "").strip()
-DB_PATH = Path(_DB_PATH_ENV) if _DB_PATH_ENV else (PROJECT_ROOT / "app" / "data" / "kp13.db")
 EXERCISES_DIR = PROJECT_ROOT / "generator" / "exercises"
 TEMPLATES_DIR = PROJECT_ROOT / "generator" / "templates"
 HISTORY_FILE = PROJECT_ROOT / "generator" / "history" / "log.json"
 
-# Auto-seeding is convenient for local first-run, but dangerous in production
-# when storage is ephemeral. Keep it opt-in.
-AUTO_SEED_ON_EMPTY_DB: bool = os.getenv("AUTO_SEED_ON_EMPTY_DB", "false").lower() in {
-    "1", "true", "yes", "on"
-}
 
-# --- Claude / Anthropic -------------------------------------------------------
-# Support both local .env and Streamlit Cloud secrets
+# --- Secrets helper (env var first, Streamlit secrets fallback) --------------
 def _get_secret(key: str, default: str = "") -> str:
-    """Read from env var first, then fall back to Streamlit secrets."""
     val = os.getenv(key, "")
     if val:
         return val
@@ -37,6 +28,19 @@ def _get_secret(key: str, default: str = "") -> str:
         return st.secrets.get(key, default)
     except Exception:
         return default
+
+
+# --- Database ----------------------------------------------------------------
+# Postgres connection string. Required. Example:
+#   postgresql://user:pass@host.neon.tech/dbname?sslmode=require
+DATABASE_URL: str = _get_secret("DATABASE_URL")
+
+# Auto-seed the DB on first run when players table is empty.
+AUTO_SEED_ON_EMPTY_DB: bool = _get_secret("AUTO_SEED_ON_EMPTY_DB", "false").lower() in {
+    "1", "true", "yes", "on"
+}
+
+# --- Claude / Anthropic -------------------------------------------------------
 
 ANTHROPIC_API_KEY: str = _get_secret("ANTHROPIC_API_KEY")
 ANTHROPIC_MODEL: str = _get_secret("ANTHROPIC_MODEL", "claude-sonnet-4-6")
