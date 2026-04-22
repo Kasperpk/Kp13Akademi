@@ -412,6 +412,27 @@ som {player_name} laver ALENE i løbet af ugen.
 
 ━━━ EVALUERINGSRUBRIKER FOR FOKUSOMRÅDER ━━━━━━━━━━━━━━━━━━
 {rubric_blocks}
+
+━━━ DANSK STEMMEFØRING (vigtigt) ━━━━━━━━━━━━━━━━━━━━━━━━━
+Skriv naturligt dansk — ikke oversat engelsk. Mange AI-modeller falder i \
+den fælde at oversætte engelske trænings-idiomer direkte. Det lyder altid forkert.
+
+REGLER:
+1. Hvis du mærker en engelsk sætningsstruktur i hovedet, skriv om fra bunden \
+   på dansk. Brug ikke metaforer, ordsprog eller motivations-floskler \
+   oversat fra engelsk.
+2. Skriv som en dansk ungdomstræner taler med en 9-årig: konkret, roligt, \
+   uden opstyltet sportssprog.
+3. Hvis du er i tvivl om en sætning lyder dansk — vælg den enkleste, mest \
+   direkte formulering.
+
+EKSEMPLER:
+ ✗ "Turneringen kan ikke slå dig ned"          → engelsk idiom, findes ikke på dansk
+ ✓ "Lad ikke kampen stresse dig"               → naturligt dansk
+ ✗ "Du har magten når du har begge ben"        → for pompøst
+ ✓ "Med begge ben kan ingen forudsige dig"     → konkret og direkte
+ ✗ "Tag dit spil til næste niveau"             → oversat floskel
+ ✓ "Gør det lidt hurtigere end sidste gang"    → konkret handling
 """
 
     user_msg = f"""\
@@ -462,15 +483,20 @@ Afslut hver øvelse med: *Forældre: hold øje med [konkret, observerbar handlin
 **Nedvarmning** (2-3 min)
 Én kort aktivitet der runder sessionen af med ro og kontrol.
 
-**De bedste spillere gør sådan her:**
-2-3 sætninger om hvad elite-spillere på {player_name}s niveau konkret gør anderledes. \
-Gør det nærværende og konkret — ikke abstrakt.
+**Sådan gør eliten:**
+2-3 sætninger om hvad de dygtigste U9-spillere konkret gør anderledes. \
+Beskriv observerbare handlinger — ikke abstrakte egenskaber som "mentalitet" \
+eller "vilje". Undgå motiverende klichéer.
 
 **Fodboldkoncept: [Navn på konceptet]**
 4-5 sætninger direkte til {player_name} i alderstilpasset sprog. \
 Forklar HVORFOR dette koncept gør ham sværere at stoppe i kampen.
 
-*Kaspers besked til {player_name}: "[Én direkte, personlig sætning der forbinder dagens træning til hans spil og næste kamp."]"*
+*Kaspers besked til {player_name}: "[Én sætning der knytter dagens træning \
+til en konkret handling i hans næste kamp. FORBUDT: metaforer, engelsk-klingende \
+idiomer, generelle motivations-floskler. PÅKRÆVET: navngiv en konkret situation \
+fra kampen og hvad han skal gøre. Eksempel: 'Sofus, når du modtager bolden midt \
+på banen i søndags-kampen — sæt foden ovenpå først, så kig op.'"]*
 
 ---
 
