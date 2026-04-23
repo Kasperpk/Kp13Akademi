@@ -16,7 +16,15 @@
       "Bash(.venv/Scripts/python.exe -c ' *)",
       "Bash(.venv/Scripts/python.exe -m app.core.agents.session_designer --player sofus --week 2026-04-20 --save)",
       "Read(//tmp/**)",
-      "Bash(./.venv/Scripts/python.exe -c ' *)"
+      "Bash(./.venv/Scripts/python.exe -c ' *)",
+      "Bash(awk '{print $NF}')",
+      "Bash(awk -F/ '{print $NF}')",
+      "Bash(python -m pip install --quiet pytest pytest-cov ruff)",
+      "Bash(python -c \"import pytest; print\\('pytest', pytest.__version__\\)\")",
+      "Bash(python -c \"import ruff\")",
+      "Bash(python -m pytest --version)",
+      "Bash(python -X utf8 -c ' *)",
+      "Bash(make --dry-run help)"
     ]
   }
 }
