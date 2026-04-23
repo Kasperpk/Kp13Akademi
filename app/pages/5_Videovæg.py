@@ -208,7 +208,7 @@ with st.expander("＋ Del et journey moment" if is_player else "＋ Tilføj jour
             "Selve noten",
             placeholder=(
                 "Fx: I dag lykkedes scanning bedre i 2. halvleg. Jeg sa 3 gange at jeg kunne vende op, "
-                "men tog kun chancen 1 gang. Naeste kamp vil jeg vaere modigere i de oejeblikke."
+                "men tog kun chancen 1 gang. Næste kamp vil jeg være modigere i de øjeblikke."
             ),
             height=150,
             key="journey_note_body",

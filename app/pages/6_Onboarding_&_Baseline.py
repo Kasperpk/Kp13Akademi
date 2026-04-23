@@ -49,7 +49,7 @@ player_id = st.selectbox(
 )
 
 if not player_id:
-    st.info("Vaelg en spiller for at fortsaette.")
+    st.info("Vælg en spiller for at fortsætte.")
     st.stop()
 
 profile = get_player_profile(player_id)
@@ -199,26 +199,26 @@ with questions_tab:
 
         try:
             answer_lines = [
-                "Dybde-sporgsmal gennemfort.",
+                "Dybde-spørgsmål gennemført.",
                 "",
                 f"Spillerens motivation: {q1.strip() or '-'}",
                 f"Trigger for fald: {q2.strip() or '-'}",
-                f"Leringsstil: {q3.strip() or '-'}",
-                f"3-maneders mal: {q4.strip() or '-'}",
-                f"Foraeldrebehov: {q5.strip() or '-'}",
+                f"Læringsstil: {q3.strip() or '-'}",
+                f"3-måneders mål: {q4.strip() or '-'}",
+                f"Forældrebehov: {q5.strip() or '-'}",
             ]
             if q_notes.strip():
                 answer_lines.extend(["", f"Noter: {q_notes.strip()}"])
             append_to_ongoing(
                 player_id=player_id,
                 entry_date=q_date,
-                title="Onboarding dybde-sporgsmal",
+                title="Onboarding dybde-spørgsmål",
                 body="\n".join(answer_lines),
             )
         except Exception:
             pass
 
-        st.success("Dybde-sporgsmal gemt.")
+        st.success("Dybde-spørgsmål gemt.")
         st.rerun()
 
 with overview_tab:
