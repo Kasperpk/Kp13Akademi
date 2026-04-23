@@ -147,11 +147,24 @@ _SCHEMA_STATEMENTS = [
         note          TEXT DEFAULT '',
         recorded_at   TEXT DEFAULT ({_ISO_DEFAULT})
     )""",
+    f"""CREATE TABLE IF NOT EXISTS player_assessments (
+        id                 SERIAL PRIMARY KEY,
+        player_id          TEXT NOT NULL REFERENCES players(id),
+        assessment_date    TEXT NOT NULL,
+        assessment_type    TEXT NOT NULL,
+        metrics_json       TEXT DEFAULT '{}',
+        questionnaire_json TEXT DEFAULT '{}',
+        suggested_scores   TEXT DEFAULT '{}',
+        applied_scores     TEXT DEFAULT '{}',
+        notes              TEXT DEFAULT '',
+        created_at         TEXT DEFAULT ({_ISO_DEFAULT})
+    )""",
     "CREATE INDEX IF NOT EXISTS idx_epm_scores_player ON epm_scores(player_id)",
     "CREATE INDEX IF NOT EXISTS idx_epm_history_player_time ON epm_history(player_id, recorded_at DESC)",
     "CREATE INDEX IF NOT EXISTS idx_session_obs_player_date ON session_observations(player_id, date DESC)",
     "CREATE INDEX IF NOT EXISTS idx_exercise_results_player_ex ON exercise_results(player_id, exercise_id)",
     "CREATE INDEX IF NOT EXISTS idx_session_completions_player_week ON session_completions(player_id, week_start)",
+    "CREATE INDEX IF NOT EXISTS idx_player_assessments_player_date ON player_assessments(player_id, assessment_date DESC)",
 ]
 
 # ---- connection helpers ------------------------------------------------------
@@ -762,3 +775,57 @@ def get_recent_results(
         r.pop("rn", None)
         grouped.setdefault(r["exercise_id"], []).append(r)
     return grouped
+
+
+# ---- player assessments ------------------------------------------------------
+
+
+def save_player_assessment(
+    player_id: str,
+    assessment_date: str,
+    assessment_type: str,
+    metrics: dict[str, float] | None = None,
+    questionnaire: dict[str, str] | None = None,
+    suggested_scores: dict[str, float] | None = None,
+    applied_scores: dict[str, float] | None = None,
+    notes: str = "",
+) -> int:
+    with get_db() as conn:
+        row = conn.execute(
+            """INSERT INTO player_assessments
+               (player_id, assessment_date, assessment_type, metrics_json,
+                questionnaire_json, suggested_scores, applied_scores, notes)
+               VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+               RETURNING id""",
+            (
+                player_id,
+                assessment_date,
+                assessment_type,
+                json.dumps(metrics or {}, ensure_ascii=False),
+                json.dumps(questionnaire or {}, ensure_ascii=False),
+                json.dumps(suggested_scores or {}, ensure_ascii=False),
+                json.dumps(applied_scores or {}, ensure_ascii=False),
+                notes,
+            ),
+        ).fetchone()
+        return row["id"]
+
+
+def get_player_assessments(player_id: str, limit: int = 20) -> list[dict[str, Any]]:
+    with get_db() as conn:
+        rows = conn.execute(
+            """SELECT * FROM player_assessments
+               WHERE player_id = %s
+               ORDER BY assessment_date DESC, created_at DESC
+               LIMIT %s""",
+            (player_id, limit),
+        ).fetchall()
+
+    out: list[dict[str, Any]] = []
+    for r in rows:
+        r["metrics_json"] = json.loads(r["metrics_json"]) if r["metrics_json"] else {}
+        r["questionnaire_json"] = json.loads(r["questionnaire_json"]) if r["questionnaire_json"] else {}
+        r["suggested_scores"] = json.loads(r["suggested_scores"]) if r["suggested_scores"] else {}
+        r["applied_scores"] = json.loads(r["applied_scores"]) if r["applied_scores"] else {}
+        out.append(r)
+    return out
