@@ -152,7 +152,7 @@ with st.expander("＋ Del et journey moment" if is_player else "＋ Tilføj jour
                         "3. Sæt **Signing mode** til **Unsigned**\n"
                         "4. Sæt **Folder** til `kp13`\n"
                         "5. Gem og kopier preset-navnet\n"
-                        "6. Tilføj til Streamlit secrets: `CLOUDINARY_UPLOAD_PRESET = "dit-preset-navn"`"
+                        "6. Tilføj til Streamlit secrets: `CLOUDINARY_UPLOAD_PRESET = \"dit-preset-navn\"`"
                     )
             else:
                 st.caption(
