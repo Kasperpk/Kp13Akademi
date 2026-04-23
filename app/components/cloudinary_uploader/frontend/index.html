@@ -3,10 +3,141 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- Streamlit component bridge -->
-  <script src="https://unpkg.com/streamlit-component-lib/dist/index.js"></script>
   <!-- Cloudinary Upload Widget -->
   <script src="https://widget.cloudinary.com/v2.0/global/all.js" type="text/javascript"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      padding: 6px 0 10px;
+      background: transparent;
+    }
+    #upload-btn {
+      background: #3B82F6;
+      color: #fff;
+      border: none;
+      padding: 9px 22px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background 0.15s;
+    }
+    #upload-btn:hover { background: #2563EB; }
+    #status {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #9CA3AF;
+      min-height: 18px;
+    }
+  </style>
+</head>
+<body>
+  <button id="upload-btn">📁 Vælg og upload stor fil (op til 2 GB)</button>
+  <div id="status"></div>
+
+  <script>
+    // ---- Minimal inline Streamlit component bridge -------------------------
+    var Streamlit = {
+      RENDER_EVENT: "streamlit:render",
+      _listeners: [],
+      events: {
+        addEventListener: function (type, fn) {
+          window.addEventListener("message", function (e) {
+            if (e.data && e.data.type === type) {
+              fn({ detail: { args: e.data.args } });
+            }
+          });
+        }
+      },
+      setComponentReady: function () {
+        window.parent.postMessage({ type: "streamlit:componentReady", apiVersion: 1 }, "*");
+      },
+      setComponentValue: function (value) {
+        window.parent.postMessage({ type: "streamlit:setComponentValue", value: value }, "*");
+      },
+      setFrameHeight: function (h) {
+        window.parent.postMessage({ type: "streamlit:setFrameHeight", height: h }, "*");
+      }
+    };
+    // -----------------------------------------------------------------------
+
+    var myWidget = null;
+    var currentArgs = null;
+
+    function buildWidget(args) {
+      if (myWidget) {
+        try { myWidget.destroy(); } catch (e) {}
+        myWidget = null;
+      }
+      currentArgs = args;
+
+      myWidget = cloudinary.createUploadWidget(
+        {
+          cloudName: args.cloud_name,
+          apiKey: args.api_key,
+          uploadSignature: args.signature,
+          uploadSignatureTimestamp: args.timestamp,
+          folder: args.folder,
+          resourceType: "auto",
+          sources: ["local"],
+          multiple: false,
+          maxFileSize: 2000000000,
+          showCompletedButton: true,
+          clientAllowedFormats: [
+            "mp4", "mov", "avi", "mkv", "m4v", "webm",
+            "jpg", "jpeg", "png", "webp", "gif", "heic", "heif"
+          ],
+          styles: {
+            palette: {
+              window: "#1F2937",
+              windowBorder: "#374151",
+              tabIcon: "#3B82F6",
+              menuIcons: "#9CA3AF",
+              textDark: "#F9FAFB",
+              textLight: "#6B7280",
+              link: "#3B82F6",
+              action: "#3B82F6",
+              inactiveTabIcon: "#9CA3AF",
+              error: "#EF4444",
+              inProgress: "#3B82F6",
+              complete: "#10B981",
+              sourceBg: "#111827"
+            }
+          }
+        },
+        function (error, result) {
+          if (error) {
+            document.getElementById("status").textContent =
+              "✗ Fejl: " + (error.statusText || error.message || JSON.stringify(error));
+            return;
+          }
+          if (result && result.event === "success") {
+            document.getElementById("status").textContent =
+              "✓ Uploadet: " + result.info.original_filename;
+            Streamlit.setComponentValue(result.info.secure_url);
+          }
+        }
+      );
+    }
+
+    document.getElementById("upload-btn").onclick = function () {
+      if (myWidget) {
+        myWidget.open();
+      }
+    };
+
+    Streamlit.events.addEventListener(Streamlit.RENDER_EVENT, function (event) {
+      buildWidget(event.detail.args);
+      Streamlit.setFrameHeight(document.body.scrollHeight + 10);
+    });
+
+    Streamlit.setComponentReady();
+    Streamlit.setFrameHeight(58);
+  </script>
+</body>
+</html>
+
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
