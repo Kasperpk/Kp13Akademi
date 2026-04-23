@@ -15,7 +15,7 @@ from core.database import (
     get_players, get_videos, add_video,
     update_video_coach_notes, delete_video,
 )
-from core.cloudinary_upload import upload_media as cloudinary_upload, is_configured
+from core.cloudinary_upload import is_configured
 from core.theme import apply_theme
 from core.auth import player_selector, get_player_id_from_url
 
@@ -136,37 +136,47 @@ with st.expander("＋ Del et journey moment" if is_player else "＋ Tilføj jour
 
     with tab_upload:
         if is_configured():
-            st.caption("Tip: På Streamlit Cloud er uploadgrænsen sat højere, men meget store filer uploades bedst som direkte Cloudinary-link i næste fane.")
-            uploaded_file = st.file_uploader(
-                "Vælg video eller billede",
-                type=["mp4", "mov", "avi", "mkv", "m4v", "webm", "jpg", "jpeg", "png", "webp", "gif", "heic"],
-                label_visibility="collapsed",
+            from components.cloudinary_uploader import cloudinary_uploader as cl_widget
+            from core.cloudinary_upload import generate_upload_signature
+
+            st.caption(
+                "Filen uploades direkte fra din browser til Cloudinary — "
+                "ingen nginx-grænse. Op til 2 GB."
             )
-            if st.button("Upload fil", type="primary", key="btn_upload"):
-                if not new_title.strip():
-                    st.error("Giv indholdet en titel.")
-                elif not uploaded_file:
-                    st.error("Vælg en fil.")
-                else:
-                    with st.spinner("Uploader fil..."):
-                        try:
-                            url = cloudinary_upload(
-                                uploaded_file.read(),
-                                player_id=selected_id,
-                                filename=uploaded_file.name,
-                            )
-                            add_video(
-                                player_id=selected_id,
-                                title=new_title.strip(),
-                                video_url=url,
-                                posted_by="player" if is_player else "coach",
-                                video_type=new_type,
-                                description=new_desc.strip(),
-                            )
-                            st.success("Journey indhold uploadet!")
-                            st.rerun()
-                        except Exception as e:
-                            st.error(f"Upload fejlede: {e}")
+
+            sig_data = generate_upload_signature(selected_id)
+            uploaded_url = cl_widget(
+                cloud_name=sig_data["cloud_name"],
+                api_key=sig_data["api_key"],
+                signature=sig_data["signature"],
+                timestamp=sig_data["timestamp"],
+                folder=sig_data["folder"],
+                key=f"cl_{selected_id}",
+            )
+
+            # Persist the URL across reruns until the user saves it
+            ss_key = f"_cl_pending_{selected_id}"
+            if uploaded_url:
+                st.session_state[ss_key] = uploaded_url
+
+            pending_url = st.session_state.get(ss_key)
+            if pending_url:
+                st.success("Fil uploadet til Cloudinary — klar til at gemme.")
+                if st.button("Gem til journey", type="primary", key="btn_save_direct"):
+                    if not new_title.strip():
+                        st.error("Giv indholdet en titel ovenfor.")
+                    else:
+                        add_video(
+                            player_id=selected_id,
+                            title=new_title.strip(),
+                            video_url=pending_url,
+                            posted_by="player" if is_player else "coach",
+                            video_type=new_type,
+                            description=new_desc.strip(),
+                        )
+                        st.session_state.pop(ss_key, None)
+                        st.success("Journey indhold gemt!")
+                        st.rerun()
         else:
             st.warning("Cloudinary er ikke konfigureret. Tilføj CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY og CLOUDINARY_API_SECRET i secrets.")
 

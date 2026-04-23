@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import os
+import time
 
 import cloudinary
 import cloudinary.uploader
+import cloudinary.utils
 
 from .config import CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET
 
@@ -52,6 +54,28 @@ def upload_media(file_bytes: bytes, player_id: str, filename: str) -> str:
 def upload_video(file_bytes: bytes, player_id: str, filename: str) -> str:
     """Backward-compatible alias for existing imports."""
     return upload_media(file_bytes=file_bytes, player_id=player_id, filename=filename)
+
+
+def generate_upload_signature(player_id: str) -> dict:
+    """Generate a signed upload payload for browser-direct Cloudinary upload.
+
+    Returns a dict with cloud_name, api_key, signature, timestamp, and folder.
+    Pass these to the cloudinary_uploader component so the browser can upload
+    files directly to Cloudinary, bypassing Streamlit's nginx proxy.
+    Signatures are valid for ~1 hour.
+    """
+    _configure()
+    ts = int(time.time())
+    folder = f"kp13/{player_id}"
+    params_to_sign = {"folder": folder, "timestamp": ts}
+    signature = cloudinary.utils.api_sign_request(params_to_sign, CLOUDINARY_API_SECRET)
+    return {
+        "cloud_name": CLOUDINARY_CLOUD_NAME,
+        "api_key": CLOUDINARY_API_KEY,
+        "signature": signature,
+        "timestamp": ts,
+        "folder": folder,
+    }
 
 
 def is_configured() -> bool:
