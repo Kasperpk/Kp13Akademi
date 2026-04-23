@@ -15,7 +15,7 @@ from core.database import (
     get_players, get_videos, add_video,
     update_video_coach_notes, delete_video,
 )
-from core.cloudinary_upload import upload_video as cloudinary_upload, is_configured
+from core.cloudinary_upload import upload_media as cloudinary_upload, is_configured
 from core.theme import apply_theme
 from core.auth import player_selector, get_player_id_from_url
 
@@ -26,12 +26,20 @@ _VIDEO_TYPE_LABELS = {
     "player_training":  "Min træning",
     "coach_reference":  "Kaspers reference",
     "target_video":     "Sådan skal det se ud",
+    "match_analysis":    "Kampanalyse",
+    "journey_photo":     "Billede",
+    "journey_moment":    "Journey moment",
+    "journey_note":      "Journey note",
 }
 
 _VIDEO_TYPE_COLORS = {
     "player_training":  "#3B82F6",
     "coach_reference":  "#10B981",
     "target_video":     "#F59E0B",
+    "match_analysis":   "#8B5CF6",
+    "journey_photo":    "#EC4899",
+    "journey_moment":   "#14B8A6",
+    "journey_note":     "#64748B",
 }
 
 
@@ -63,6 +71,24 @@ def _render_video(url: str) -> None:
         st.video(url)
 
 
+def _is_image_url(url: str) -> bool:
+    low = url.lower()
+    image_exts = (".jpg", ".jpeg", ".png", ".webp", ".gif", ".heic", ".heif")
+    if any(low.endswith(ext) for ext in image_exts):
+        return True
+    return "/image/upload/" in low
+
+
+def _render_media(url: str) -> None:
+    if not url.strip():
+        st.caption("Ingen media vedhaeftet - dette er en ren journey note.")
+        return
+    if _is_image_url(url):
+        st.image(url, use_container_width=True)
+        return
+    _render_video(url)
+
+
 # ---- player selector ---------------------------------------------------------
 
 players = get_players()
@@ -75,14 +101,14 @@ _, is_player = get_player_id_from_url(players)
 
 player_name = next(p["name"] for p in players if p["id"] == selected_id).split()[0]
 
-st.title(f"Videovæg — {player_name}")
-st.caption("Her kan du se dine træningsvideoer, Kaspers referencevideoer og feedback.")
+st.title(f"Your Journey — {player_name}")
+st.caption("Upload store træningsklip, kampkommentarer, billeder og milepæle på din rejse.")
 
 st.markdown("---")
 
 # ---- post new video ----------------------------------------------------------
 
-with st.expander("＋ Del en træningsvideo" if is_player else "＋ Tilføj video"):
+with st.expander("＋ Del et journey moment" if is_player else "＋ Tilføj journey content"):
     if not is_player:
         new_type = st.selectbox(
             "Type",
@@ -90,34 +116,39 @@ with st.expander("＋ Del en træningsvideo" if is_player else "＋ Tilføj vide
             format_func=lambda k: _VIDEO_TYPE_LABELS[k],
         )
     else:
-        new_type = "player_training"
+        new_type = st.selectbox(
+            "Type",
+            options=["player_training", "journey_moment", "journey_photo"],
+            format_func=lambda k: _VIDEO_TYPE_LABELS[k],
+        )
 
     new_title = st.text_input(
         "Titel",
-        placeholder="Fx: Sole rolls med venstre ben — uge 17",
+        placeholder="Fx: Kamp mod B93 — scanning i 1. halvleg",
     )
     new_desc = st.text_area(
         "Beskrivelse (valgfrit)",
-        placeholder="Fx: Fokus på at holde bolden tæt og skifte retning hurtigt",
+        placeholder="Fx: Kommentarer til beslutninger, rytme, kropsvinkel og hvad jeg lærte",
         height=70,
     )
 
-    tab_upload, tab_youtube = st.tabs(["⬆️ Upload direkte", "🔗 YouTube-link"])
+    tab_upload, tab_external, tab_note = st.tabs(["⬆️ Upload fil", "🔗 Eksternt link", "📝 Journey note"])
 
     with tab_upload:
         if is_configured():
+            st.caption("Tip: På Streamlit Cloud er uploadgrænsen sat højere, men meget store filer uploades bedst som direkte Cloudinary-link i næste fane.")
             uploaded_file = st.file_uploader(
-                "Vælg videofil",
-                type=["mp4", "mov", "avi", "mkv"],
+                "Vælg video eller billede",
+                type=["mp4", "mov", "avi", "mkv", "m4v", "webm", "jpg", "jpeg", "png", "webp", "gif", "heic"],
                 label_visibility="collapsed",
             )
-            if st.button("Upload video", type="primary", key="btn_upload"):
+            if st.button("Upload fil", type="primary", key="btn_upload"):
                 if not new_title.strip():
-                    st.error("Giv videoen en titel.")
+                    st.error("Giv indholdet en titel.")
                 elif not uploaded_file:
-                    st.error("Vælg en videofil.")
+                    st.error("Vælg en fil.")
                 else:
-                    with st.spinner("Uploader video..."):
+                    with st.spinner("Uploader fil..."):
                         try:
                             url = cloudinary_upload(
                                 uploaded_file.read(),
@@ -132,23 +163,23 @@ with st.expander("＋ Del en træningsvideo" if is_player else "＋ Tilføj vide
                                 video_type=new_type,
                                 description=new_desc.strip(),
                             )
-                            st.success("Video uploadet!")
+                            st.success("Journey indhold uploadet!")
                             st.rerun()
                         except Exception as e:
                             st.error(f"Upload fejlede: {e}")
         else:
             st.warning("Cloudinary er ikke konfigureret. Tilføj CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY og CLOUDINARY_API_SECRET i secrets.")
 
-    with tab_youtube:
+    with tab_external:
         new_url = st.text_input(
-            "YouTube-link",
-            placeholder="https://www.youtube.com/watch?v=...",
+            "Link (YouTube, Cloudinary, Drive m.m.)",
+            placeholder="https://...",
         )
-        if st.button("Tilføj video", type="primary", key="btn_youtube"):
+        if st.button("Tilføj link", type="primary", key="btn_external"):
             if not new_title.strip():
-                st.error("Giv videoen en titel.")
+                st.error("Giv indholdet en titel.")
             elif not new_url.strip():
-                st.error("Indsæt et YouTube-link.")
+                st.error("Indsæt et link.")
             else:
                 add_video(
                     player_id=selected_id,
@@ -158,7 +189,39 @@ with st.expander("＋ Del en træningsvideo" if is_player else "＋ Tilføj vide
                     video_type=new_type,
                     description=new_desc.strip(),
                 )
-                st.success("Video tilføjet!")
+                st.success("Journey indhold tilføjet!")
+                st.rerun()
+
+    with tab_note:
+        st.caption("Brug notes som personlig logbog: hvad sa du i kampen, hvad laerte du, og hvad vil du forbedre naeste gang.")
+        note_body = st.text_area(
+            "Selve noten",
+            placeholder=(
+                "Fx: I dag lykkedes scanning bedre i 2. halvleg. Jeg sa 3 gange at jeg kunne vende op, "
+                "men tog kun chancen 1 gang. Naeste kamp vil jeg vaere modigere i de oejeblikke."
+            ),
+            height=150,
+            key="journey_note_body",
+        )
+        if st.button("Gem journey note", type="primary", key="btn_note"):
+            if not new_title.strip():
+                st.error("Giv noten en titel.")
+            elif not note_body.strip():
+                st.error("Skriv selve noten.")
+            else:
+                combined_desc = note_body.strip()
+                if new_desc.strip():
+                    combined_desc += "\n\nEkstra kontekst:\n" + new_desc.strip()
+
+                add_video(
+                    player_id=selected_id,
+                    title=new_title.strip(),
+                    video_url="",
+                    posted_by="player" if is_player else "coach",
+                    video_type="journey_note",
+                    description=combined_desc,
+                )
+                st.success("Journey note gemt!")
                 st.rerun()
 
 st.markdown("---")
@@ -171,14 +234,14 @@ if not videos:
     st.info("Ingen videoer endnu. Del din første træningsvideo herover!")
     st.stop()
 
-# Group by type: coach reference / target first, then player training
-coach_vids = [v for v in videos if v["video_type"] in ("coach_reference", "target_video")]
-player_vids = [v for v in videos if v["video_type"] == "player_training"]
+# Group by type: coach-led guidance first, then journey timeline
+coach_vids = [v for v in videos if v["video_type"] in ("coach_reference", "target_video", "match_analysis")]
+player_vids = [v for v in videos if v["video_type"] not in ("coach_reference", "target_video", "match_analysis")]
 
 # ---- Coach reference / target videos ----------------------------------------
 
 if coach_vids:
-    st.markdown("### Fra Kasper")
+    st.markdown("### Coaching & Reference")
     for v in coach_vids:
         color = _VIDEO_TYPE_COLORS.get(v["video_type"], "#6B7280")
         label = _VIDEO_TYPE_LABELS.get(v["video_type"], v["video_type"])
@@ -190,7 +253,7 @@ if coach_vids:
         st.markdown(f"**{v['title']}**")
         if v.get("description"):
             st.caption(v["description"])
-        _render_video(v["video_url"])
+        _render_media(v["video_url"])
 
         if v.get("coach_notes"):
             st.markdown(
@@ -222,19 +285,21 @@ if coach_vids:
 # ---- Player training videos --------------------------------------------------
 
 if player_vids:
-    st.markdown("### Træningsvideoer")
+    st.markdown("### Journey Timeline")
     for v in player_vids:
         posted = "dig" if v["posted_by"] == "player" else "Kasper"
+        label = _VIDEO_TYPE_LABELS.get(v["video_type"], "Journey")
+        color = _VIDEO_TYPE_COLORS.get(v["video_type"], "#3B82F6")
         st.markdown(
-            f'<span style="background:#3B82F6;color:white;border-radius:4px;'
-            f'padding:2px 8px;font-size:0.75rem;">Min træning</span>',
+            f'<span style="background:{color};color:white;border-radius:4px;'
+            f'padding:2px 8px;font-size:0.75rem;">{label}</span>',
             unsafe_allow_html=True,
         )
         st.markdown(f"**{v['title']}**")
         st.caption(f"Delt af {posted} · {v['created_at'][:10]}")
         if v.get("description"):
             st.caption(v["description"])
-        _render_video(v["video_url"])
+        _render_media(v["video_url"])
 
         if v.get("coach_notes"):
             st.markdown(
