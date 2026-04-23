@@ -9,7 +9,7 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.utils
 
-from .config import CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET
+from .config import CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET, CLOUDINARY_UPLOAD_PRESET
 
 
 def _configure() -> None:

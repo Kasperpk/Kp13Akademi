@@ -137,92 +137,100 @@ with st.expander("＋ Del et journey moment" if is_player else "＋ Tilføj jour
     with tab_upload:
         if is_configured():
             import html as _html
-            from core.cloudinary_upload import generate_upload_signature
+            from core.config import CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET
 
-            st.caption(
-                "Filen uploades direkte fra din browser til Cloudinary — "
-                "ingen nginx-grænse. Op til 2 GB."
-            )
-
-            sig_data = generate_upload_signature(selected_id)
-
-            # Build the widget HTML inline — no custom component needed,
-            # works on Streamlit Cloud without any extra files to deploy.
-            _cname = _html.escape(sig_data["cloud_name"])
-            _akey  = _html.escape(sig_data["api_key"])
-            _sig   = _html.escape(sig_data["signature"])
-            _ts    = sig_data["timestamp"]
-            _fold  = _html.escape(sig_data["folder"])
-
-            widget_html = f"""<!DOCTYPE html>
-<html><head><meta charset="UTF-8">
-<script src="https://widget.cloudinary.com/v2.0/global/all.js"></script>
-<style>
-* {{margin:0;padding:0;box-sizing:border-box;}}
-body {{font-family:sans-serif;background:transparent;padding:4px 0 8px;}}
-#btn {{background:#3B82F6;color:#fff;border:none;padding:9px 22px;
-       border-radius:6px;cursor:pointer;font-size:14px;font-weight:500;}}
-#btn:hover {{background:#2563EB;}}
-#msg {{margin-top:8px;font-size:12px;color:#10B981;min-height:18px;word-break:break-all;}}
-</style></head>
-<body>
-<button id="btn">📁 Vælg og upload stor fil (op til 2 GB)</button>
-<div id="msg"></div>
-<script>
-var w = cloudinary.createUploadWidget({{
-  cloudName: "{_cname}",
-  apiKey: "{_akey}",
-  uploadSignature: "{_sig}",
-  uploadSignatureTimestamp: {_ts},
-  folder: "{_fold}",
-  resourceType: "auto",
-  sources: ["local"],
-  multiple: false,
-  maxFileSize: 2000000000,
-  styles: {{palette: {{window:"#1F2937",windowBorder:"#374151",
-    tabIcon:"#3B82F6",textDark:"#F9FAFB",link:"#3B82F6",
-    action:"#3B82F6",complete:"#10B981",error:"#EF4444",
-    inProgress:"#3B82F6",sourceBg:"#111827"}}}}
-}}, function(error, result) {{
-  if (result && result.event === "success") {{
-    var url = result.info.secure_url;
-    var el = document.getElementById("msg");
-    el.innerHTML = "✓ Uploadet! <strong>Kopier dette link:</strong><br>" + url;
-    try {{ navigator.clipboard.writeText(url); }} catch(e) {{}}
-  }}
-}});
-document.getElementById("btn").onclick = function() {{ w.open(); }};
-</script></body></html>"""
-
-            st.components.v1.html(widget_html, height=90, scrolling=False)
-
-            st.caption(
-                "📋 Efter upload vises linket ovenfor og kopieres automatisk. "
-                "Sæt det ind herunder og klik Gem."
-            )
-            cl_url = st.text_input(
-                "Cloudinary-link",
-                placeholder="https://res.cloudinary.com/...",
-                label_visibility="collapsed",
-                key="cl_url_input",
-            )
-            if st.button("Gem til journey", type="primary", key="btn_save_direct"):
-                if not new_title.strip():
-                    st.error("Giv indholdet en titel ovenfor.")
-                elif not cl_url.strip():
-                    st.error("Sæt Cloudinary-linket ind i feltet ovenfor først.")
-                else:
-                    add_video(
-                        player_id=selected_id,
-                        title=new_title.strip(),
-                        video_url=cl_url.strip(),
-                        posted_by="player" if is_player else "coach",
-                        video_type=new_type,
-                        description=new_desc.strip(),
+            upload_preset = CLOUDINARY_UPLOAD_PRESET
+            if not upload_preset:
+                st.warning(
+                    "Tilføj `CLOUDINARY_UPLOAD_PRESET` til dine Streamlit secrets. "
+                    "Se instruktionerne nedenfor."
+                )
+                with st.expander("Sådan opretter du et upload preset"):
+                    st.markdown(
+                        "1. Gå til Cloudinary Dashboard → Settings → Upload\n"
+                        "2. Klik **Add upload preset**\n"
+                        "3. Sæt **Signing mode** til **Unsigned**\n"
+                        "4. Sæt **Folder** til `kp13`\n"
+                        "5. Gem og kopier preset-navnet\n"
+                        "6. Tilføj til Streamlit secrets: `CLOUDINARY_UPLOAD_PRESET = "dit-preset-navn"`"
                     )
-                    st.session_state["cl_url_input"] = ""
-                    st.success("Journey indhold gemt!")
-                    st.rerun()
+            else:
+                st.caption(
+                    "Filen uploades direkte fra din browser til Cloudinary — "
+                    "ingen nginx-grænse. Op til 2 GB."
+                )
+
+                _cname  = _html.escape(CLOUDINARY_CLOUD_NAME)
+                _preset = _html.escape(upload_preset)
+                _fold   = _html.escape(f"kp13/{selected_id}")
+
+                widget_html = (
+                    '<!DOCTYPE html><html><head><meta charset="UTF-8">'
+                    '<script src="https://widget.cloudinary.com/v2.0/global/all.js"></script>'
+                    "<style>"
+                    "* {margin:0;padding:0;box-sizing:border-box;}"
+                    "body {font-family:sans-serif;background:transparent;padding:4px 0 8px;}"
+                    "#btn {background:#3B82F6;color:#fff;border:none;padding:9px 22px;"
+                    "      border-radius:6px;cursor:pointer;font-size:14px;font-weight:500;}"
+                    "#btn:hover {background:#2563EB;}"
+                    "#msg {margin-top:8px;font-size:12px;color:#10B981;min-height:18px;word-break:break-all;}"
+                    "</style></head><body>"
+                    '<button id="btn">📁 Vælg og upload stor fil (op til 2 GB)</button>'
+                    '<div id="msg"></div>'
+                    "<script>"
+                    "var w = cloudinary.createUploadWidget({"
+                    f'  cloudName: "{_cname}",'
+                    f'  uploadPreset: "{_preset}",'
+                    f'  folder: "{_fold}",'
+                    "  resourceType: 'auto',"
+                    "  sources: ['local'],"
+                    "  multiple: false,"
+                    "  maxFileSize: 2000000000,"
+                    "  styles: {palette: {window:'#1F2937',windowBorder:'#374151',"
+                    "    tabIcon:'#3B82F6',textDark:'#F9FAFB',link:'#3B82F6',"
+                    "    action:'#3B82F6',complete:'#10B981',error:'#EF4444',"
+                    "    inProgress:'#3B82F6',sourceBg:'#111827'}}"
+                    "}, function(error, result) {"
+                    "  if (result && result.event === 'success') {"
+                    "    var url = result.info.secure_url;"
+                    '    document.getElementById("msg").innerHTML ='
+                    '      "\u2713 Uploadet! Kopier dette link:<br><strong>" + url + "</strong>";'
+                    "    try { navigator.clipboard.writeText(url); } catch(e) {}"
+                    "  }"
+                    "});"
+                    'document.getElementById("btn").onclick = function() { w.open(); };'
+                    "</script></body></html>"
+                )
+
+                st.components.v1.html(widget_html, height=90, scrolling=False)
+
+                st.caption(
+                    "📋 Efter upload vises linket ovenfor og kopieres automatisk. "
+                    "Sæt det ind herunder og klik Gem."
+                )
+                cl_url = st.text_input(
+                    "Cloudinary-link",
+                    placeholder="https://res.cloudinary.com/...",
+                    label_visibility="collapsed",
+                    key="cl_url_input",
+                )
+                if st.button("Gem til journey", type="primary", key="btn_save_direct"):
+                    if not new_title.strip():
+                        st.error("Giv indholdet en titel ovenfor.")
+                    elif not cl_url.strip():
+                        st.error("Sæt Cloudinary-linket ind i feltet ovenfor først.")
+                    else:
+                        add_video(
+                            player_id=selected_id,
+                            title=new_title.strip(),
+                            video_url=cl_url.strip(),
+                            posted_by="player" if is_player else "coach",
+                            video_type=new_type,
+                            description=new_desc.strip(),
+                        )
+                        st.session_state["cl_url_input"] = ""
+                        st.success("Journey indhold gemt!")
+                        st.rerun()
         else:
             st.warning("Cloudinary er ikke konfigureret. Tilføj CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY og CLOUDINARY_API_SECRET i secrets.")
 

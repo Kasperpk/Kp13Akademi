@@ -49,6 +49,7 @@ COACH_PASSWORD: str = _get_secret("COACH_PASSWORD", "kp13")
 CLOUDINARY_CLOUD_NAME: str = _get_secret("CLOUDINARY_CLOUD_NAME")
 CLOUDINARY_API_KEY: str = _get_secret("CLOUDINARY_API_KEY")
 CLOUDINARY_API_SECRET: str = _get_secret("CLOUDINARY_API_SECRET")
+CLOUDINARY_UPLOAD_PRESET: str = _get_secret("CLOUDINARY_UPLOAD_PRESET")
 
 # --- EPM tuning ---------------------------------------------------------------
 EPM_ALPHA: float = float(os.getenv("EPM_ALPHA", "0.3"))  # EMA learning rate
