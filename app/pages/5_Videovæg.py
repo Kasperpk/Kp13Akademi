@@ -164,45 +164,57 @@ with st.expander("＋ Del et journey moment" if is_player else "＋ Tilføj jour
                 _preset = _html.escape(upload_preset)
                 _fold   = _html.escape(f"kp13/{selected_id}")
 
+                _api_url = f"https://api.cloudinary.com/v1_1/{_cname}/auto/upload"
+
                 widget_html = (
-                    '<!DOCTYPE html><html><head><meta charset="UTF-8">'
-                    '<script src="https://widget.cloudinary.com/v2.0/global/all.js"></script>'
-                    "<style>"
-                    "* {margin:0;padding:0;box-sizing:border-box;}"
-                    "body {font-family:sans-serif;background:transparent;padding:4px 0 8px;}"
-                    "#btn {background:#3B82F6;color:#fff;border:none;padding:9px 22px;"
-                    "      border-radius:6px;cursor:pointer;font-size:14px;font-weight:500;}"
-                    "#btn:hover {background:#2563EB;}"
-                    "#msg {margin-top:8px;font-size:12px;color:#10B981;min-height:18px;word-break:break-all;}"
-                    "</style></head><body>"
-                    '<button id="btn">📁 Vælg og upload stor fil (op til 2 GB)</button>'
-                    '<div id="msg"></div>'
-                    "<script>"
-                    "var w = cloudinary.createUploadWidget({"
-                    f'  cloudName: "{_cname}",'
-                    f'  uploadPreset: "{_preset}",'
-                    f'  folder: "{_fold}",'
-                    "  resourceType: 'auto',"
-                    "  sources: ['local'],"
-                    "  multiple: false,"
-                    "  maxFileSize: 2000000000,"
-                    "  styles: {palette: {window:'#1F2937',windowBorder:'#374151',"
-                    "    tabIcon:'#3B82F6',textDark:'#F9FAFB',link:'#3B82F6',"
-                    "    action:'#3B82F6',complete:'#10B981',error:'#EF4444',"
-                    "    inProgress:'#3B82F6',sourceBg:'#111827'}}"
-                    "}, function(error, result) {"
-                    "  if (result && result.event === 'success') {"
-                    "    var url = result.info.secure_url;"
-                    '    document.getElementById("msg").innerHTML ='
-                    '      "\u2713 Uploadet! Kopier dette link:<br><strong>" + url + "</strong>";'
-                    "    try { navigator.clipboard.writeText(url); } catch(e) {}"
-                    "  }"
-                    "});"
-                    'document.getElementById("btn").onclick = function() { w.open(); };'
-                    "</script></body></html>"
+                    '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>'
+                    '*{margin:0;padding:0;box-sizing:border-box;}'
+                    'body{font-family:sans-serif;background:transparent;padding:6px 0 10px;color:#e5e7eb;}'
+                    'label{display:inline-block;background:#3B82F6;color:#fff;padding:9px 20px;'
+                    '      border-radius:6px;cursor:pointer;font-size:14px;font-weight:500;}'
+                    'label:hover{background:#2563EB;}'
+                    '#file{display:none;}'
+                    '#bar-wrap{display:none;margin-top:10px;background:#374151;border-radius:4px;height:8px;overflow:hidden;}'
+                    '#bar{height:100%;width:0%;background:#3B82F6;transition:width 0.2s;}'
+                    '#pct{font-size:11px;color:#9CA3AF;margin-top:4px;}'
+                    '#msg{margin-top:8px;font-size:12px;color:#10B981;word-break:break-all;}'
+                    '#err{margin-top:8px;font-size:12px;color:#EF4444;}'
+                    '</style></head><body>'
+                    '<label>&#128193; Vælg fil (op til 2 GB)'
+                    '<input type="file" id="file" accept=".mp4,.mov,.avi,.mkv,.m4v,.webm,.jpg,.jpeg,.png,.webp,.gif,.heic,.heif">'
+                    '</label>'
+                    '<div id="bar-wrap"><div id="bar"></div></div>'
+                    '<div id="pct"></div><div id="msg"></div><div id="err"></div>'
+                    '<script>'
+                    'document.getElementById("file").onchange=function(){'
+                    'var file=this.files[0];if(!file)return;'
+                    'document.getElementById("bar-wrap").style.display="block";'
+                    'document.getElementById("pct").textContent="Uploader "+file.name+"...";'
+                    'var fd=new FormData();'
+                    'fd.append("file",file);'
+                    f'fd.append("upload_preset","{_preset}");'
+                    f'fd.append("folder","{_fold}");'
+                    'var xhr=new XMLHttpRequest();'
+                    f'xhr.open("POST","{_api_url}",true);'
+                    'xhr.upload.onprogress=function(e){if(e.lengthComputable){'
+                    'var p=Math.round(e.loaded/e.total*100);'
+                    'document.getElementById("bar").style.width=p+"%";'
+                    'document.getElementById("pct").textContent=p+"% uploadet...";}};'
+                    'xhr.onload=function(){if(xhr.status===200){'
+                    'var res=JSON.parse(xhr.responseText);var url=res.secure_url;'
+                    'document.getElementById("bar").style.width="100%";'
+                    'document.getElementById("bar").style.background="#10B981";'
+                    'document.getElementById("pct").textContent="\u2713 F\u00e6rdig!";'
+                    'document.getElementById("msg").innerHTML="<strong>Kopier linket og s\u00e6t det ind nedenfor:</strong><br>"'
+                    '+"<span style=\\"user-select:all;cursor:text;\\">"+url+"</span>";'
+                    'try{navigator.clipboard.writeText(url);}catch(e){}}'
+                    'else{document.getElementById("err").textContent="Fejl "+xhr.status+": "+xhr.responseText.slice(0,200);}};'
+                    'xhr.onerror=function(){document.getElementById("err").textContent="Netv\u00e6rksfejl \u2014 pr\u00f8v igen.";};'
+                    'xhr.send(fd);};'
+                    '</script></body></html>'
                 )
 
-                st.components.v1.html(widget_html, height=90, scrolling=False)
+                st.components.v1.html(widget_html, height=160, scrolling=False)
 
                 st.caption(
                     "📋 Efter upload vises linket ovenfor og kopieres automatisk. "
