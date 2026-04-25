@@ -38,7 +38,7 @@ _DAYS = {
 
 _SESSION_TYPES = [
     "Hold Træning",
-    "1-mod-1 (KP13)",
+    "Individuel Træning KP13 Akademi",
     "Styrke Træning",
     "Teknisk Træning",
     "Taktisk Træning",
@@ -51,6 +51,7 @@ _SESSION_TYPES = [
 _SESSION_COLORS = {
     "Hold Træning":    "#93C5FD",
     "1-mod-1 (KP13)": "#3B82F6",
+    "Individuel Træning KP13 Akademi": "#3B82F6",
     "Styrke Træning":  "#FCA5A5",
     "Teknisk Træning": "#C4B5FD",
     "Taktisk Træning": "#6EE7B7",
@@ -216,6 +217,15 @@ if not plan_data or not plan_data.get("content"):
 # ---- UGENTLIG KALENDER -------------------------------------------------------
 
 st.markdown("### Ugens Kalender")
+st.markdown("""
+<style>
+div[data-testid="column"] div[data-testid="stButton"] > button[data-testid="baseButton-primary"] {
+    font-size: 0.7rem !important;
+    padding: 3px 6px !important;
+    line-height: 1.3 !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
 completions = get_completions(selected_id, week_start)
 player_sessions_by_day = get_player_sessions(selected_id, week_start)
@@ -232,7 +242,7 @@ for i, (day, short) in enumerate(zip(_ALL_DAYS, _SHORT_DAYS)):
                 st.markdown(_day_card("✓ Akademi", _AKADEMI_DONE_COLOR, badge="KP13"), unsafe_allow_html=True)
             else:
                 st.markdown(_day_card("📚 Akademi", _AKADEMI_COLOR, badge="KP13"), unsafe_allow_html=True)
-                if st.button("✓ Gjort", key=f"done_{day}", use_container_width=True,
+                if st.button("Gennemført ✓", key=f"done_{day}", use_container_width=True,
                              help="Marker akademi-session som gennemført",
                              type="primary"):
                     mark_session_complete(selected_id, week_start, day, "")
