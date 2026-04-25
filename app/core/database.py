@@ -161,6 +161,8 @@ _SCHEMA_STATEMENTS = [
     )""",
     # Additive migrations (safe to run on existing DBs)
     "ALTER TABLE players ADD COLUMN IF NOT EXISTS preferred_days TEXT DEFAULT NULL",
+    "ALTER TABLE player_sessions ADD COLUMN IF NOT EXISTS duration_min INTEGER DEFAULT NULL",
+    "ALTER TABLE player_sessions ADD COLUMN IF NOT EXISTS added_by TEXT DEFAULT 'coach'",
     "CREATE INDEX IF NOT EXISTS idx_epm_scores_player ON epm_scores(player_id)",
     "CREATE INDEX IF NOT EXISTS idx_epm_history_player_time ON epm_history(player_id, recorded_at DESC)",
     "CREATE INDEX IF NOT EXISTS idx_session_obs_player_date ON session_observations(player_id, date DESC)",
@@ -643,13 +645,15 @@ def add_player_session(
     session_type: str,
     time_start: str = "",
     notes: str = "",
+    duration_min: int | None = None,
+    added_by: str = "coach",
 ) -> None:
     with get_db() as conn:
         conn.execute(
             """INSERT INTO player_sessions
-               (player_id, week_start, day, session_type, time_start, notes)
-               VALUES (%s, %s, %s, %s, %s, %s)""",
-            (player_id, week_start, day, session_type, time_start, notes),
+               (player_id, week_start, day, session_type, time_start, notes, duration_min, added_by)
+               VALUES (%s, %s, %s, %s, %s, %s, %s, %s)""",
+            (player_id, week_start, day, session_type, time_start, notes, duration_min, added_by),
         )
 
 
@@ -666,6 +670,27 @@ def get_player_sessions(player_id: str, week_start: str) -> dict[str, list[dict[
     for r in rows:
         result.setdefault(r["day"], []).append(r)
     return result
+
+
+def get_week_training_minutes(player_id: str, week_start: str) -> dict[str, int]:
+    """Return training minutes broken down by added_by for the week.
+
+    Returns {"coach": N, "player": N, "total": N}
+    """
+    with get_db() as conn:
+        rows = conn.execute(
+            """SELECT added_by, COALESCE(SUM(duration_min), 0) AS mins
+               FROM player_sessions
+               WHERE player_id = %s AND week_start = %s AND duration_min IS NOT NULL
+               GROUP BY added_by""",
+            (player_id, week_start),
+        ).fetchall()
+    totals = {"coach": 0, "player": 0}
+    for r in rows:
+        key = r["added_by"] if r["added_by"] in totals else "player"
+        totals[key] = int(r["mins"])
+    totals["total"] = totals["coach"] + totals["player"]
+    return totals
 
 
 def delete_player_session(session_id: int) -> None:

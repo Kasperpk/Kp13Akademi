@@ -397,6 +397,8 @@ async def log_activity(request: Request, token: str):
     activity_type = str(form.get("activity_type", "Andet")).strip()
     time_start = str(form.get("time_start", "")).strip()
     notes = str(form.get("notes", "")).strip()
+    duration_raw = str(form.get("duration_min", "")).strip()
+    duration_min = int(duration_raw) if duration_raw.isdigit() else None
 
     if day not in _ALL_DAYS:
         raise HTTPException(400, "Ugyldig dag")
@@ -404,7 +406,8 @@ async def log_activity(request: Request, token: str):
         activity_type = "Andet"
 
     week_start = _monday(date.today()).isoformat()
-    db.add_player_session(player_id, week_start, day, activity_type, time_start, notes)
+    db.add_player_session(player_id, week_start, day, activity_type, time_start, notes,
+                          duration_min=duration_min, added_by="player")
 
     return RedirectResponse(url=f"/p/{token}/week", status_code=303)
 
