@@ -240,7 +240,7 @@ for i, (day, short) in enumerate(zip(_ALL_DAYS, _SHORT_DAYS)):
                 st.markdown(_day_card("✓ Akademi", _AKADEMI_DONE_COLOR, badge="KP13"), unsafe_allow_html=True)
             else:
                 st.markdown(_day_card("📚 Akademi", _AKADEMI_COLOR, badge="KP13"), unsafe_allow_html=True)
-                if st.button("Gennemført ✓", key=f"done_{day}", use_container_width=True,
+                if st.button("✓ Gjort", key=f"done_{day}", use_container_width=True,
                              help="Marker akademi-session som gennemført",
                              type="primary"):
                     mark_session_complete(selected_id, week_start, day, "")

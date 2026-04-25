@@ -554,7 +554,8 @@ _SESSION_TYPE_MINUTES = {
     "match": 90,
     "home": 30,
 }
-_DAILY_PLAN_MINUTES = 25
+_DAILY_PLAN_MINUTES = 25      # legacy home-exercise plans (short)
+_AKADEMI_SESSION_MINUTES = 60  # KP13 akademi session completions
 
 
 def get_training_hours(player_id: str) -> dict[str, Any]:
@@ -591,14 +592,19 @@ def get_training_hours(player_id: str) -> dict[str, Any]:
         if r["date"] >= week_start:
             week_sessions += 1
 
-    completed_dates = set()
+    # Akademi session completions (marked via "Gennemført" button) = 60 min each
     for r in completion_rows:
         d = r["completed_at"][:10]
-        completed_dates.add(d)
-    for r in plan_rows:
-        completed_dates.add(r["date"])
+        total_minutes += _AKADEMI_SESSION_MINUTES
+        if d >= month_start:
+            month_minutes += _AKADEMI_SESSION_MINUTES
+        if d >= week_start:
+            week_sessions += 1
+            week_minutes += _AKADEMI_SESSION_MINUTES
 
-    for d in completed_dates:
+    # Legacy daily-plan completions (home exercises) = 25 min each
+    for r in plan_rows:
+        d = r["date"]
         total_minutes += _DAILY_PLAN_MINUTES
         if d >= month_start:
             month_minutes += _DAILY_PLAN_MINUTES
