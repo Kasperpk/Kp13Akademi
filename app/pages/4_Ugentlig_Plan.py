@@ -16,7 +16,7 @@ from core.database import (
     save_ugentlig_plan, update_player_goals,
     mark_session_complete, get_completions,
     add_player_session, get_player_sessions, delete_player_session,
-    get_preferred_days, set_preferred_days, get_week_training_minutes,
+    get_preferred_days, set_preferred_days,
 )
 from core.epm import get_player_profile, identify_gaps, identify_strengths
 from core.elm import generate_weekly_plan_danish
@@ -219,12 +219,8 @@ if not plan_data or not plan_data.get("content"):
 st.markdown("### Ugens Kalender")
 st.markdown("""
 <style>
-div[data-testid="column"] button[kind="primary"] p,
-div[data-testid="column"] button[kind="primary"] {
-    font-size: 0.65rem !important;
-    padding-top: 2px !important;
-    padding-bottom: 2px !important;
-    line-height: 1.2 !important;
+[data-testid="baseButton-primary"] p {
+    font-size: 0.68rem !important;
     white-space: nowrap !important;
 }
 </style>
@@ -232,7 +228,6 @@ div[data-testid="column"] button[kind="primary"] {
 
 completions = get_completions(selected_id, week_start)
 player_sessions_by_day = get_player_sessions(selected_id, week_start)
-training_mins = get_week_training_minutes(selected_id, week_start)
 
 cols = st.columns(7)
 for i, (day, short) in enumerate(zip(_ALL_DAYS, _SHORT_DAYS)):
@@ -267,21 +262,6 @@ for i, (day, short) in enumerate(zip(_ALL_DAYS, _SHORT_DAYS)):
                 delete_player_session(sess["id"])
                 st.rerun()
 
-# ---- UGENTLIG TRÆNINGSTIMER --------------------------------------------------
-
-total = training_mins["total"]
-coach_min = training_mins["coach"]
-player_min = training_mins["player"]
-if total > 0:
-    def _fmt(m: int) -> str:
-        return f"{m // 60}t {m % 60}m" if m >= 60 else f"{m}m"
-    cols_summary = st.columns(3)
-    with cols_summary[0]:
-        st.metric("Total denne uge", _fmt(total))
-    with cols_summary[1]:
-        st.metric("KP13-sessioner", _fmt(coach_min))
-    with cols_summary[2]:
-        st.metric("Ekstra (selvtræning)", _fmt(player_min))
 
 # ---- TILFØJ TRÆNING ----------------------------------------------------------
 

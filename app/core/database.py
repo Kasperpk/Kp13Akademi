@@ -581,6 +581,7 @@ def get_training_hours(player_id: str) -> dict[str, Any]:
     total_minutes = 0
     month_minutes = 0
     week_sessions = 0
+    week_minutes = 0
 
     for r in obs_rows:
         mins = _SESSION_TYPE_MINUTES.get(r["session_type"], 45)
@@ -604,10 +605,28 @@ def get_training_hours(player_id: str) -> dict[str, Any]:
         if d >= week_start:
             week_sessions += 1
 
+    # Also count player_sessions with explicit duration_min
+    with get_db() as conn:
+        ps_rows = conn.execute(
+            """SELECT week_start, COALESCE(duration_min, 0) AS duration_min
+               FROM player_sessions
+               WHERE player_id = %s AND duration_min IS NOT NULL AND duration_min > 0""",
+            (player_id,),
+        ).fetchall()
+
+    for r in ps_rows:
+        mins = int(r["duration_min"])
+        total_minutes += mins
+        if r["week_start"] >= month_start:
+            month_minutes += mins
+        if r["week_start"] >= week_start:
+            week_minutes += mins
+
     return {
         "total_hours": round(total_minutes / 60, 1),
         "month_hours": round(month_minutes / 60, 1),
         "week_sessions": week_sessions,
+        "week_minutes": week_minutes,
     }
 
 
