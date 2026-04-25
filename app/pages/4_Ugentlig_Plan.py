@@ -219,10 +219,13 @@ if not plan_data or not plan_data.get("content"):
 st.markdown("### Ugens Kalender")
 st.markdown("""
 <style>
-div[data-testid="column"] div[data-testid="stButton"] > button[data-testid="baseButton-primary"] {
-    font-size: 0.7rem !important;
-    padding: 3px 6px !important;
-    line-height: 1.3 !important;
+div[data-testid="column"] button[kind="primary"] p,
+div[data-testid="column"] button[kind="primary"] {
+    font-size: 0.65rem !important;
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
 }
 </style>
 """, unsafe_allow_html=True)
