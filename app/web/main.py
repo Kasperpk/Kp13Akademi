@@ -382,7 +382,7 @@ async def player_settings_save(request: Request, token: str):
 # ---------------------------------------------------------------------------
 
 _SESSION_TYPES = [
-    "Hold Træning", "Styrke Træning", "Teknisk Træning",
+    "Hold Træning", "1-mod-1 (KP13)", "Styrke Træning", "Teknisk Træning",
     "Taktisk Træning", "Agilty Træning", "Løb / Kondition", "Kamp", "Andet",
 ]
 
