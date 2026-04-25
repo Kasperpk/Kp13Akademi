@@ -43,6 +43,12 @@
                 </svg>
                 <span class="text-[10px] {{ 'text-kp-accent font-medium' if active == 'home' else 'text-kp-muted' }}">Training</span>
             </a>
+            <a href="/p/{{ token }}/week" class="flex flex-col items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 {{ 'text-kp-accent' if active == 'week' else 'text-kp-muted' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+                </svg>
+                <span class="text-[10px] {{ 'text-kp-accent font-medium' if active == 'week' else 'text-kp-muted' }}">Ugeplan</span>
+            </a>
             <a href="/p/{{ token }}/development" class="flex flex-col items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 {{ 'text-kp-accent' if active == 'development' else 'text-kp-muted' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>

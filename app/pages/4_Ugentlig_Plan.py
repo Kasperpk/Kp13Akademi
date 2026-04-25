@@ -16,6 +16,7 @@ from core.database import (
     save_ugentlig_plan, update_player_goals,
     mark_session_complete, get_completions,
     add_player_session, get_player_sessions, delete_player_session,
+    get_preferred_days, set_preferred_days,
 )
 from core.epm import get_player_profile, identify_gaps, identify_strengths
 from core.elm import generate_weekly_plan_danish
@@ -122,7 +123,7 @@ st.markdown("---")
 
 plan_data = get_ugentlig_plan(selected_id, week_start)
 sessions_per_week_saved = (plan_data.get("sessions_per_week") or 3) if plan_data else 3
-planned_days = _DAYS.get(sessions_per_week_saved, _DAYS[3])
+planned_days = get_preferred_days(selected_id, fallback_sessions=sessions_per_week_saved)
 
 # ---- TRÆNER-SEKTION: indstillinger og generering ----------------------------
 
@@ -139,7 +140,17 @@ if not is_player:
         if player_goals != existing_goals:
             update_player_goals(selected_id, player_goals)
     with col_b:
-        sessions_per_week = st.selectbox("Sessions pr. uge", options=[2, 3, 4], index=1)
+        st.markdown("**Træningsdage**")
+        chosen_days = []
+        for day in _ALL_DAYS:
+            default = day in planned_days
+            if st.checkbox(day[:3], value=default, key=f"day_{day}"):
+                chosen_days.append(day)
+        if not chosen_days:
+            st.warning("Vælg mindst én dag.")
+        elif chosen_days != planned_days:
+            set_preferred_days(selected_id, chosen_days)
+            planned_days = chosen_days
 
     gaps = identify_gaps(selected_id, top_n=5)
     strengths = identify_strengths(selected_id, top_n=3)
@@ -158,17 +169,20 @@ if not is_player:
             unsafe_allow_html=True,
         )
         if st.button("Generer ugentlig træningsplan", type="primary"):
+            if not chosen_days:
+                st.error("Vælg mindst én træningsdag.")
+                st.stop()
             with st.spinner("Bygger træningsplan..."):
                 try:
                     recent = get_observations(selected_id, limit=5)
                     recommended = recommend_for_gaps(gaps, max_results=20, age=age_int, max_players=2)
                     plan_md = generate_weekly_plan_danish(
                         player=player, gaps=gaps, strengths=strengths,
-                        recent_observations=recent, sessions_per_week=sessions_per_week,
+                        recent_observations=recent, chosen_days=chosen_days,
                         available_exercises=recommended,
                         player_goals=player.get("goals", ""),
                     )
-                    save_ugentlig_plan(selected_id, week_start, plan_md, sessions_per_week)
+                    save_ugentlig_plan(selected_id, week_start, plan_md, len(chosen_days))
                     st.rerun()
                 except Exception as e:
                     st.error(f"Generering fejlede: {e}")
@@ -241,5 +255,5 @@ with st.expander("📋 Ugens træningsplan (detaljer)", expanded=True):
 if not is_player:
     st.markdown("---")
     if st.button("Generer ny plan", help="Overskriver den eksisterende plan for denne uge"):
-        save_ugentlig_plan(selected_id, week_start, "", sessions_per_week_saved)
+        save_ugentlig_plan(selected_id, week_start, "", len(planned_days))
         st.rerun()

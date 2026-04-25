@@ -159,6 +159,8 @@ _SCHEMA_STATEMENTS = [
         notes              TEXT DEFAULT '',
         created_at         TEXT DEFAULT ({_ISO_DEFAULT})
     )""",
+    # Additive migrations (safe to run on existing DBs)
+    "ALTER TABLE players ADD COLUMN IF NOT EXISTS preferred_days TEXT DEFAULT NULL",
     "CREATE INDEX IF NOT EXISTS idx_epm_scores_player ON epm_scores(player_id)",
     "CREATE INDEX IF NOT EXISTS idx_epm_history_player_time ON epm_history(player_id, recorded_at DESC)",
     "CREATE INDEX IF NOT EXISTS idx_session_obs_player_date ON session_observations(player_id, date DESC)",
@@ -259,6 +261,34 @@ def get_player(player_id: str) -> dict[str, Any] | None:
             "SELECT * FROM players WHERE id = %s", (player_id,)
         ).fetchone()
         return row
+
+
+_ALL_DAYS = ["Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag", "Søndag"]
+_DEFAULT_DAYS_BY_COUNT = {
+    2: ["Mandag", "Torsdag"],
+    3: ["Mandag", "Onsdag", "Fredag"],
+    4: ["Mandag", "Tirsdag", "Torsdag", "Lørdag"],
+}
+
+
+def get_preferred_days(player_id: str, fallback_sessions: int = 3) -> list[str]:
+    """Return the player's preferred training days, or a sensible default."""
+    with get_db() as conn:
+        row = conn.execute(
+            "SELECT preferred_days FROM players WHERE id = %s", (player_id,)
+        ).fetchone()
+    if row and row.get("preferred_days"):
+        return [d.strip() for d in row["preferred_days"].split(",") if d.strip()]
+    return _DEFAULT_DAYS_BY_COUNT.get(fallback_sessions, _DEFAULT_DAYS_BY_COUNT[3])
+
+
+def set_preferred_days(player_id: str, days: list[str]) -> None:
+    """Persist preferred training days as a comma-separated string."""
+    with get_db() as conn:
+        conn.execute(
+            "UPDATE players SET preferred_days = %s WHERE id = %s",
+            (",".join(days), player_id),
+        )
 
 
 # ---- EPM scores --------------------------------------------------------------
