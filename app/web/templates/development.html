@@ -1,104 +1,83 @@
 {% extends "base.html" %}
-{% block title %}{{ first_name }}'s Development – KP13{% endblock %}
+{% block title %}{{ first_name }}'s Træning – KP13{% endblock %}
 
 {% block content %}
 <!-- Header -->
 <div class="mb-6">
     <p class="text-kp-muted text-sm">KP13 Akademi</p>
-    <h1 class="text-2xl font-bold mt-1">{{ first_name }}'s Development</h1>
+    <h1 class="text-2xl font-bold mt-1">Din træning</h1>
+    {% if started_label %}
+    <p class="text-kp-muted text-xs mt-1">På akademiet siden {{ started_label }}</p>
+    {% endif %}
 </div>
 
-<!-- Focus areas (gaps) -->
-{% if gaps %}
-<div class="mb-8">
-    <h2 class="text-xs font-semibold text-kp-muted uppercase tracking-wider mb-3">Focus areas</h2>
-    <div class="space-y-2">
-        {% for g in gaps %}
-        {% set stage_label, stage_color = score_to_stage(g.score) %}
-        <div class="bg-kp-card border border-kp-border rounded-lg p-3">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-sm font-medium">{{ g.name }}</span>
-                <span class="text-xs {{ stage_color }} font-medium">{{ stage_label }}</span>
-            </div>
-            <div class="h-1.5 bg-kp-bg rounded-full overflow-hidden">
-                <div class="{{ bar_color(g.score) }} h-full rounded-full transition-all" style="width: {{ g.score * 10 }}%"></div>
-            </div>
-        </div>
-        {% endfor %}
+<!-- Hours hero -->
+<div class="grid grid-cols-3 gap-2 mb-6">
+    <div class="bg-kp-card border border-kp-border rounded-xl p-4">
+        <p class="text-[10px] uppercase tracking-wider text-kp-muted">Denne uge</p>
+        <p class="text-2xl font-bold mt-1">{{ week_label }}</p>
+        <p class="text-[11px] text-kp-muted mt-0.5">{{ week_sub }}</p>
+    </div>
+    <div class="bg-kp-card border border-kp-border rounded-xl p-4">
+        <p class="text-[10px] uppercase tracking-wider text-kp-muted">Denne måned</p>
+        <p class="text-2xl font-bold mt-1">{{ month_hours }}<span class="text-sm font-normal text-kp-muted ml-0.5">t</span></p>
+        <p class="text-[11px] text-kp-muted mt-0.5">timer</p>
+    </div>
+    <div class="bg-kp-card border border-kp-border rounded-xl p-4">
+        <p class="text-[10px] uppercase tracking-wider text-kp-muted">I alt</p>
+        <p class="text-2xl font-bold mt-1">{{ total_hours }}<span class="text-sm font-normal text-kp-muted ml-0.5">t</span></p>
+        <p class="text-[11px] text-kp-muted mt-0.5">siden start</p>
     </div>
 </div>
-{% endif %}
 
-<!-- Strengths -->
-{% if strengths %}
+<!-- Activity grid (last 12 weeks) -->
 <div class="mb-8">
-    <h2 class="text-xs font-semibold text-kp-muted uppercase tracking-wider mb-3">Strengths</h2>
-    <div class="space-y-2">
-        {% for s in strengths %}
-        {% set stage_label, stage_color = score_to_stage(s.score) %}
-        <div class="bg-kp-card border border-kp-border rounded-lg p-3">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-sm font-medium">{{ s.name }}</span>
-                <span class="text-xs {{ stage_color }} font-medium">{{ stage_label }}</span>
-            </div>
-            <div class="h-1.5 bg-kp-bg rounded-full overflow-hidden">
-                <div class="{{ bar_color(s.score) }} h-full rounded-full transition-all" style="width: {{ s.score * 10 }}%"></div>
-            </div>
+    <div class="flex justify-between items-baseline mb-3">
+        <h2 class="text-xs font-semibold text-kp-muted uppercase tracking-wider">Sidste 12 uger</h2>
+        <span class="text-[10px] text-kp-muted">{{ active_weeks }}/{{ activity|length }} uger trænet</span>
+    </div>
+    <div class="bg-kp-card border border-kp-border rounded-xl p-4">
+        <div class="grid grid-cols-12 gap-1.5">
+            {% for w in activity %}
+            <div class="aspect-square rounded {{ w.cell_class }}" title="Uge {{ w.week_label }} · {{ w.sessions }} session(er)"></div>
+            {% endfor %}
         </div>
-        {% endfor %}
+        <div class="flex items-center justify-between mt-3 text-[10px] text-kp-muted">
+            <span>{{ activity[0].week_label }}</span>
+            <div class="flex items-center gap-1">
+                <span>Færre</span>
+                <div class="w-2.5 h-2.5 rounded bg-kp-bg border border-kp-border"></div>
+                <div class="w-2.5 h-2.5 rounded bg-blue-900/60"></div>
+                <div class="w-2.5 h-2.5 rounded bg-blue-700"></div>
+                <div class="w-2.5 h-2.5 rounded bg-blue-500"></div>
+                <div class="w-2.5 h-2.5 rounded bg-blue-400"></div>
+                <span>Flere</span>
+            </div>
+            <span>Nu</span>
+        </div>
     </div>
 </div>
-{% endif %}
 
-<!-- All dimensions by category -->
-{% for cat in categories %}
+<!-- Recent sessions -->
+{% if recent %}
 <div class="mb-6">
-    <h2 class="text-xs font-semibold text-kp-muted uppercase tracking-wider mb-3">{{ cat.name }}</h2>
+    <h2 class="text-xs font-semibold text-kp-muted uppercase tracking-wider mb-3">Seneste træninger</h2>
     <div class="bg-kp-card border border-kp-border rounded-xl overflow-hidden divide-y divide-kp-border">
-        {% for dim in cat.dimensions %}
-        <div class="px-4 py-3">
-            <div class="flex justify-between items-center mb-1.5">
-                <span class="text-sm">{{ dim.name }}</span>
-                <span class="text-[11px] {{ dim.stage_color }} font-medium">{{ dim.stage_label }}</span>
+        {% for s in recent %}
+        <div class="px-4 py-3 flex items-center justify-between">
+            <div class="min-w-0">
+                <p class="text-sm font-medium truncate">{{ s.label }}</p>
+                <p class="text-[11px] text-kp-muted mt-0.5">{{ s.date_label }} · {{ s.minutes }} min</p>
             </div>
-            <div class="h-1 bg-kp-bg rounded-full overflow-hidden">
-                <div class="{{ dim.bar_color }} h-full rounded-full" style="width: {{ dim.bar_width }}%"></div>
-            </div>
+            <span class="text-[10px] {{ s.kind_color }} font-medium uppercase tracking-wider shrink-0 ml-3">{{ s.kind_label }}</span>
         </div>
         {% endfor %}
     </div>
 </div>
-{% endfor %}
-
-<!-- Stage legend -->
-<div class="mt-8 mb-4">
-    <h2 class="text-xs font-semibold text-kp-muted uppercase tracking-wider mb-3">Development stages</h2>
-    <div class="bg-kp-card border border-kp-border rounded-xl p-4 space-y-2">
-        <div class="flex items-center gap-2">
-            <div class="w-2 h-2 rounded-full bg-gray-500"></div>
-            <span class="text-xs text-gray-400">Discovering</span>
-            <span class="text-[10px] text-kp-muted ml-auto">Learning the basics</span>
-        </div>
-        <div class="flex items-center gap-2">
-            <div class="w-2 h-2 rounded-full bg-blue-500"></div>
-            <span class="text-xs text-blue-400">Developing</span>
-            <span class="text-[10px] text-kp-muted ml-auto">Building foundations</span>
-        </div>
-        <div class="flex items-center gap-2">
-            <div class="w-2 h-2 rounded-full bg-green-500"></div>
-            <span class="text-xs text-green-400">Confident</span>
-            <span class="text-[10px] text-kp-muted ml-auto">Reliable in training</span>
-        </div>
-        <div class="flex items-center gap-2">
-            <div class="w-2 h-2 rounded-full bg-amber-500"></div>
-            <span class="text-xs text-amber-400">Advanced</span>
-            <span class="text-[10px] text-kp-muted ml-auto">Transfers to matches</span>
-        </div>
-        <div class="flex items-center gap-2">
-            <div class="w-2 h-2 rounded-full bg-red-500"></div>
-            <span class="text-xs text-red-400">Elite</span>
-            <span class="text-[10px] text-kp-muted ml-auto">Stands out at age group</span>
-        </div>
-    </div>
+{% else %}
+<div class="bg-kp-card border border-kp-border rounded-xl p-6 text-center">
+    <p class="text-sm text-kp-muted">Endnu ingen sessioner registreret.</p>
+    <p class="text-[11px] text-kp-muted mt-1">Færdiggør en træning og kom tilbage.</p>
 </div>
+{% endif %}
 {% endblock %}

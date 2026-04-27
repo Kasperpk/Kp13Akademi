@@ -1,4 +1,4 @@
-"""Min Udvikling — Spillerens udviklingsview med rubrics, foto og træningsdashboard."""
+"""Min Udvikling — træningstimer som primær metrik. Niveau-gennemgang flyttet til 10-ugers review."""
 
 from __future__ import annotations
 
@@ -15,78 +15,35 @@ import streamlit as st
 
 from core.config import ANTHROPIC_API_KEY
 from core.database import (
-    get_players, get_observations, get_epm_history, get_training_hours,
+    get_players, get_observations, get_epm_history,
+    get_training_hours, get_weekly_activity, get_recent_sessions,
     update_player_image, get_player_image,
 )
 from core.epm import (
-    get_player_profile, identify_gaps, identify_strengths,
-    DIMENSIONS, DIM_BY_KEY, CATEGORIES, CATEGORY_DIMS,
+    get_player_profile, identify_gaps, identify_strengths, DIMENSIONS,
 )
 from core.elm import generate_weekly_summary
-from core.rubrics import RUBRICS
-from core.theme import apply_theme, score_to_stage, focus_badge
+from core.theme import apply_theme
 from core.auth import player_selector, get_player_id_from_url
 
 st.set_page_config(page_title="Min Udvikling – KP13", layout="wide")
 apply_theme()
 
-_STAGE_COLORS = {
-    "Opdageren":       "#6B7280",
-    "Under Udvikling": "#3B82F6",
-    "Sikker":          "#10B981",
-    "Avanceret":       "#F59E0B",
-    "Elite":           "#EF4444",
-}
 
-_CATEGORY_LABELS = {
-    "technical": "Teknisk",
-    "physical":  "Fysisk",
-    "cognitive": "Spilforståelse",
-    "mental":    "Mentalitet",
-}
-
-_CATEGORY_ICONS = {
-    "technical": "⚽",
-    "physical":  "💪",
-    "cognitive": "🧠",
-    "mental":    "🔥",
-}
+def _fmt_min(m: int) -> str:
+    return f"{m // 60}t {m % 60}m" if m >= 60 else f"{m}m"
 
 
-def _score_to_rubric_key(score: float) -> str:
-    if score <= 2: return "1-2"
-    if score <= 5: return "3-5"
-    if score <= 7: return "6-7"
-    if score <= 9: return "8-9"
-    return "10"
-
-
-def _next_rubric_key(key: str) -> str | None:
-    order = ["1-2", "3-5", "6-7", "8-9", "10"]
-    try:
-        idx = order.index(key)
-        return order[idx + 1] if idx < len(order) - 1 else None
-    except ValueError:
-        return None
-
-
-def _stage_badge_html(stage: str) -> str:
-    color = _STAGE_COLORS.get(stage, "#6B7280")
-    return (
-        f'<span style="background:{color};color:white;border-radius:4px;'
-        f'padding:2px 8px;font-size:0.72rem;font-weight:600;">{stage}</span>'
-    )
-
-
-def _score_bar_html(score: float) -> str:
-    pct = (score / 10) * 100
-    stage = score_to_stage(score)
-    color = _STAGE_COLORS.get(stage, "#3B82F6")
-    return (
-        f'<div style="background:#1F2937;border-radius:4px;height:6px;margin:4px 0 8px 0;">'
-        f'<div style="background:{color};width:{pct:.0f}%;height:100%;border-radius:4px;"></div>'
-        f'</div>'
-    )
+def _activity_color(sessions: int) -> str:
+    if sessions <= 0:
+        return "#1F2937"
+    if sessions == 1:
+        return "#1E3A8A"
+    if sessions == 2:
+        return "#1D4ED8"
+    if sessions == 3:
+        return "#3B82F6"
+    return "#60A5FA"
 
 
 # ---- player selector ---------------------------------------------------------
@@ -105,7 +62,6 @@ if not profile:
     st.stop()
 
 player = profile["player"]
-flat = profile["flat_scores"]
 
 # ---- header with profile photo -----------------------------------------------
 
@@ -142,95 +98,77 @@ with photo_col:
 
 st.markdown("")
 
-# ---- gaps + strengths --------------------------------------------------------
-
-gaps = identify_gaps(selected_id, top_n=3)
-strengths = identify_strengths(selected_id, top_n=3)
-
-col_gaps, col_str = st.columns(2)
-with col_gaps:
-    if gaps:
-        st.markdown("**Fokusområder**")
-        badges = " ".join(focus_badge(f"{g['name']} {g['score']:.1f}") for g in gaps)
-        st.markdown(badges, unsafe_allow_html=True)
-with col_str:
-    if strengths:
-        st.markdown("**Styrker**")
-        badges = " ".join(focus_badge(f"{s['name']} {s['score']:.1f}") for s in strengths)
-        st.markdown(badges, unsafe_allow_html=True)
-
-st.markdown("---")
-
-# ---- rubrics view ------------------------------------------------------------
-
-st.markdown("### Dit niveau")
-st.caption("Klik på en dimension for at se præcis hvad dit nuværende niveau betyder — og hvad næste trin kræver.")
-
-for cat in CATEGORIES:
-    dims = CATEGORY_DIMS[cat]
-    icon = _CATEGORY_ICONS.get(cat, "")
-    label = _CATEGORY_LABELS.get(cat, cat.capitalize())
-    st.markdown(f"#### {icon} {label}")
-
-    cols = st.columns(len(dims))
-    for i, d in enumerate(dims):
-        score = flat.get(d.key, 5.0)
-        stage = score_to_stage(score)
-        rubric_key = _score_to_rubric_key(score)
-        rubric = RUBRICS.get(d.key, {})
-        current_desc = rubric.get(rubric_key, "")
-        next_key = _next_rubric_key(rubric_key)
-        next_desc = rubric.get(next_key, "") if next_key else ""
-
-        with cols[i]:
-            st.markdown(
-                f'<div style="background:#1A1D27;border-radius:8px;padding:12px 14px;margin-bottom:6px;">'
-                f'<div style="font-size:0.8rem;font-weight:600;color:#E5E7EB;margin-bottom:2px;">{d.name}</div>'
-                f'<div style="font-size:1.5rem;font-weight:700;color:#F9FAFB;">{score:.1f}</div>'
-                f'{_score_bar_html(score)}'
-                f'{_stage_badge_html(stage)}'
-                f'</div>',
-                unsafe_allow_html=True,
-            )
-            if current_desc:
-                with st.expander("Se niveau"):
-                    st.markdown(f"**Nu — {score:.1f}/10**")
-                    st.info(current_desc)
-                    if next_desc and next_key:
-                        st.markdown(f"**Næste trin ({next_key}/10):**")
-                        st.success(next_desc)
-
-    st.markdown("")
-
-st.markdown("---")
-
-# ---- training dashboard ------------------------------------------------------
-
-st.markdown("### Trænings-Dashboard")
+# ---- training hours hero -----------------------------------------------------
 
 hours = get_training_hours(selected_id)
+week_min = hours.get("week_minutes", 0)
+week_sessions = hours.get("week_sessions", 0)
 
-def _fmt_min(m: int) -> str:
-    return f"{m // 60}t {m % 60}m" if m >= 60 else f"{m}m"
+st.markdown("### Din træning")
 
 c1, c2, c3 = st.columns(3)
-c1.metric("Timer i alt", f"{hours['total_hours']} t")
-c2.metric("Timer denne måned", f"{hours['month_hours']} t")
-week_min = hours.get("week_minutes", 0)
-c3.metric("Denne uge", _fmt_min(week_min) if week_min else f"{hours['week_sessions']} sessions")
+if week_min:
+    c1.metric("Denne uge", _fmt_min(week_min), help=f"{week_sessions} session(er)")
+else:
+    c1.metric("Denne uge", f"{week_sessions} sessions" if week_sessions else "0")
+c2.metric("Denne måned", f"{hours['month_hours']} t")
+c3.metric("I alt", f"{hours['total_hours']} t")
 
-if gaps:
-    st.markdown("**Mål at nå**")
-    for g in gaps[:3]:
-        target = 5.0 if g["score"] < 5 else (7.5 if g["score"] < 7.5 else 9.0)
-        progress = min((g["score"] - 1.0) / (target - 1.0), 1.0)
-        stage_target = score_to_stage(target)
-        goal_label = f"{g['name']}: {g['score']:.1f} → {target:.0f} ({stage_target})"
-        st.progress(max(0.0, progress), text=goal_label)
+# ---- activity grid -----------------------------------------------------------
 
-# ---- weekly summary ----------------------------------------------------------
+weekly = get_weekly_activity(selected_id, weeks=12)
+active_weeks = sum(1 for w in weekly if w["sessions"] > 0)
 
-st.divider()
+st.markdown(
+    f'<p style="color:#9CA3AF;font-size:0.85rem;margin-top:1rem;margin-bottom:0.5rem;">'
+    f'Sidste 12 uger — {active_weeks}/{len(weekly)} uger trænet</p>',
+    unsafe_allow_html=True,
+)
+
+cells = []
+for w in weekly:
+    color = _activity_color(w["sessions"])
+    cells.append(
+        f'<div title="Uge {w["week_start"]} · {w["sessions"]} session(er)" '
+        f'style="aspect-ratio:1;background:{color};border-radius:3px;'
+        f'border:1px solid #2A2D3A;"></div>'
+    )
+st.markdown(
+    f'<div style="display:grid;grid-template-columns:repeat(12,1fr);gap:6px;'
+    f'max-width:520px;">{ "".join(cells) }</div>',
+    unsafe_allow_html=True,
+)
+
+# ---- recent sessions ---------------------------------------------------------
+
+recent = get_recent_sessions(selected_id, limit=8)
+if recent:
+    st.markdown("##### Seneste træninger")
+    for s in recent:
+        cols = st.columns([4, 1, 1])
+        cols[0].markdown(f"**{s['label']}**  \n<span style='color:#9CA3AF;font-size:0.78rem'>{s['date']} · {s['minutes']} min</span>", unsafe_allow_html=True)
+        cols[1].markdown(f"<span style='color:#9CA3AF;font-size:0.78rem'>{s['kind']}</span>", unsafe_allow_html=True)
+
+st.markdown("---")
+
+# ---- 10-week review entry point ---------------------------------------------
+
+st.markdown("### Niveau-gennemgang")
+st.caption(
+    "Færdighedsniveauer (første touch, pasning, osv.) gennemgår vi i en samlet samtale "
+    "ca. hver 10. uge — ikke som en daglig score, men som en grundig samtale om hvor du står "
+    "og hvad du arbejder hen imod de næste 10 uger."
+)
+st.page_link(
+    "pages/7_10_uger_review.py",
+    label="Start 10-ugers review →",
+    icon="🎯",
+)
+
+st.markdown("---")
+
+# ---- weekly AI summary -------------------------------------------------------
+
 st.markdown("### Ugentlig Rapport")
 
 today = date.today()
@@ -250,6 +188,8 @@ else:
     if st.button("Generer ugentlig rapport", type="primary"):
         with st.spinner("Skriver rapport..."):
             try:
+                gaps = identify_gaps(selected_id, top_n=3)
+                strengths = identify_strengths(selected_id, top_n=3)
                 epm_hist = []
                 for d in DIMENSIONS:
                     epm_hist.extend(get_epm_history(selected_id, d.key, limit=10))

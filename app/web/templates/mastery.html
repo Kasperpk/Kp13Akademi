@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Mestring – KP13{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <p class="text-kp-muted text-sm">KP13 Akademi</p>
+    <h1 class="text-2xl font-bold mt-1">Mestring</h1>
+    <p class="text-kp-muted text-sm mt-2 leading-relaxed">
+        Sådan ser det ud at mestre hver færdighed. Brug det til at vide præcis hvad du arbejder hen imod —
+        hvis du er <span class="text-kp-text font-medium">10/10</span> i første touch, ved du nøjagtigt hvordan bolden skal opføre sig.
+    </p>
+</div>
+
+{% for cat in categories %}
+<div class="mb-8">
+    <h2 class="text-xs font-semibold text-kp-muted uppercase tracking-wider mb-3">{{ cat.label }}</h2>
+    <div class="space-y-2">
+        {% for d in cat.dimensions %}
+        <details class="bg-kp-card border border-kp-border rounded-xl overflow-hidden group">
+            <summary class="px-4 py-3 cursor-pointer flex items-center justify-between gap-3 list-none">
+                <div class="min-w-0">
+                    <p class="text-sm font-medium">{{ d.name }}</p>
+                    <p class="text-[11px] text-kp-muted mt-0.5 leading-snug">{{ d.description }}</p>
+                </div>
+                <svg class="w-4 h-4 text-kp-muted shrink-0 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </summary>
+            <div class="px-4 pb-4 border-t border-kp-border">
+                <p class="text-[10px] uppercase tracking-wider text-kp-muted mt-3 mb-2">Sådan ser det ud i praksis</p>
+                <div class="space-y-2.5">
+                    {% for level in d.levels %}
+                    <div class="flex gap-3">
+                        <div class="shrink-0 w-14 pt-0.5">
+                            <span class="text-[10px] font-bold tracking-wider
+                                {% if level.key == '10' %}text-red-400
+                                {% elif level.key == '8-9' %}text-amber-400
+                                {% elif level.key == '6-7' %}text-green-400
+                                {% elif level.key == '3-5' %}text-blue-400
+                                {% else %}text-gray-400{% endif %}">{{ level.stage|upper }}</span>
+                            <span class="block text-[10px] text-kp-muted">{{ level.key }}/10</span>
+                        </div>
+                        <p class="text-xs text-kp-text leading-relaxed">{{ level.description }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </details>
+        {% endfor %}
+    </div>
+</div>
+{% endfor %}
+
+<div class="mt-6 mb-2 px-1">
+    <p class="text-[11px] text-kp-muted leading-relaxed">
+        Hvor du selv står på hver færdighed gennemgår vi sammen ca. hver 10. uge.
+        Indtil da: bare træn — og brug listen ovenfor som inspiration til hvad du vil mestre.
+    </p>
+</div>
+{% endblock %}

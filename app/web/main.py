@@ -27,6 +27,7 @@ from core.epm import (
     CATEGORIES,
     CATEGORY_DIMS,
 )
+from core.review import grouped_dimensions
 from core.agents.session_designer import design_week, load_schedule, save_schedule
 from core.models import WeeklySchedule
 
@@ -264,6 +265,51 @@ async def complete_session(request: Request, token: str, day: str):
     return RedirectResponse(url=f"/p/{token}", status_code=303)
 
 
+_KIND_LABEL = {
+    "coached": ("Coached",  "text-amber-400"),
+    "team":    ("Hold",     "text-blue-400"),
+    "match":   ("Kamp",     "text-red-400"),
+    "home":    ("Hjemme",   "text-green-400"),
+    "akademi": ("Akademi",  "text-kp-accent"),
+    "daily":   ("Daglig",   "text-kp-muted"),
+    "player":  ("Træning",  "text-kp-muted"),
+}
+
+
+def _activity_cell_class(sessions: int) -> str:
+    """Tailwind class for one cell in the 12-week activity grid."""
+    if sessions <= 0:
+        return "bg-kp-bg border border-kp-border"
+    if sessions == 1:
+        return "bg-blue-900/60"
+    if sessions == 2:
+        return "bg-blue-700"
+    if sessions == 3:
+        return "bg-blue-500"
+    return "bg-blue-400"
+
+
+_DK_MONTH = {
+    1: "jan", 2: "feb", 3: "mar", 4: "apr", 5: "maj", 6: "jun",
+    7: "jul", 8: "aug", 9: "sep", 10: "okt", 11: "nov", 12: "dec",
+}
+
+
+def _date_label_dk(iso: str) -> str:
+    try:
+        d = date.fromisoformat(iso[:10])
+    except ValueError:
+        return iso
+    return f"{d.day}. {_DK_MONTH.get(d.month, '')}"
+
+
+def _fmt_minutes_dk(m: int) -> str:
+    if m >= 60:
+        h, rem = divmod(m, 60)
+        return f"{h}t {rem}m" if rem else f"{h}t"
+    return f"{m}m"
+
+
 @app.get("/p/{token}/development", response_class=HTMLResponse)
 async def player_development(request: Request, token: str):
     info = _verify(token)
@@ -272,44 +318,92 @@ async def player_development(request: Request, token: str):
     if not player:
         raise HTTPException(404)
 
-    profile = get_player_profile(player_id)
-    gaps = identify_gaps(player_id, top_n=3)
-    strengths = identify_strengths(player_id, top_n=3)
-    scores = profile.get("scores", {})
+    hours = db.get_training_hours(player_id)
+    weekly = db.get_weekly_activity(player_id, weeks=12)
+    recent = db.get_recent_sessions(player_id, limit=8)
 
-    # Build dimension data with stages for template
-    categories_data = []
-    for cat in CATEGORIES:
-        dims = CATEGORY_DIMS.get(cat, [])
-        dim_data = []
-        for d in dims:
-            s = scores.get(d.key, {})
-            score = s.get("score", 5.0)
-            stage_label, stage_color = _score_to_stage(score)
-            dim_data.append({
-                "key": d.key,
-                "name": d.name,
-                "score": score,
-                "stage_label": stage_label,
-                "stage_color": stage_color,
-                "bar_color": _bar_color(score),
-                "bar_width": score * 10,
-            })
-        categories_data.append({
-            "name": cat.title(),
-            "dimensions": dim_data,
+    # Activity grid cells
+    activity = []
+    for w in weekly:
+        activity.append({
+            "week_start": w["week_start"],
+            "week_label": _date_label_dk(w["week_start"]),
+            "sessions": w["sessions"],
+            "minutes": w["minutes"],
+            "cell_class": _activity_cell_class(w["sessions"]),
         })
+    active_weeks = sum(1 for w in weekly if w["sessions"] > 0)
+
+    # This-week summary
+    week_min = hours.get("week_minutes", 0)
+    week_sessions = hours.get("week_sessions", 0)
+    if week_min:
+        week_label = _fmt_minutes_dk(week_min)
+        week_sub = f"{week_sessions} session(er)"
+    elif week_sessions:
+        week_label = f"{week_sessions}"
+        week_sub = "session(er)"
+    else:
+        week_label = "0"
+        week_sub = "endnu"
+
+    # Recent sessions display
+    recent_view = []
+    for s in recent:
+        kind_label, kind_color = _KIND_LABEL.get(s["kind"], (s["kind"].title(), "text-kp-muted"))
+        recent_view.append({
+            "label": s["label"],
+            "date_label": _date_label_dk(s["date"]),
+            "minutes": s["minutes"],
+            "kind_label": kind_label,
+            "kind_color": kind_color,
+        })
+
+    started = player.get("started_date") or ""
+    started_label = _date_label_dk(started) if started else ""
 
     return _render("development.html",
         token=token,
         player=player,
         first_name=player["name"].split()[0],
-        categories=categories_data,
-        gaps=gaps,
-        strengths=strengths,
-        score_to_stage=_score_to_stage,
-        bar_color=_bar_color,
+        started_label=started_label,
+        week_label=week_label,
+        week_sub=week_sub,
+        month_hours=hours["month_hours"],
+        total_hours=hours["total_hours"],
+        activity=activity,
+        active_weeks=active_weeks,
+        recent=recent_view,
         active="development",
+    )
+
+
+@app.get("/p/{token}/mastery", response_class=HTMLResponse)
+async def player_mastery(request: Request, token: str):
+    """Educational rubric ladder — full levels for each skill, no personal score."""
+    info = _verify(token)
+    player_id = info["player_id"]
+    player = db.get_player(player_id)
+    if not player:
+        raise HTTPException(404)
+
+    cats = grouped_dimensions()
+    # Localize category labels
+    cat_labels = {
+        "technical": "Teknisk",
+        "physical":  "Fysisk",
+        "cognitive": "Spilforståelse",
+        "mental":    "Mentalitet",
+    }
+    for c in cats:
+        c["label"] = cat_labels.get(c["category"], c["category"].title())
+
+    return _render("mastery.html",
+        token=token,
+        player=player,
+        first_name=player["name"].split()[0],
+        categories=cats,
+        active="mastery",
     )
 
 

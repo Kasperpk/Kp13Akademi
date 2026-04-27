@@ -636,6 +636,155 @@ def get_training_hours(player_id: str) -> dict[str, Any]:
     }
 
 
+def get_weekly_activity(player_id: str, weeks: int = 12) -> list[dict[str, Any]]:
+    """Return per-week session counts and minutes for the last *weeks* weeks.
+
+    Output is ordered oldest → newest. Each entry:
+        {"week_start": "YYYY-MM-DD", "sessions": int, "minutes": int}
+
+    Used by the player development page to render a GitHub-style activity grid.
+    """
+    from datetime import date as _date, timedelta as _timedelta
+
+    today = _date.today()
+    this_monday = today - _timedelta(days=today.weekday())
+    earliest = this_monday - _timedelta(weeks=weeks - 1)
+    earliest_iso = earliest.isoformat()
+
+    buckets: dict[str, dict[str, int]] = {}
+    for i in range(weeks):
+        wk = (earliest + _timedelta(weeks=i)).isoformat()
+        buckets[wk] = {"sessions": 0, "minutes": 0}
+
+    def _bucket_for(d: str) -> str | None:
+        # d is an ISO date string YYYY-MM-DD
+        try:
+            dd = _date.fromisoformat(d[:10])
+        except ValueError:
+            return None
+        if dd < earliest:
+            return None
+        wk_monday = dd - _timedelta(days=dd.weekday())
+        return wk_monday.isoformat()
+
+    with get_db() as conn:
+        obs_rows = conn.execute(
+            "SELECT date, session_type FROM session_observations WHERE player_id = %s AND date >= %s",
+            (player_id, earliest_iso),
+        ).fetchall()
+        completion_rows = conn.execute(
+            "SELECT completed_at FROM session_completions WHERE player_id = %s AND completed_at >= %s",
+            (player_id, earliest_iso),
+        ).fetchall()
+        plan_rows = conn.execute(
+            "SELECT date FROM daily_plans WHERE player_id = %s AND completed = 1 AND date >= %s",
+            (player_id, earliest_iso),
+        ).fetchall()
+        ps_rows = conn.execute(
+            """SELECT week_start, COALESCE(duration_min, 0) AS duration_min
+               FROM player_sessions
+               WHERE player_id = %s AND week_start >= %s
+                 AND duration_min IS NOT NULL AND duration_min > 0""",
+            (player_id, earliest_iso),
+        ).fetchall()
+
+    for r in obs_rows:
+        wk = _bucket_for(r["date"])
+        if wk and wk in buckets:
+            buckets[wk]["sessions"] += 1
+            buckets[wk]["minutes"] += _SESSION_TYPE_MINUTES.get(r["session_type"], 45)
+
+    for r in completion_rows:
+        wk = _bucket_for(r["completed_at"])
+        if wk and wk in buckets:
+            buckets[wk]["sessions"] += 1
+            buckets[wk]["minutes"] += _AKADEMI_SESSION_MINUTES
+
+    for r in plan_rows:
+        wk = _bucket_for(r["date"])
+        if wk and wk in buckets:
+            buckets[wk]["sessions"] += 1
+            buckets[wk]["minutes"] += _DAILY_PLAN_MINUTES
+
+    for r in ps_rows:
+        wk = _bucket_for(r["week_start"])
+        if wk and wk in buckets:
+            buckets[wk]["sessions"] += 1
+            buckets[wk]["minutes"] += int(r["duration_min"])
+
+    return [
+        {"week_start": wk, "sessions": v["sessions"], "minutes": v["minutes"]}
+        for wk, v in sorted(buckets.items())
+    ]
+
+
+def get_recent_sessions(player_id: str, limit: int = 8) -> list[dict[str, Any]]:
+    """Return the most recent training events across all sources, newest first.
+
+    Each entry: {"date": "YYYY-MM-DD", "kind": str, "label": str, "minutes": int}
+    Sources:
+      - session_observations (coach-logged) — kind="coached"/"team"/"match"/"home"
+      - session_completions (Akademi) — kind="akademi"
+      - daily_plans (legacy) — kind="daily"
+      - player_sessions (explicit-duration) — kind="player"
+    """
+    rows: list[dict[str, Any]] = []
+
+    with get_db() as conn:
+        obs = conn.execute(
+            "SELECT date, session_type, theme FROM session_observations WHERE player_id = %s ORDER BY date DESC LIMIT %s",
+            (player_id, limit),
+        ).fetchall()
+        comps = conn.execute(
+            "SELECT completed_at, day FROM session_completions WHERE player_id = %s ORDER BY completed_at DESC LIMIT %s",
+            (player_id, limit),
+        ).fetchall()
+        plans = conn.execute(
+            "SELECT date, focus_dimension FROM daily_plans WHERE player_id = %s AND completed = 1 ORDER BY date DESC LIMIT %s",
+            (player_id, limit),
+        ).fetchall()
+        ps = conn.execute(
+            """SELECT week_start, day, session_type, COALESCE(duration_min, 0) AS duration_min
+               FROM player_sessions
+               WHERE player_id = %s AND duration_min IS NOT NULL AND duration_min > 0
+               ORDER BY week_start DESC, day DESC LIMIT %s""",
+            (player_id, limit),
+        ).fetchall()
+
+    for r in obs:
+        rows.append({
+            "date": r["date"],
+            "kind": r["session_type"],
+            "label": r["theme"] or r["session_type"].title(),
+            "minutes": _SESSION_TYPE_MINUTES.get(r["session_type"], 45),
+        })
+    for r in comps:
+        rows.append({
+            "date": r["completed_at"][:10],
+            "kind": "akademi",
+            "label": f"Akademi · {r['day']}",
+            "minutes": _AKADEMI_SESSION_MINUTES,
+        })
+    for r in plans:
+        rows.append({
+            "date": r["date"],
+            "kind": "daily",
+            "label": r["focus_dimension"] or "Hjemmetræning",
+            "minutes": _DAILY_PLAN_MINUTES,
+        })
+    for r in ps:
+        st_label = r["session_type"] or "player"
+        rows.append({
+            "date": r["week_start"],
+            "kind": st_label,
+            "label": st_label.title(),
+            "minutes": int(r["duration_min"]),
+        })
+
+    rows.sort(key=lambda x: x["date"], reverse=True)
+    return rows[:limit]
+
+
 # ---- ugentlig planer (Danish weekly plans) -----------------------------------
 
 
