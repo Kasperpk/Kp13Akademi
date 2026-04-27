@@ -159,6 +159,10 @@ _SCHEMA_STATEMENTS = [
         notes              TEXT DEFAULT '',
         created_at         TEXT DEFAULT ({_ISO_DEFAULT})
     )""",
+    # Additive migrations (safe to run on existing DBs)
+    "ALTER TABLE players ADD COLUMN IF NOT EXISTS preferred_days TEXT DEFAULT NULL",
+    "ALTER TABLE player_sessions ADD COLUMN IF NOT EXISTS duration_min INTEGER DEFAULT NULL",
+    "ALTER TABLE player_sessions ADD COLUMN IF NOT EXISTS added_by TEXT DEFAULT 'coach'",
     "CREATE INDEX IF NOT EXISTS idx_epm_scores_player ON epm_scores(player_id)",
     "CREATE INDEX IF NOT EXISTS idx_epm_history_player_time ON epm_history(player_id, recorded_at DESC)",
     "CREATE INDEX IF NOT EXISTS idx_session_obs_player_date ON session_observations(player_id, date DESC)",
@@ -259,6 +263,34 @@ def get_player(player_id: str) -> dict[str, Any] | None:
             "SELECT * FROM players WHERE id = %s", (player_id,)
         ).fetchone()
         return row
+
+
+_ALL_DAYS = ["Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag", "Søndag"]
+_DEFAULT_DAYS_BY_COUNT = {
+    2: ["Mandag", "Torsdag"],
+    3: ["Mandag", "Onsdag", "Fredag"],
+    4: ["Mandag", "Tirsdag", "Torsdag", "Lørdag"],
+}
+
+
+def get_preferred_days(player_id: str, fallback_sessions: int = 3) -> list[str]:
+    """Return the player's preferred training days, or a sensible default."""
+    with get_db() as conn:
+        row = conn.execute(
+            "SELECT preferred_days FROM players WHERE id = %s", (player_id,)
+        ).fetchone()
+    if row and row.get("preferred_days"):
+        return [d.strip() for d in row["preferred_days"].split(",") if d.strip()]
+    return _DEFAULT_DAYS_BY_COUNT.get(fallback_sessions, _DEFAULT_DAYS_BY_COUNT[3])
+
+
+def set_preferred_days(player_id: str, days: list[str]) -> None:
+    """Persist preferred training days as a comma-separated string."""
+    with get_db() as conn:
+        conn.execute(
+            "UPDATE players SET preferred_days = %s WHERE id = %s",
+            (",".join(days), player_id),
+        )
 
 
 # ---- EPM scores --------------------------------------------------------------
@@ -522,7 +554,8 @@ _SESSION_TYPE_MINUTES = {
     "match": 90,
     "home": 30,
 }
-_DAILY_PLAN_MINUTES = 25
+_DAILY_PLAN_MINUTES = 25      # legacy home-exercise plans (short)
+_AKADEMI_SESSION_MINUTES = 60  # KP13 akademi session completions
 
 
 def get_training_hours(player_id: str) -> dict[str, Any]:
@@ -549,6 +582,7 @@ def get_training_hours(player_id: str) -> dict[str, Any]:
     total_minutes = 0
     month_minutes = 0
     week_sessions = 0
+    week_minutes = 0
 
     for r in obs_rows:
         mins = _SESSION_TYPE_MINUTES.get(r["session_type"], 45)
@@ -558,24 +592,47 @@ def get_training_hours(player_id: str) -> dict[str, Any]:
         if r["date"] >= week_start:
             week_sessions += 1
 
-    completed_dates = set()
+    # Akademi session completions (marked via "Gennemført" button) = 60 min each
     for r in completion_rows:
         d = r["completed_at"][:10]
-        completed_dates.add(d)
-    for r in plan_rows:
-        completed_dates.add(r["date"])
+        total_minutes += _AKADEMI_SESSION_MINUTES
+        if d >= month_start:
+            month_minutes += _AKADEMI_SESSION_MINUTES
+        if d >= week_start:
+            week_sessions += 1
+            week_minutes += _AKADEMI_SESSION_MINUTES
 
-    for d in completed_dates:
+    # Legacy daily-plan completions (home exercises) = 25 min each
+    for r in plan_rows:
+        d = r["date"]
         total_minutes += _DAILY_PLAN_MINUTES
         if d >= month_start:
             month_minutes += _DAILY_PLAN_MINUTES
         if d >= week_start:
             week_sessions += 1
 
+    # Also count player_sessions with explicit duration_min
+    with get_db() as conn:
+        ps_rows = conn.execute(
+            """SELECT week_start, COALESCE(duration_min, 0) AS duration_min
+               FROM player_sessions
+               WHERE player_id = %s AND duration_min IS NOT NULL AND duration_min > 0""",
+            (player_id,),
+        ).fetchall()
+
+    for r in ps_rows:
+        mins = int(r["duration_min"])
+        total_minutes += mins
+        if r["week_start"] >= month_start:
+            month_minutes += mins
+        if r["week_start"] >= week_start:
+            week_minutes += mins
+
     return {
         "total_hours": round(total_minutes / 60, 1),
         "month_hours": round(month_minutes / 60, 1),
         "week_sessions": week_sessions,
+        "week_minutes": week_minutes,
     }
 
 
@@ -613,13 +670,15 @@ def add_player_session(
     session_type: str,
     time_start: str = "",
     notes: str = "",
+    duration_min: int | None = None,
+    added_by: str = "coach",
 ) -> None:
     with get_db() as conn:
         conn.execute(
             """INSERT INTO player_sessions
-               (player_id, week_start, day, session_type, time_start, notes)
-               VALUES (%s, %s, %s, %s, %s, %s)""",
-            (player_id, week_start, day, session_type, time_start, notes),
+               (player_id, week_start, day, session_type, time_start, notes, duration_min, added_by)
+               VALUES (%s, %s, %s, %s, %s, %s, %s, %s)""",
+            (player_id, week_start, day, session_type, time_start, notes, duration_min, added_by),
         )
 
 
@@ -636,6 +695,27 @@ def get_player_sessions(player_id: str, week_start: str) -> dict[str, list[dict[
     for r in rows:
         result.setdefault(r["day"], []).append(r)
     return result
+
+
+def get_week_training_minutes(player_id: str, week_start: str) -> dict[str, int]:
+    """Return training minutes broken down by added_by for the week.
+
+    Returns {"coach": N, "player": N, "total": N}
+    """
+    with get_db() as conn:
+        rows = conn.execute(
+            """SELECT added_by, COALESCE(SUM(duration_min), 0) AS mins
+               FROM player_sessions
+               WHERE player_id = %s AND week_start = %s AND duration_min IS NOT NULL
+               GROUP BY added_by""",
+            (player_id, week_start),
+        ).fetchall()
+    totals = {"coach": 0, "player": 0}
+    for r in rows:
+        key = r["added_by"] if r["added_by"] in totals else "player"
+        totals[key] = int(r["mins"])
+    totals["total"] = totals["coach"] + totals["player"]
+    return totals
 
 
 def delete_player_session(session_id: int) -> None:

@@ -210,10 +210,14 @@ st.markdown("### Trænings-Dashboard")
 
 hours = get_training_hours(selected_id)
 
+def _fmt_min(m: int) -> str:
+    return f"{m // 60}t {m % 60}m" if m >= 60 else f"{m}m"
+
 c1, c2, c3 = st.columns(3)
 c1.metric("Timer i alt", f"{hours['total_hours']} t")
 c2.metric("Timer denne måned", f"{hours['month_hours']} t")
-c3.metric("Sessions denne uge", hours["week_sessions"])
+week_min = hours.get("week_minutes", 0)
+c3.metric("Denne uge", _fmt_min(week_min) if week_min else f"{hours['week_sessions']} sessions")
 
 if gaps:
     st.markdown("**Mål at nå**")

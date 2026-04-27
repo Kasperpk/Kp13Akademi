@@ -345,9 +345,10 @@ def generate_weekly_plan_danish(
     gaps: list[dict[str, Any]],
     strengths: list[dict[str, Any]],
     recent_observations: list[dict[str, Any]],
-    sessions_per_week: int,
+    chosen_days: list[str],
     available_exercises: list[dict[str, Any]],
     player_goals: str = "",
+    sessions_per_week: int | None = None,
 ) -> str:
     """Generate a full weekly training plan in Danish.
 
@@ -396,7 +397,16 @@ def generate_weekly_plan_danish(
     kp13_methodology = _load_kp13_methodology()
 
     day_names = {2: "Mandag og Torsdag", 3: "Mandag, Onsdag og Fredag", 4: "Mandag, Tirsdag, Torsdag og Lørdag"}
-    days_label = day_names.get(sessions_per_week, f"{sessions_per_week} gange om ugen")
+    sessions_count = len(chosen_days) if chosen_days else (sessions_per_week or 3)
+    if chosen_days:
+        if len(chosen_days) == 1:
+            days_label = chosen_days[0]
+        elif len(chosen_days) == 2:
+            days_label = f"{chosen_days[0]} og {chosen_days[1]}"
+        else:
+            days_label = ", ".join(chosen_days[:-1]) + f" og {chosen_days[-1]}"
+    else:
+        days_label = day_names.get(sessions_count, f"{sessions_count} gange om ugen")
 
     system = f"""\
 Du er KP13 Akademiets AI-træningsmester. Du designer ugentlige HJEMMETRÆNINGSPLANER \
@@ -461,7 +471,7 @@ TILGÆNGELIGE ØVELSER:
 {exercises_text}
 
 PLAN-FORMAT:
-Lav {sessions_per_week} sessioner ({days_label}). Skriv planen som en sammenhængende, letlæselig tekst \
+Lav {sessions_count} sessioner ({days_label}). Skriv planen som en sammenhængende, letlæselig tekst \
 henvendt direkte til {player_name} og hans forælder. Brug "du" til {player_name}.
 
 For HVER session:
