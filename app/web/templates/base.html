@@ -39,21 +39,21 @@
         <div class="flex justify-around max-w-lg mx-auto py-3">
             <a href="/p/{{ token }}" class="flex flex-col items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 {{ 'text-kp-accent' if active == 'home' else 'text-kp-muted' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                </svg>
+                <span class="text-[10px] {{ 'text-kp-accent font-medium' if active == 'home' else 'text-kp-muted' }}">Min Udvikling</span>
+            </a>
+            <a href="/p/{{ token }}/today" class="flex flex-col items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 {{ 'text-kp-accent' if active == 'today' else 'text-kp-muted' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
-                <span class="text-[10px] {{ 'text-kp-accent font-medium' if active == 'home' else 'text-kp-muted' }}">Training</span>
+                <span class="text-[10px] {{ 'text-kp-accent font-medium' if active == 'today' else 'text-kp-muted' }}">Træn idag</span>
             </a>
             <a href="/p/{{ token }}/week" class="flex flex-col items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 {{ 'text-kp-accent' if active == 'week' else 'text-kp-muted' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
                 </svg>
                 <span class="text-[10px] {{ 'text-kp-accent font-medium' if active == 'week' else 'text-kp-muted' }}">Ugeplan</span>
-            </a>
-            <a href="/p/{{ token }}/development" class="flex flex-col items-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 {{ 'text-kp-accent' if active == 'development' else 'text-kp-muted' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-                </svg>
-                <span class="text-[10px] {{ 'text-kp-accent font-medium' if active == 'development' else 'text-kp-muted' }}">Træning</span>
             </a>
             <a href="/p/{{ token }}/mastery" class="flex flex-col items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 {{ 'text-kp-accent' if active == 'mastery' else 'text-kp-muted' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

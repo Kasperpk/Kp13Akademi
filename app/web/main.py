@@ -157,6 +157,33 @@ async def welcome(request: Request):
 
 @app.get("/p/{token}", response_class=HTMLResponse)
 async def player_home(request: Request, token: str):
+    """Min Udvikling — landing page. Træningstimer, sessioner og deltas."""
+    info = _verify(token)
+    player_id = info["player_id"]
+    player = db.get_player(player_id)
+    if not player:
+        raise HTTPException(404)
+
+    stats = db.get_training_stats(player_id)
+
+    started = player.get("started_date") or ""
+    started_label = _date_label_dk(started) if started else ""
+
+    return _render("home.html",
+        token=token,
+        player=player,
+        first_name=player["name"].split()[0],
+        started_label=started_label,
+        week=_card_payload(stats["week"], stats["prev_week"], "uge"),
+        month=_card_payload(stats["month"], stats["prev_month"], "måned"),
+        total=_card_payload(stats["total"], None, None),
+        active="home",
+    )
+
+
+@app.get("/p/{token}/today", response_class=HTMLResponse)
+async def player_today(request: Request, token: str):
+    """Træn idag — weekly schedule with today highlighted (was the old home view)."""
     info = _verify(token)
     player_id = info["player_id"]
     player = db.get_player(player_id)
@@ -176,17 +203,15 @@ async def player_home(request: Request, token: str):
             (s for s in schedule.sessions if s.day == today_name), None
         )
 
-    first_name = player["name"].split()[0]
-
-    return _render("home.html",
+    return _render("today.html",
         token=token,
         player=player,
-        first_name=first_name,
+        first_name=player["name"].split()[0],
         schedule=schedule,
         today_session=today_session,
         today_name=today_name,
         completions=completions,
-        active="home",
+        active="today",
     )
 
 
@@ -215,7 +240,7 @@ async def player_session(request: Request, token: str, day: str):
         session=session,
         day=day,
         completed=day in completions,
-        active="home",
+        active="today",
     )
 
 
@@ -262,31 +287,7 @@ async def complete_session(request: Request, token: str, day: str):
                     result_value=result_value,
                 )
 
-    return RedirectResponse(url=f"/p/{token}", status_code=303)
-
-
-_KIND_LABEL = {
-    "coached": ("Coached",  "text-amber-400"),
-    "team":    ("Hold",     "text-blue-400"),
-    "match":   ("Kamp",     "text-red-400"),
-    "home":    ("Hjemme",   "text-green-400"),
-    "akademi": ("Akademi",  "text-kp-accent"),
-    "daily":   ("Daglig",   "text-kp-muted"),
-    "player":  ("Træning",  "text-kp-muted"),
-}
-
-
-def _activity_cell_class(sessions: int) -> str:
-    """Tailwind class for one cell in the 12-week activity grid."""
-    if sessions <= 0:
-        return "bg-kp-bg border border-kp-border"
-    if sessions == 1:
-        return "bg-blue-900/60"
-    if sessions == 2:
-        return "bg-blue-700"
-    if sessions == 3:
-        return "bg-blue-500"
-    return "bg-blue-400"
+    return RedirectResponse(url=f"/p/{token}/today", status_code=303)
 
 
 _DK_MONTH = {
@@ -303,79 +304,41 @@ def _date_label_dk(iso: str) -> str:
     return f"{d.day}. {_DK_MONTH.get(d.month, '')}"
 
 
-def _fmt_minutes_dk(m: int) -> str:
-    if m >= 60:
-        h, rem = divmod(m, 60)
-        return f"{h}t {rem}m" if rem else f"{h}t"
-    return f"{m}m"
+def _hours_label(hours: float) -> str:
+    return f"{hours:.1f} t" if hours >= 0.05 else "0 t"
 
 
-@app.get("/p/{token}/development", response_class=HTMLResponse)
-async def player_development(request: Request, token: str):
-    info = _verify(token)
-    player_id = info["player_id"]
-    player = db.get_player(player_id)
-    if not player:
-        raise HTTPException(404)
+def _card_payload(now: dict[str, Any], prev: dict[str, Any] | None, period: str | None) -> dict[str, Any]:
+    """Build the template payload for one hero card (week / month / total)."""
+    payload: dict[str, Any] = {
+        "hours_label": _hours_label(now["hours"]),
+        "sessions": now["sessions"],
+        "delta_label": None,
+        "delta_color": "text-kp-muted",
+    }
+    if prev is None or period is None:
+        return payload
 
-    hours = db.get_training_hours(player_id)
-    weekly = db.get_weekly_activity(player_id, weeks=12)
-    recent = db.get_recent_sessions(player_id, limit=8)
+    sess_diff = now["sessions"] - prev["sessions"]
+    hour_diff = now["hours"] - prev["hours"]
+    parts = []
+    if abs(hour_diff) >= 0.05:
+        sign = "+" if hour_diff > 0 else "−"
+        parts.append(f"{sign}{abs(hour_diff):.1f}t")
+    if sess_diff != 0:
+        sign = "+" if sess_diff > 0 else "−"
+        parts.append(f"{sign}{abs(sess_diff)} sess.")
+    if parts:
+        payload["delta_label"] = "  ·  ".join(parts) + f" vs sidste {period}"
+        up = (hour_diff > 0) or (hour_diff == 0 and sess_diff > 0)
+        payload["delta_color"] = "text-green-400" if up else "text-red-400"
+    return payload
 
-    # Activity grid cells
-    activity = []
-    for w in weekly:
-        activity.append({
-            "week_start": w["week_start"],
-            "week_label": _date_label_dk(w["week_start"]),
-            "sessions": w["sessions"],
-            "minutes": w["minutes"],
-            "cell_class": _activity_cell_class(w["sessions"]),
-        })
-    active_weeks = sum(1 for w in weekly if w["sessions"] > 0)
 
-    # This-week summary
-    week_min = hours.get("week_minutes", 0)
-    week_sessions = hours.get("week_sessions", 0)
-    if week_min:
-        week_label = _fmt_minutes_dk(week_min)
-        week_sub = f"{week_sessions} session(er)"
-    elif week_sessions:
-        week_label = f"{week_sessions}"
-        week_sub = "session(er)"
-    else:
-        week_label = "0"
-        week_sub = "endnu"
-
-    # Recent sessions display
-    recent_view = []
-    for s in recent:
-        kind_label, kind_color = _KIND_LABEL.get(s["kind"], (s["kind"].title(), "text-kp-muted"))
-        recent_view.append({
-            "label": s["label"],
-            "date_label": _date_label_dk(s["date"]),
-            "minutes": s["minutes"],
-            "kind_label": kind_label,
-            "kind_color": kind_color,
-        })
-
-    started = player.get("started_date") or ""
-    started_label = _date_label_dk(started) if started else ""
-
-    return _render("development.html",
-        token=token,
-        player=player,
-        first_name=player["name"].split()[0],
-        started_label=started_label,
-        week_label=week_label,
-        week_sub=week_sub,
-        month_hours=hours["month_hours"],
-        total_hours=hours["total_hours"],
-        activity=activity,
-        active_weeks=active_weeks,
-        recent=recent_view,
-        active="development",
-    )
+@app.get("/p/{token}/development")
+async def player_development_redirect(token: str):
+    """Back-compat: previous URL for the development page."""
+    return RedirectResponse(url=f"/p/{token}", status_code=308)
 
 
 @app.get("/p/{token}/mastery", response_class=HTMLResponse)
@@ -442,7 +405,7 @@ async def player_settings(request: Request, token: str):
         first_name=player["name"].split()[0],
         all_days=_ALL_DAYS,
         preferred_days=preferred,
-        active="home",
+        active=None,
         saved=False,
     )
 
@@ -466,7 +429,7 @@ async def player_settings_save(request: Request, token: str):
         first_name=player["name"].split()[0],
         all_days=_ALL_DAYS,
         preferred_days=chosen or db.get_preferred_days(player_id),
-        active="home",
+        active=None,
         saved=True,
     )
 

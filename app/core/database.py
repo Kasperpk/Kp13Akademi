@@ -558,12 +558,61 @@ _DAILY_PLAN_MINUTES = 25      # legacy home-exercise plans (short)
 _AKADEMI_SESSION_MINUTES = 60  # KP13 akademi session completions
 
 
-def get_training_hours(player_id: str) -> dict[str, Any]:
-    """Return training hour stats: total, this month, this week session count."""
+def _empty_bucket() -> dict[str, Any]:
+    return {"sessions": 0, "minutes": 0, "hours": 0.0}
+
+
+def get_training_stats(player_id: str) -> dict[str, dict[str, Any]]:
+    """Return sessions + minutes + hours bucketed by week / prev_week / month / prev_month / total.
+
+    Each bucket: {"sessions": int, "minutes": int, "hours": float}
+    Used by the player development view to drive the hero cards and period-over-period deltas.
+    """
     from datetime import date as _date, timedelta as _timedelta
+
     today = _date.today()
-    month_start = today.replace(day=1).isoformat()
-    week_start = (today - _timedelta(days=today.weekday())).isoformat()
+
+    # Week boundaries
+    this_monday = today - _timedelta(days=today.weekday())
+    last_monday = this_monday - _timedelta(weeks=1)
+    week_start_iso = this_monday.isoformat()
+    prev_week_start_iso = last_monday.isoformat()
+    prev_week_end_iso = this_monday.isoformat()  # exclusive
+
+    # Month boundaries
+    month_start = today.replace(day=1)
+    if month_start.month == 1:
+        prev_month_start = month_start.replace(year=month_start.year - 1, month=12)
+    else:
+        prev_month_start = month_start.replace(month=month_start.month - 1)
+    month_start_iso = month_start.isoformat()
+    prev_month_start_iso = prev_month_start.isoformat()
+    prev_month_end_iso = month_start_iso  # exclusive
+
+    buckets = {
+        "week":       _empty_bucket(),
+        "prev_week":  _empty_bucket(),
+        "month":      _empty_bucket(),
+        "prev_month": _empty_bucket(),
+        "total":      _empty_bucket(),
+    }
+
+    def _add(d_iso: str, mins: int) -> None:
+        d = d_iso[:10]
+        buckets["total"]["sessions"] += 1
+        buckets["total"]["minutes"] += mins
+        if d >= week_start_iso:
+            buckets["week"]["sessions"] += 1
+            buckets["week"]["minutes"] += mins
+        elif d >= prev_week_start_iso and d < prev_week_end_iso:
+            buckets["prev_week"]["sessions"] += 1
+            buckets["prev_week"]["minutes"] += mins
+        if d >= month_start_iso:
+            buckets["month"]["sessions"] += 1
+            buckets["month"]["minutes"] += mins
+        elif d >= prev_month_start_iso and d < prev_month_end_iso:
+            buckets["prev_month"]["sessions"] += 1
+            buckets["prev_month"]["minutes"] += mins
 
     with get_db() as conn:
         obs_rows = conn.execute(
@@ -578,41 +627,6 @@ def get_training_hours(player_id: str) -> dict[str, Any]:
             "SELECT date FROM daily_plans WHERE player_id = %s AND completed = 1",
             (player_id,),
         ).fetchall()
-
-    total_minutes = 0
-    month_minutes = 0
-    week_sessions = 0
-    week_minutes = 0
-
-    for r in obs_rows:
-        mins = _SESSION_TYPE_MINUTES.get(r["session_type"], 45)
-        total_minutes += mins
-        if r["date"] >= month_start:
-            month_minutes += mins
-        if r["date"] >= week_start:
-            week_sessions += 1
-
-    # Akademi session completions (marked via "Gennemført" button) = 60 min each
-    for r in completion_rows:
-        d = r["completed_at"][:10]
-        total_minutes += _AKADEMI_SESSION_MINUTES
-        if d >= month_start:
-            month_minutes += _AKADEMI_SESSION_MINUTES
-        if d >= week_start:
-            week_sessions += 1
-            week_minutes += _AKADEMI_SESSION_MINUTES
-
-    # Legacy daily-plan completions (home exercises) = 25 min each
-    for r in plan_rows:
-        d = r["date"]
-        total_minutes += _DAILY_PLAN_MINUTES
-        if d >= month_start:
-            month_minutes += _DAILY_PLAN_MINUTES
-        if d >= week_start:
-            week_sessions += 1
-
-    # Also count player_sessions with explicit duration_min
-    with get_db() as conn:
         ps_rows = conn.execute(
             """SELECT week_start, COALESCE(duration_min, 0) AS duration_min
                FROM player_sessions
@@ -620,169 +634,19 @@ def get_training_hours(player_id: str) -> dict[str, Any]:
             (player_id,),
         ).fetchall()
 
-    for r in ps_rows:
-        mins = int(r["duration_min"])
-        total_minutes += mins
-        if r["week_start"] >= month_start:
-            month_minutes += mins
-        if r["week_start"] >= week_start:
-            week_minutes += mins
-
-    return {
-        "total_hours": round(total_minutes / 60, 1),
-        "month_hours": round(month_minutes / 60, 1),
-        "week_sessions": week_sessions,
-        "week_minutes": week_minutes,
-    }
-
-
-def get_weekly_activity(player_id: str, weeks: int = 12) -> list[dict[str, Any]]:
-    """Return per-week session counts and minutes for the last *weeks* weeks.
-
-    Output is ordered oldest → newest. Each entry:
-        {"week_start": "YYYY-MM-DD", "sessions": int, "minutes": int}
-
-    Used by the player development page to render a GitHub-style activity grid.
-    """
-    from datetime import date as _date, timedelta as _timedelta
-
-    today = _date.today()
-    this_monday = today - _timedelta(days=today.weekday())
-    earliest = this_monday - _timedelta(weeks=weeks - 1)
-    earliest_iso = earliest.isoformat()
-
-    buckets: dict[str, dict[str, int]] = {}
-    for i in range(weeks):
-        wk = (earliest + _timedelta(weeks=i)).isoformat()
-        buckets[wk] = {"sessions": 0, "minutes": 0}
-
-    def _bucket_for(d: str) -> str | None:
-        # d is an ISO date string YYYY-MM-DD
-        try:
-            dd = _date.fromisoformat(d[:10])
-        except ValueError:
-            return None
-        if dd < earliest:
-            return None
-        wk_monday = dd - _timedelta(days=dd.weekday())
-        return wk_monday.isoformat()
-
-    with get_db() as conn:
-        obs_rows = conn.execute(
-            "SELECT date, session_type FROM session_observations WHERE player_id = %s AND date >= %s",
-            (player_id, earliest_iso),
-        ).fetchall()
-        completion_rows = conn.execute(
-            "SELECT completed_at FROM session_completions WHERE player_id = %s AND completed_at >= %s",
-            (player_id, earliest_iso),
-        ).fetchall()
-        plan_rows = conn.execute(
-            "SELECT date FROM daily_plans WHERE player_id = %s AND completed = 1 AND date >= %s",
-            (player_id, earliest_iso),
-        ).fetchall()
-        ps_rows = conn.execute(
-            """SELECT week_start, COALESCE(duration_min, 0) AS duration_min
-               FROM player_sessions
-               WHERE player_id = %s AND week_start >= %s
-                 AND duration_min IS NOT NULL AND duration_min > 0""",
-            (player_id, earliest_iso),
-        ).fetchall()
-
     for r in obs_rows:
-        wk = _bucket_for(r["date"])
-        if wk and wk in buckets:
-            buckets[wk]["sessions"] += 1
-            buckets[wk]["minutes"] += _SESSION_TYPE_MINUTES.get(r["session_type"], 45)
-
+        _add(r["date"], _SESSION_TYPE_MINUTES.get(r["session_type"], 45))
     for r in completion_rows:
-        wk = _bucket_for(r["completed_at"])
-        if wk and wk in buckets:
-            buckets[wk]["sessions"] += 1
-            buckets[wk]["minutes"] += _AKADEMI_SESSION_MINUTES
-
+        _add(r["completed_at"], _AKADEMI_SESSION_MINUTES)
     for r in plan_rows:
-        wk = _bucket_for(r["date"])
-        if wk and wk in buckets:
-            buckets[wk]["sessions"] += 1
-            buckets[wk]["minutes"] += _DAILY_PLAN_MINUTES
-
+        _add(r["date"], _DAILY_PLAN_MINUTES)
     for r in ps_rows:
-        wk = _bucket_for(r["week_start"])
-        if wk and wk in buckets:
-            buckets[wk]["sessions"] += 1
-            buckets[wk]["minutes"] += int(r["duration_min"])
+        _add(r["week_start"], int(r["duration_min"]))
 
-    return [
-        {"week_start": wk, "sessions": v["sessions"], "minutes": v["minutes"]}
-        for wk, v in sorted(buckets.items())
-    ]
+    for b in buckets.values():
+        b["hours"] = round(b["minutes"] / 60, 1)
 
-
-def get_recent_sessions(player_id: str, limit: int = 8) -> list[dict[str, Any]]:
-    """Return the most recent training events across all sources, newest first.
-
-    Each entry: {"date": "YYYY-MM-DD", "kind": str, "label": str, "minutes": int}
-    Sources:
-      - session_observations (coach-logged) — kind="coached"/"team"/"match"/"home"
-      - session_completions (Akademi) — kind="akademi"
-      - daily_plans (legacy) — kind="daily"
-      - player_sessions (explicit-duration) — kind="player"
-    """
-    rows: list[dict[str, Any]] = []
-
-    with get_db() as conn:
-        obs = conn.execute(
-            "SELECT date, session_type, theme FROM session_observations WHERE player_id = %s ORDER BY date DESC LIMIT %s",
-            (player_id, limit),
-        ).fetchall()
-        comps = conn.execute(
-            "SELECT completed_at, day FROM session_completions WHERE player_id = %s ORDER BY completed_at DESC LIMIT %s",
-            (player_id, limit),
-        ).fetchall()
-        plans = conn.execute(
-            "SELECT date, focus_dimension FROM daily_plans WHERE player_id = %s AND completed = 1 ORDER BY date DESC LIMIT %s",
-            (player_id, limit),
-        ).fetchall()
-        ps = conn.execute(
-            """SELECT week_start, day, session_type, COALESCE(duration_min, 0) AS duration_min
-               FROM player_sessions
-               WHERE player_id = %s AND duration_min IS NOT NULL AND duration_min > 0
-               ORDER BY week_start DESC, day DESC LIMIT %s""",
-            (player_id, limit),
-        ).fetchall()
-
-    for r in obs:
-        rows.append({
-            "date": r["date"],
-            "kind": r["session_type"],
-            "label": r["theme"] or r["session_type"].title(),
-            "minutes": _SESSION_TYPE_MINUTES.get(r["session_type"], 45),
-        })
-    for r in comps:
-        rows.append({
-            "date": r["completed_at"][:10],
-            "kind": "akademi",
-            "label": f"Akademi · {r['day']}",
-            "minutes": _AKADEMI_SESSION_MINUTES,
-        })
-    for r in plans:
-        rows.append({
-            "date": r["date"],
-            "kind": "daily",
-            "label": r["focus_dimension"] or "Hjemmetræning",
-            "minutes": _DAILY_PLAN_MINUTES,
-        })
-    for r in ps:
-        st_label = r["session_type"] or "player"
-        rows.append({
-            "date": r["week_start"],
-            "kind": st_label,
-            "label": st_label.title(),
-            "minutes": int(r["duration_min"]),
-        })
-
-    rows.sort(key=lambda x: x["date"], reverse=True)
-    return rows[:limit]
+    return buckets
 
 
 # ---- ugentlig planer (Danish weekly plans) -----------------------------------

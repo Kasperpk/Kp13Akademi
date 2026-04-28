@@ -24,7 +24,9 @@
       "Bash(python -c \"import ruff\")",
       "Bash(python -m pytest --version)",
       "Bash(python -X utf8 -c ' *)",
-      "Bash(make --dry-run help)"
+      "Bash(make --dry-run help)",
+      "Bash(rm \"app/pages/1_Min_Udvikling.py\")",
+      "Read(//c/c/Users/KasperKærgaardPeders/Repositories/Kp13Akademi/app/**)"
     ]
   }
 }
