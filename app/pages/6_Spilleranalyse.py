@@ -1,4 +1,4 @@
-"""Onboarding & Baseline workflow for new and existing players."""
+"""Spilleranalyse — baseline-målinger, dybde-spørgsmål, udviklingsoverblik og 10-ugers review."""
 
 from __future__ import annotations
 
@@ -20,17 +20,34 @@ from core.database import (
     get_player_assessments,
     set_epm_score,
 )
-from core.epm import DIM_BY_KEY, get_player_profile
+from core.epm import (
+    CATEGORIES, CATEGORY_DIMS, DIM_BY_KEY, DIMENSIONS, get_player_profile,
+)
 from core.onboarding import key_metrics_snapshot, suggest_epm_from_measurements
 from core.clients_loader import append_to_ongoing
 from core.charts import multi_trend
+from core.review import current_and_next
 from core.theme import apply_theme, score_to_stage
 
-st.set_page_config(page_title="Onboarding & Baseline – KP13", layout="wide")
+_CLIENTS_DIR = _ROOT / "clients"
+_CATEGORY_LABELS = {
+    "technical": "Teknisk",
+    "physical":  "Fysisk",
+    "cognitive": "Spilforståelse",
+    "mental":    "Mentalitet",
+}
+_CATEGORY_ICONS = {
+    "technical": "⚽",
+    "physical":  "💪",
+    "cognitive": "🧠",
+    "mental":    "🔥",
+}
+
+st.set_page_config(page_title="Spilleranalyse – KP13", layout="wide")
 apply_theme()
 require_coach()
 
-st.title("Onboarding & Baseline")
+st.title("Spilleranalyse")
 st.caption(
     "Struktureret onboarding med målbare tests + dyb spillerforståelse. "
     "Brug samme flow til re-tests for at holde baseline opdateret."
@@ -63,8 +80,8 @@ st.markdown(
     f"**{player['name']}** · {player.get('age_group', '')} · {player.get('position', '')}"
 )
 
-onboarding_tab, questions_tab, overview_tab = st.tabs(
-    ["1) Målbar Baseline", "2) Dybde-Spørgsmål", "3) Udviklingsoverblik"]
+onboarding_tab, questions_tab, overview_tab, review_tab = st.tabs(
+    ["1) Målbar Baseline", "2) Dybde-Spørgsmål", "3) Udviklingsoverblik", "4) 10-ugers Review"]
 )
 
 with onboarding_tab:
@@ -308,3 +325,147 @@ with overview_tab:
     history_by_dim = {k: get_epm_history(player_id, k, limit=50) for k in tracked_dims}
     fig = multi_trend(history_by_dim, title=f"{player['name']} — onboarding til progression")
     st.plotly_chart(fig, use_container_width=True)
+
+with review_tab:
+    st.subheader("10-ugers Review")
+    st.caption(
+        f"Gennemgang af **{player['name']}**'s færdighedsniveauer. Tag tid til hver dimension — "
+        "fortæl spilleren hvor de står nu, og hvad næste niveau ser ud som."
+    )
+
+    flat = profile["flat_scores"]
+    review_date = st.date_input("Review-dato", value=date.today(), key="review_date")
+
+    _state_key_prefix = f"review::{player_id}::{review_date.isoformat()}"
+    notes_key = f"{_state_key_prefix}::notes"
+    focus_key = f"{_state_key_prefix}::focus"
+
+    if notes_key not in st.session_state:
+        st.session_state[notes_key] = {d.key: "" for d in DIMENSIONS}
+    if focus_key not in st.session_state:
+        st.session_state[focus_key] = []
+
+    for cat in CATEGORIES:
+        icon = _CATEGORY_ICONS.get(cat, "")
+        label = _CATEGORY_LABELS.get(cat, cat.capitalize())
+        st.markdown(f"### {icon} {label}")
+
+        for d in CATEGORY_DIMS[cat]:
+            score = flat.get(d.key, 5.0)
+            cn = current_and_next(score, d.key)
+
+            with st.container(border=True):
+                head = st.columns([3, 1])
+                with head[0]:
+                    st.markdown(f"**{d.name}** — *{d.description}*")
+                with head[1]:
+                    st.markdown(
+                        f"<div style='text-align:right;font-size:1.4rem;font-weight:700;'>"
+                        f"{score:.1f}<span style='font-size:0.8rem;color:#9CA3AF;'>/10</span></div>",
+                        unsafe_allow_html=True,
+                    )
+
+                cols = st.columns(2) if cn["next"] else st.columns(1)
+
+                with cols[0]:
+                    st.markdown(
+                        f"**Nu — {cn['current']['stage']} ({cn['current']['key']}/10)**"
+                    )
+                    st.info(cn["current"]["description"] or "_Ingen beskrivelse._")
+
+                if cn["next"] and len(cols) > 1:
+                    with cols[1]:
+                        st.markdown(
+                            f"**Næste — {cn['next']['stage']} ({cn['next']['key']}/10)**"
+                        )
+                        st.success(cn["next"]["description"] or "_Ingen beskrivelse._")
+
+                st.session_state[notes_key][d.key] = st.text_area(
+                    "Coach-noter",
+                    value=st.session_state[notes_key].get(d.key, ""),
+                    key=f"note_{d.key}_{review_date.isoformat()}",
+                    placeholder="Hvad så vi i de sidste 10 uger? Hvad skal der til for næste skridt?",
+                    height=80,
+                )
+
+    st.markdown("### Fokus de næste 10 uger")
+    st.caption("Vælg 1–3 dimensioner spilleren primært arbejder med frem til næste review.")
+
+    dim_options = {d.key: d.name for d in DIMENSIONS}
+    focus = st.multiselect(
+        "Fokusområder",
+        options=list(dim_options.keys()),
+        default=st.session_state[focus_key],
+        format_func=lambda k: dim_options[k],
+        max_selections=3,
+        key=f"focus_select_{review_date.isoformat()}",
+    )
+    st.session_state[focus_key] = focus
+
+    review_summary = st.text_area(
+        "Samlet kommentar til spilleren (med i markdown-output)",
+        placeholder="Hvad er den ene ting du vil have spilleren tager med sig fra denne samtale?",
+        height=120,
+        key=f"review_summary_{review_date.isoformat()}",
+    )
+
+    def _build_review_markdown() -> str:
+        lines: list[str] = []
+        lines.append(f"# 10-ugers Review — {player['name']}")
+        lines.append("")
+        lines.append(f"**Dato:** {review_date.isoformat()}  ")
+        lines.append(f"**Aldersgruppe:** {player.get('age_group', '')}  ")
+        parts = [player.get("position", ""), player.get("club", "")]
+        sub = " · ".join(p for p in parts if p)
+        if sub:
+            lines.append(f"**Position:** {sub}  ")
+        lines.append("")
+
+        if focus:
+            lines.append("## Fokus næste 10 uger")
+            for k in focus:
+                lines.append(f"- **{dim_options[k]}**")
+            lines.append("")
+
+        if review_summary.strip():
+            lines.append("## Samlet kommentar")
+            lines.append(review_summary.strip())
+            lines.append("")
+
+        lines.append("## Niveauer")
+        for cat in CATEGORIES:
+            label = _CATEGORY_LABELS.get(cat, cat.capitalize())
+            lines.append(f"### {label}")
+            lines.append("")
+            for d in CATEGORY_DIMS[cat]:
+                score = flat.get(d.key, 5.0)
+                cn = current_and_next(score, d.key)
+                lines.append(f"#### {d.name} — {score:.1f}/10 ({cn['current']['stage']})")
+                lines.append("")
+                lines.append(f"**Nu ({cn['current']['key']}/10):** {cn['current']['description']}")
+                lines.append("")
+                if cn["next"]:
+                    lines.append(f"**Næste ({cn['next']['key']}/10):** {cn['next']['description']}")
+                    lines.append("")
+                note = (st.session_state[notes_key].get(d.key) or "").strip()
+                if note:
+                    lines.append(f"**Coach-noter:** {note}")
+                    lines.append("")
+            lines.append("")
+
+        return "\n".join(lines).rstrip() + "\n"
+
+    col_save, col_preview = st.columns([1, 1])
+
+    if col_save.button("💾 Gem review", type="primary", key="save_review"):
+        try:
+            out_dir = _CLIENTS_DIR / player_id / "reviews"
+            out_dir.mkdir(parents=True, exist_ok=True)
+            out_path = out_dir / f"{review_date.isoformat()}.md"
+            out_path.write_text(_build_review_markdown(), encoding="utf-8")
+            st.success(f"Gemt: `{out_path.relative_to(_ROOT)}`")
+        except Exception as e:
+            st.error(f"Kunne ikke gemme: {e}")
+
+    with col_preview.expander("📄 Forhåndsvis markdown"):
+        st.code(_build_review_markdown(), language="markdown")

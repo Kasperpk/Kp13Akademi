@@ -28,7 +28,7 @@ Requires Python 3.12+ and a `DATABASE_URL` in `.env` pointing to a Postgres inst
 **Coach console** (Streamlit):
 
 ```bash
-make run-coach   # streamlit run app/Home.py
+make run-coach   # streamlit run app/Min_Udvikling.py
 ```
 
 **Player app** (FastAPI, served over mobile-friendly HTML):
