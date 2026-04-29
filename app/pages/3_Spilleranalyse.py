@@ -20,7 +20,6 @@ from core.database import (
     get_observations,
     get_player_assessments,
     get_players,
-    initialise_player_epm,
     save_player_assessment,
     set_epm_score,
     upsert_player,
@@ -33,6 +32,7 @@ from core.epm import (
     get_player_profile,
     identify_gaps,
     identify_strengths,
+    initialise_player_epm,
 )
 from core.onboarding import key_metrics_snapshot, suggest_epm_from_measurements
 from core.review import current_and_next
