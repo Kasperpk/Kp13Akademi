@@ -1,11 +1,12 @@
-"""KP13 Akademi — Min Udvikling (landing). Træningstimer & sessioner som primær metrik."""
+"""Min udvikling — landing. Træningstimer + dagens AI-genererede session."""
 
 from __future__ import annotations
 
+import re
 import sys
 import base64
 from pathlib import Path
-from datetime import date, timedelta
+from datetime import date
 
 _ROOT = Path(__file__).resolve().parent.parent
 if str(_ROOT) not in sys.path:
@@ -15,20 +16,22 @@ import streamlit as st
 
 from core.config import APP_TITLE, ANTHROPIC_API_KEY, AUTO_SEED_ON_EMPTY_DB
 from core.database import (
-    init_db, get_players, get_observations, get_epm_history,
-    get_training_stats, update_player_image, get_player_image,
+    init_db, get_players, get_observations, get_training_stats,
+    update_player_image, get_player_image,
+    get_daily_plan, save_daily_plan, mark_plan_completed,
 )
 from core.epm import (
-    get_player_profile, identify_gaps, identify_strengths, DIMENSIONS,
+    get_player_profile, identify_gaps, identify_strengths, DIM_BY_KEY,
 )
-from core.elm import generate_weekly_summary
-from core.theme import apply_theme
+from core.elm import generate_daily_plan
+from core.recommender import recommend_for_gaps
+from core.theme import apply_theme, focus_badge, card, completed_badge
 from core.auth import player_selector, get_player_id_from_url
 
 # ---- page config (entry point only) -----------------------------------------
 
 st.set_page_config(
-    page_title=APP_TITLE,
+    page_title="Min udvikling – KP13",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -64,6 +67,14 @@ if not profile:
 player = profile["player"]
 
 
+# ---- helpers ----------------------------------------------------------------
+
+_DK_MONTHS = {
+    1: "januar", 2: "februar", 3: "marts", 4: "april", 5: "maj", 6: "juni",
+    7: "juli", 8: "august", 9: "september", 10: "oktober", 11: "november", 12: "december",
+}
+
+
 def _fmt_hours(hours: float) -> str:
     return f"{hours:.1f} t" if hours >= 0.05 else "0 t"
 
@@ -82,6 +93,27 @@ def _fmt_hour_delta(now: float, prev: float) -> str | None:
     diff = now - prev
     sign = "+" if diff > 0 else "−"
     return f"{sign}{abs(diff):.1f}t"
+
+
+def _format_date_danish(d: date) -> str:
+    return f"{d.day}. {_DK_MONTHS[d.month]} {d.year}"
+
+
+def _strip_ai_title_and_date(md: str) -> str:
+    if not md:
+        return md
+    lines = md.splitlines()
+    while lines and not lines[0].strip():
+        lines.pop(0)
+    if lines and re.match(r"^#{1,6}\s+", lines[0].strip()):
+        lines.pop(0)
+    while lines and not lines[0].strip():
+        lines.pop(0)
+    if lines and re.match(r"^(dato|date)\s*:\s*", lines[0].strip(), flags=re.IGNORECASE):
+        lines.pop(0)
+    while lines and not lines[0].strip():
+        lines.pop(0)
+    return "\n".join(lines)
 
 
 # ---- header with profile photo ----------------------------------------------
@@ -162,52 +194,97 @@ with c3:
 
 st.markdown("---")
 
-# ---- 10-week review entry point ---------------------------------------------
+# ---- today's training session ----------------------------------------------
 
-st.markdown("### Niveau-gennemgang")
-st.caption(
-    "Færdighedsniveauer (første touch, pasning, osv.) gennemgår vi i en samlet samtale "
-    "ca. hver 10. uge — ikke som en daglig score, men som en grundig samtale om hvor du står "
-    "og hvad du arbejder hen imod de næste 10 uger."
-)
-st.page_link("pages/7_10_uger_review.py", label="Start 10-ugers review →", icon="🎯")
+today_iso = date.today().isoformat()
+gaps = identify_gaps(selected_id, top_n=3)
+strengths = identify_strengths(selected_id, top_n=3)
 
-st.markdown("---")
+st.markdown("### Dagens træning")
 
-# ---- weekly AI summary ------------------------------------------------------
+if gaps:
+    badges_html = " ".join(focus_badge(g["name"]) for g in gaps[:2])
+    st.markdown(f"Dagens fokus &nbsp; {badges_html}", unsafe_allow_html=True)
 
-st.markdown("### Ugentlig Rapport")
+existing_plan = get_daily_plan(selected_id, today_iso)
 
-today = date.today()
-week_start = today - timedelta(days=today.weekday())
-all_obs = get_observations(selected_id, limit=100)
-week_obs = [obs for obs in all_obs if obs["date"] >= week_start.isoformat()]
+if existing_plan and existing_plan.get("plan_content"):
+    plan_content = existing_plan["plan_content"]
+    plan_md = plan_content.get("markdown", plan_content) if isinstance(plan_content, dict) else plan_content
+    clean_plan_md = _strip_ai_title_and_date(plan_md)
 
-st.markdown(
-    f'<p style="color:#9CA3AF;font-size:0.85rem;">Uge der starter {week_start.day}. '
-    f'{week_start.strftime("%B %Y")} — {len(week_obs)} session(er) logget</p>',
-    unsafe_allow_html=True,
-)
+    st.markdown(f"**Dato:** {_format_date_danish(date.fromisoformat(today_iso))}")
+    st.markdown("")
 
-if not ANTHROPIC_API_KEY:
-    st.caption("Tilføj API-nøgle i .env for at generere ugentlige rapporter.")
+    if existing_plan.get("completed"):
+        st.markdown(completed_badge(), unsafe_allow_html=True)
+        st.markdown("")
+
+    st.markdown(clean_plan_md)
+
+    if not existing_plan.get("completed"):
+        st.markdown("#### Hvordan gik det?")
+        feedback_option = st.radio(
+            "Vurder din session",
+            options=["Fantastisk", "Godt", "Hårdt", "Fik ikke gennemført"],
+            horizontal=True,
+            label_visibility="collapsed",
+        )
+        feedback_text = st.text_input(
+            "Noget at tilføje?",
+            placeholder="Valgfrit — hvad var nemt, hvad var svært",
+        )
+        if st.button("Marker session som gennemført", type="primary"):
+            full_feedback = feedback_option
+            if feedback_text:
+                full_feedback += f" — {feedback_text}"
+            mark_plan_completed(existing_plan["id"], full_feedback)
+            st.rerun()
+    elif existing_plan.get("player_feedback"):
+        st.markdown(
+            f'<p class="kp-muted">Feedback: {existing_plan["player_feedback"]}</p>',
+            unsafe_allow_html=True,
+        )
+
 else:
-    if st.button("Generer ugentlig rapport", type="primary"):
-        with st.spinner("Skriver rapport..."):
-            try:
-                gaps = identify_gaps(selected_id, top_n=3)
-                strengths = identify_strengths(selected_id, top_n=3)
-                epm_hist = []
-                for d in DIMENSIONS:
-                    epm_hist.extend(get_epm_history(selected_id, d.key, limit=10))
+    st.markdown(
+        card(
+            "<h4 style='margin:0 0 0.5rem 0;color:#F9FAFB'>Ingen session planlagt for i dag</h4>"
+            "<p style='color:#9CA3AF;margin:0'>Generer en personlig træningssession baseret på dine udviklingsområder.</p>",
+        ),
+        unsafe_allow_html=True,
+    )
 
-                summary = generate_weekly_summary(
+    if not ANTHROPIC_API_KEY:
+        st.caption("Tilføj API-nøgle i .env for at generere træningsplaner.")
+    elif st.button("Generer dagens session", type="primary"):
+        with st.spinner("Bygger din session..."):
+            try:
+                recent = get_observations(selected_id, limit=5)
+                recommended = recommend_for_gaps(gaps, max_results=8, age=9, max_players=2)
+
+                plan_md = generate_daily_plan(
                     player_profile=profile,
-                    week_observations=week_obs,
-                    epm_history=epm_hist,
                     gaps=gaps,
                     strengths=strengths,
+                    recent_sessions=recent,
+                    available_exercises=recommended,
                 )
-                st.markdown(summary)
+                plan_md = _strip_ai_title_and_date(plan_md)
+
+                focus_dim = gaps[0]["key"] if gaps else "general"
+                save_daily_plan(
+                    plan_date=today_iso,
+                    player_id=selected_id,
+                    focus_dimension=focus_dim,
+                    plan_content={"markdown": plan_md},
+                )
+                st.rerun()
             except Exception as e:
-                st.error(f"Rapport-generering fejlede: {e}")
+                st.error(f"Generering fejlede: {e}")
+
+if gaps:
+    with st.expander("Hvorfor dette er fokus"):
+        for g in gaps[:2]:
+            meta = DIM_BY_KEY[g["key"]]
+            st.markdown(f"**{meta.name}** — {meta.description}")

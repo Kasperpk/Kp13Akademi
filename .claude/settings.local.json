@@ -29,7 +29,8 @@
       "Read(//c/c/Users/KasperKærgaardPeders/Repositories/Kp13Akademi/app/**)",
       "Bash(python -m pytest tests/core/test_onboarding.py -v)",
       "Bash(.venv/Scripts/python.exe -m pytest tests/core/test_onboarding.py -v)",
-      "Bash(.venv/Scripts/python.exe -c \"import ast; ast.parse\\(open\\('app/pages/2_Log_Træning.py', encoding='utf-8'\\).read\\(\\)\\); print\\('OK'\\)\")"
+      "Bash(.venv/Scripts/python.exe -c \"import ast; ast.parse\\(open\\('app/pages/2_Log_Træning.py', encoding='utf-8'\\).read\\(\\)\\); print\\('OK'\\)\")",
+      "Bash(.venv/Scripts/python.exe -c \"import ast; ast.parse\\(open\\('app/Home.py', encoding='utf-8'\\).read\\(\\)\\); print\\('OK'\\)\")"
     ]
   }
 }
