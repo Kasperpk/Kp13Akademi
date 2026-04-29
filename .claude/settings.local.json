@@ -26,7 +26,10 @@
       "Bash(python -X utf8 -c ' *)",
       "Bash(make --dry-run help)",
       "Bash(rm \"app/pages/1_Min_Udvikling.py\")",
-      "Read(//c/c/Users/KasperKærgaardPeders/Repositories/Kp13Akademi/app/**)"
+      "Read(//c/c/Users/KasperKærgaardPeders/Repositories/Kp13Akademi/app/**)",
+      "Bash(python -m pytest tests/core/test_onboarding.py -v)",
+      "Bash(.venv/Scripts/python.exe -m pytest tests/core/test_onboarding.py -v)",
+      "Bash(.venv/Scripts/python.exe -c \"import ast; ast.parse\\(open\\('app/pages/2_Log_Træning.py', encoding='utf-8'\\).read\\(\\)\\); print\\('OK'\\)\")"
     ]
   }
 }

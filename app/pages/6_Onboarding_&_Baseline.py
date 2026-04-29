@@ -75,17 +75,59 @@ with onboarding_tab:
     )
 
     with st.form("onboarding_metrics"):
-        c1, c2, c3 = st.columns(3)
+        st.markdown("**Atletisk grundlag**")
+        c1, c2 = st.columns(2)
         with c1:
-            sprint_10m = st.number_input("10m sprint (sek)", min_value=1.0, max_value=8.0, value=2.6, step=0.01)
-            dribble_10m = st.number_input("10m dribling (sek)", min_value=1.2, max_value=10.0, value=3.2, step=0.01)
-            t_drill = st.number_input("T-drill (sek)", min_value=6.0, max_value=20.0, value=11.0, step=0.01)
+            sprint_10m = st.number_input(
+                "10m sprint (sek)", min_value=1.0, max_value=8.0, value=2.6, step=0.01
+            )
         with c2:
-            decision_pct = st.number_input("Decision intelligence (%)", min_value=0.0, max_value=100.0, value=50.0, step=1.0)
-            shots_on_target = st.number_input("Afslutninger på mål /10", min_value=0.0, max_value=10.0, value=4.0, step=1.0)
+            long_jump_cm = st.number_input(
+                "Stående længdespring (cm)", min_value=30, max_value=300, value=140, step=1
+            )
+
+        st.markdown("**Tempo med og uden bold** (2m ud / 2m hjem / 10m ud / 10m hjem)")
+        c3, c4 = st.columns(2)
         with c3:
-            wall_right = st.number_input("Vægpasninger højre /30s", min_value=0.0, max_value=60.0, value=18.0, step=1.0)
-            wall_left = st.number_input("Vægpasninger venstre /30s", min_value=0.0, max_value=60.0, value=12.0, step=1.0)
+            turn_sprint_no_ball = st.number_input(
+                "Vendings-sprint uden bold (sek)",
+                min_value=3.0, max_value=20.0, value=7.0, step=0.01,
+            )
+        with c4:
+            turn_sprint_with_ball = st.number_input(
+                "Vendings-sprint med bold (sek)",
+                min_value=3.0, max_value=20.0, value=8.0, step=0.01,
+            )
+
+        ball_tax = max(0.0, turn_sprint_with_ball - turn_sprint_no_ball)
+        st.caption(f"Bold-skat (delta): **{ball_tax:.2f} s**")
+
+        st.markdown("**Boldfærdighed**")
+        c5, c6, c7 = st.columns(3)
+        with c5:
+            juggling_alt = st.number_input(
+                "Jonglering, begge fødder (max af 3)",
+                min_value=0, max_value=500, value=10, step=1,
+            )
+        with c6:
+            taps_right = st.number_input(
+                "Inde-ude tæt højre, 15 s (antal)",
+                min_value=0, max_value=200, value=30, step=1,
+            )
+        with c7:
+            taps_left = st.number_input(
+                "Inde-ude tæt venstre, 15 s (antal)",
+                min_value=0, max_value=200, value=25, step=1,
+            )
+
+        st.markdown("**Selv-vurdering** (1–10)")
+        c8, c9, c10 = st.columns(3)
+        with c8:
+            self_confidence_1v1 = st.slider("Selvtillid i 1v1", 1, 10, 5)
+        with c9:
+            self_weak_foot_comfort = st.slider("Komfort med svagt ben", 1, 10, 5)
+        with c10:
+            self_focus_training = st.slider("Fokus i træning", 1, 10, 5)
 
         assessment_date = st.date_input("Dato", value=date.today())
         assessment_type = st.selectbox(
@@ -93,19 +135,26 @@ with onboarding_tab:
             options=["onboarding_initial", "retest"],
             format_func=lambda t: "Første onboarding" if t == "onboarding_initial" else "Re-test",
         )
-        notes = st.text_area("Noter", placeholder="Kontekst: underlag, træthed, motivation, forhold som påvirker testen")
+        notes = st.text_area(
+            "Noter",
+            placeholder="Kontekst: underlag, træthed, motivation, forhold som påvirker testen",
+        )
         apply_to_epm = st.checkbox("Anvend foreslåede scores i EPM nu", value=True)
 
         submit_metrics = st.form_submit_button("Gem baseline-test", type="primary")
 
     measurements = {
         "sprint_10m_seconds": sprint_10m,
-        "dribble_10m_seconds": dribble_10m,
-        "t_drill_seconds": t_drill,
-        "decision_intelligence_pct": decision_pct,
-        "shots_on_target_10": shots_on_target,
-        "wall_passes_right_30s": wall_right,
-        "wall_passes_left_30s": wall_left,
+        "long_jump_cm": float(long_jump_cm),
+        "turn_sprint_no_ball_seconds": turn_sprint_no_ball,
+        "turn_sprint_with_ball_seconds": turn_sprint_with_ball,
+        "ball_tax_seconds": ball_tax,
+        "juggling_alt_count": float(juggling_alt),
+        "taps_right_15s": float(taps_right),
+        "taps_left_15s": float(taps_left),
+        "self_confidence_1v1": float(self_confidence_1v1),
+        "self_weak_foot_comfort": float(self_weak_foot_comfort),
+        "self_focus_training": float(self_focus_training),
     }
     suggested = suggest_epm_from_measurements(measurements)
 
@@ -142,10 +191,18 @@ with onboarding_tab:
             summary_lines = [
                 "Målbar baseline-test gemt.",
                 "",
-                f"10m sprint: {sprint_10m:.2f}s",
-                f"10m dribling: {dribble_10m:.2f}s",
-                f"Decision intelligence: {decision_pct:.0f}%",
-                f"T-drill: {t_drill:.2f}s",
+                f"10m sprint: {sprint_10m:.2f} s",
+                f"Stående længdespring: {long_jump_cm} cm",
+                f"Vendings-sprint uden bold: {turn_sprint_no_ball:.2f} s",
+                f"Vendings-sprint med bold: {turn_sprint_with_ball:.2f} s",
+                f"Bold-skat: {ball_tax:.2f} s",
+                f"Jonglering (alt.): {juggling_alt}",
+                f"Inde-ude højre 15s: {taps_right}",
+                f"Inde-ude venstre 15s: {taps_left}",
+                "",
+                f"Selvtillid 1v1: {self_confidence_1v1}/10",
+                f"Komfort svagt ben: {self_weak_foot_comfort}/10",
+                f"Fokus i træning: {self_focus_training}/10",
             ]
             if notes.strip():
                 summary_lines.extend(["", f"Noter: {notes.strip()}"])
@@ -234,8 +291,12 @@ with overview_tab:
                     "dato": a["assessment_date"],
                     "type": a["assessment_type"],
                     "sprint_10m": metrics.get("sprint_10m_seconds"),
-                    "dribble_10m": metrics.get("dribble_10m_seconds"),
-                    "decision_%": metrics.get("decision_intelligence_pct"),
+                    "long_jump_cm": metrics.get("long_jump_cm"),
+                    "turn_sprint_no_ball": metrics.get("turn_sprint_no_ball_seconds"),
+                    "turn_sprint_with_ball": metrics.get("turn_sprint_with_ball_seconds"),
+                    "juggling_alt": metrics.get("juggling_alt_count"),
+                    "taps_right_15s": metrics.get("taps_right_15s"),
+                    "taps_left_15s": metrics.get("taps_left_15s"),
                 }
             )
         st.dataframe(rows, use_container_width=True, hide_index=True)
@@ -243,7 +304,7 @@ with overview_tab:
         st.info("Ingen assessments endnu.")
 
     st.markdown("### EPM-udvikling i nøgleområder")
-    tracked_dims = ["acceleration", "dribbling_speed", "decision_speed", "game_reading"]
+    tracked_dims = ["acceleration", "agility", "dribbling_speed", "ball_mastery", "weak_foot"]
     history_by_dim = {k: get_epm_history(player_id, k, limit=50) for k in tracked_dims}
     fig = multi_trend(history_by_dim, title=f"{player['name']} — onboarding til progression")
     st.plotly_chart(fig, use_container_width=True)
