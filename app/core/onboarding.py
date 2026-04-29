@@ -45,13 +45,21 @@ def map_to_score(value: float, scale: MeasurementScale) -> float:
 
 _MEASUREMENT_SCALES: dict[str, MeasurementScale] = {
     "sprint_10m_seconds": MeasurementScale(low_anchor=1.8, high_anchor=3.2, lower_is_better=True),
-    "dribble_10m_seconds": MeasurementScale(low_anchor=2.2, high_anchor=4.2, lower_is_better=True),
-    "t_drill_seconds": MeasurementScale(low_anchor=8.8, high_anchor=14.0, lower_is_better=True),
-    "decision_intelligence_pct": MeasurementScale(low_anchor=20.0, high_anchor=90.0, lower_is_better=False),
-    "wall_passes_right_30s": MeasurementScale(low_anchor=8.0, high_anchor=36.0, lower_is_better=False),
-    "wall_passes_left_30s": MeasurementScale(low_anchor=4.0, high_anchor=28.0, lower_is_better=False),
-    "shots_on_target_10": MeasurementScale(low_anchor=1.0, high_anchor=9.0, lower_is_better=False),
+    "turn_sprint_no_ball_seconds": MeasurementScale(low_anchor=5.5, high_anchor=9.0, lower_is_better=True),
+    "turn_sprint_with_ball_seconds": MeasurementScale(low_anchor=6.5, high_anchor=11.0, lower_is_better=True),
+    "ball_tax_seconds": MeasurementScale(low_anchor=0.3, high_anchor=1.8, lower_is_better=True),
+    "juggling_alt_count": MeasurementScale(low_anchor=0.0, high_anchor=30.0, lower_is_better=False),
+    "taps_right_15s": MeasurementScale(low_anchor=20.0, high_anchor=60.0, lower_is_better=False),
+    "taps_left_15s": MeasurementScale(low_anchor=15.0, high_anchor=50.0, lower_is_better=False),
+    "first_touch_clean_10": MeasurementScale(low_anchor=2.0, high_anchor=9.0, lower_is_better=False),
+    "passing_right_5m_10": MeasurementScale(low_anchor=2.0, high_anchor=9.0, lower_is_better=False),
+    "passing_left_5m_10": MeasurementScale(low_anchor=0.0, high_anchor=8.0, lower_is_better=False),
+    "finishing_on_target_10": MeasurementScale(low_anchor=1.0, high_anchor=9.0, lower_is_better=False),
 }
+
+
+def _avg(values: list[float]) -> float:
+    return sum(values) / len(values)
 
 
 def suggest_epm_from_measurements(measurements: dict[str, float]) -> dict[str, float]:
@@ -62,47 +70,77 @@ def suggest_epm_from_measurements(measurements: dict[str, float]) -> dict[str, f
     if sprint is not None:
         out["acceleration"] = map_to_score(sprint, _MEASUREMENT_SCALES["sprint_10m_seconds"])
 
-    dribble = measurements.get("dribble_10m_seconds")
-    if dribble is not None:
-        out["dribbling_speed"] = map_to_score(dribble, _MEASUREMENT_SCALES["dribble_10m_seconds"])
-
-    if sprint is not None and dribble is not None:
-        delta = max(0.0, dribble - sprint)
-        # Smaller delta means less speed loss with the ball.
-        out["ball_mastery"] = map_to_score(
-            delta,
-            MeasurementScale(low_anchor=0.3, high_anchor=1.8, lower_is_better=True),
+    turn_no_ball = measurements.get("turn_sprint_no_ball_seconds")
+    if turn_no_ball is not None:
+        out["agility"] = map_to_score(
+            turn_no_ball,
+            _MEASUREMENT_SCALES["turn_sprint_no_ball_seconds"],
         )
 
-    t_drill = measurements.get("t_drill_seconds")
-    if t_drill is not None:
-        out["agility"] = map_to_score(t_drill, _MEASUREMENT_SCALES["t_drill_seconds"])
-
-    decision_pct = measurements.get("decision_intelligence_pct")
-    if decision_pct is not None:
-        decision_score = map_to_score(
-            decision_pct,
-            _MEASUREMENT_SCALES["decision_intelligence_pct"],
+    turn_with_ball = measurements.get("turn_sprint_with_ball_seconds")
+    if turn_with_ball is not None:
+        out["dribbling_speed"] = map_to_score(
+            turn_with_ball,
+            _MEASUREMENT_SCALES["turn_sprint_with_ball_seconds"],
         )
-        out["decision_speed"] = decision_score
-        out["game_reading"] = decision_score
 
-    right_passes = measurements.get("wall_passes_right_30s")
-    left_passes = measurements.get("wall_passes_left_30s")
-    if right_passes is not None:
+    ball_mastery_components: list[float] = []
+
+    if turn_no_ball is not None and turn_with_ball is not None:
+        ball_tax = max(0.0, turn_with_ball - turn_no_ball)
+        ball_mastery_components.append(
+            map_to_score(ball_tax, _MEASUREMENT_SCALES["ball_tax_seconds"])
+        )
+
+    juggling_alt = measurements.get("juggling_alt_count")
+    if juggling_alt is not None:
+        ball_mastery_components.append(
+            map_to_score(juggling_alt, _MEASUREMENT_SCALES["juggling_alt_count"])
+        )
+
+    taps_right = measurements.get("taps_right_15s")
+    if taps_right is not None:
+        ball_mastery_components.append(
+            map_to_score(taps_right, _MEASUREMENT_SCALES["taps_right_15s"])
+        )
+
+    if ball_mastery_components:
+        out["ball_mastery"] = _clamp_score(_avg(ball_mastery_components))
+
+    weak_foot_components: list[float] = []
+
+    taps_left = measurements.get("taps_left_15s")
+    if taps_left is not None:
+        weak_foot_components.append(
+            map_to_score(taps_left, _MEASUREMENT_SCALES["taps_left_15s"])
+        )
+
+    passing_left = measurements.get("passing_left_5m_10")
+    if passing_left is not None:
+        weak_foot_components.append(
+            map_to_score(passing_left, _MEASUREMENT_SCALES["passing_left_5m_10"])
+        )
+
+    if weak_foot_components:
+        out["weak_foot"] = _clamp_score(_avg(weak_foot_components))
+
+    first_touch = measurements.get("first_touch_clean_10")
+    if first_touch is not None:
+        out["first_touch"] = map_to_score(
+            first_touch, _MEASUREMENT_SCALES["first_touch_clean_10"]
+        )
+
+    passing_right = measurements.get("passing_right_5m_10")
+    if passing_right is not None:
         out["passing"] = map_to_score(
-            right_passes,
-            _MEASUREMENT_SCALES["wall_passes_right_30s"],
-        )
-    if left_passes is not None:
-        out["weak_foot"] = map_to_score(
-            left_passes,
-            _MEASUREMENT_SCALES["wall_passes_left_30s"],
+            passing_right, _MEASUREMENT_SCALES["passing_right_5m_10"]
         )
 
-    shots = measurements.get("shots_on_target_10")
-    if shots is not None:
-        out["finishing"] = map_to_score(shots, _MEASUREMENT_SCALES["shots_on_target_10"])
+    finishing = measurements.get("finishing_on_target_10")
+    if finishing is not None:
+        out["finishing"] = map_to_score(
+            finishing, _MEASUREMENT_SCALES["finishing_on_target_10"]
+        )
 
     return out
 
@@ -111,9 +149,15 @@ def key_metrics_snapshot(measurements: dict[str, float]) -> dict[str, float]:
     """Return normalized key onboarding metrics for dashboards and history views."""
     keep = {
         "sprint_10m_seconds",
-        "dribble_10m_seconds",
-        "decision_intelligence_pct",
-        "t_drill_seconds",
-        "shots_on_target_10",
+        "long_jump_cm",
+        "turn_sprint_no_ball_seconds",
+        "turn_sprint_with_ball_seconds",
+        "juggling_alt_count",
+        "taps_right_15s",
+        "taps_left_15s",
+        "first_touch_clean_10",
+        "passing_right_5m_10",
+        "passing_left_5m_10",
+        "finishing_on_target_10",
     }
     return {k: v for k, v in measurements.items() if k in keep}

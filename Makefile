@@ -13,7 +13,7 @@ seed: ## Populate DB with Sofus and Felix
 	python app/seed.py
 
 run-coach: ## Start the Streamlit coach console
-	streamlit run app/Home.py
+	streamlit run app/Min_Udvikling.py
 
 run-player: ## Start the FastAPI player app on :8000
 	cd app && python -m uvicorn web.main:app --host 0.0.0.0 --port 8000 --reload

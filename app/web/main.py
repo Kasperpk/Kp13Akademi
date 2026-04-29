@@ -27,6 +27,7 @@ from core.epm import (
     CATEGORIES,
     CATEGORY_DIMS,
 )
+from core.review import grouped_dimensions
 from core.agents.session_designer import design_week, load_schedule, save_schedule
 from core.models import WeeklySchedule
 
@@ -156,6 +157,33 @@ async def welcome(request: Request):
 
 @app.get("/p/{token}", response_class=HTMLResponse)
 async def player_home(request: Request, token: str):
+    """Min Udvikling — landing page. Træningstimer, sessioner og deltas."""
+    info = _verify(token)
+    player_id = info["player_id"]
+    player = db.get_player(player_id)
+    if not player:
+        raise HTTPException(404)
+
+    stats = db.get_training_stats(player_id)
+
+    started = player.get("started_date") or ""
+    started_label = _date_label_dk(started) if started else ""
+
+    return _render("home.html",
+        token=token,
+        player=player,
+        first_name=player["name"].split()[0],
+        started_label=started_label,
+        week=_card_payload(stats["week"], stats["prev_week"], "uge"),
+        month=_card_payload(stats["month"], stats["prev_month"], "måned"),
+        total=_card_payload(stats["total"], None, None),
+        active="home",
+    )
+
+
+@app.get("/p/{token}/today", response_class=HTMLResponse)
+async def player_today(request: Request, token: str):
+    """Træn idag — weekly schedule with today highlighted (was the old home view)."""
     info = _verify(token)
     player_id = info["player_id"]
     player = db.get_player(player_id)
@@ -175,17 +203,15 @@ async def player_home(request: Request, token: str):
             (s for s in schedule.sessions if s.day == today_name), None
         )
 
-    first_name = player["name"].split()[0]
-
-    return _render("home.html",
+    return _render("today.html",
         token=token,
         player=player,
-        first_name=first_name,
+        first_name=player["name"].split()[0],
         schedule=schedule,
         today_session=today_session,
         today_name=today_name,
         completions=completions,
-        active="home",
+        active="today",
     )
 
 
@@ -214,7 +240,7 @@ async def player_session(request: Request, token: str, day: str):
         session=session,
         day=day,
         completed=day in completions,
-        active="home",
+        active="today",
     )
 
 
@@ -261,55 +287,86 @@ async def complete_session(request: Request, token: str, day: str):
                     result_value=result_value,
                 )
 
-    return RedirectResponse(url=f"/p/{token}", status_code=303)
+    return RedirectResponse(url=f"/p/{token}/today", status_code=303)
 
 
-@app.get("/p/{token}/development", response_class=HTMLResponse)
-async def player_development(request: Request, token: str):
+_DK_MONTH = {
+    1: "jan", 2: "feb", 3: "mar", 4: "apr", 5: "maj", 6: "jun",
+    7: "jul", 8: "aug", 9: "sep", 10: "okt", 11: "nov", 12: "dec",
+}
+
+
+def _date_label_dk(iso: str) -> str:
+    try:
+        d = date.fromisoformat(iso[:10])
+    except ValueError:
+        return iso
+    return f"{d.day}. {_DK_MONTH.get(d.month, '')}"
+
+
+def _hours_label(hours: float) -> str:
+    return f"{hours:.1f} t" if hours >= 0.05 else "0 t"
+
+
+def _card_payload(now: dict[str, Any], prev: dict[str, Any] | None, period: str | None) -> dict[str, Any]:
+    """Build the template payload for one hero card (week / month / total)."""
+    payload: dict[str, Any] = {
+        "hours_label": _hours_label(now["hours"]),
+        "sessions": now["sessions"],
+        "delta_label": None,
+        "delta_color": "text-kp-muted",
+    }
+    if prev is None or period is None:
+        return payload
+
+    sess_diff = now["sessions"] - prev["sessions"]
+    hour_diff = now["hours"] - prev["hours"]
+    parts = []
+    if abs(hour_diff) >= 0.05:
+        sign = "+" if hour_diff > 0 else "−"
+        parts.append(f"{sign}{abs(hour_diff):.1f}t")
+    if sess_diff != 0:
+        sign = "+" if sess_diff > 0 else "−"
+        parts.append(f"{sign}{abs(sess_diff)} sess.")
+    if parts:
+        payload["delta_label"] = "  ·  ".join(parts) + f" vs sidste {period}"
+        up = (hour_diff > 0) or (hour_diff == 0 and sess_diff > 0)
+        payload["delta_color"] = "text-green-400" if up else "text-red-400"
+    return payload
+
+
+@app.get("/p/{token}/development")
+async def player_development_redirect(token: str):
+    """Back-compat: previous URL for the development page."""
+    return RedirectResponse(url=f"/p/{token}", status_code=308)
+
+
+@app.get("/p/{token}/mastery", response_class=HTMLResponse)
+async def player_mastery(request: Request, token: str):
+    """Educational rubric ladder — full levels for each skill, no personal score."""
     info = _verify(token)
     player_id = info["player_id"]
     player = db.get_player(player_id)
     if not player:
         raise HTTPException(404)
 
-    profile = get_player_profile(player_id)
-    gaps = identify_gaps(player_id, top_n=3)
-    strengths = identify_strengths(player_id, top_n=3)
-    scores = profile.get("scores", {})
+    cats = grouped_dimensions()
+    # Localize category labels
+    cat_labels = {
+        "technical": "Teknisk",
+        "physical":  "Fysisk",
+        "cognitive": "Spilforståelse",
+        "mental":    "Mentalitet",
+    }
+    for c in cats:
+        c["label"] = cat_labels.get(c["category"], c["category"].title())
 
-    # Build dimension data with stages for template
-    categories_data = []
-    for cat in CATEGORIES:
-        dims = CATEGORY_DIMS.get(cat, [])
-        dim_data = []
-        for d in dims:
-            s = scores.get(d.key, {})
-            score = s.get("score", 5.0)
-            stage_label, stage_color = _score_to_stage(score)
-            dim_data.append({
-                "key": d.key,
-                "name": d.name,
-                "score": score,
-                "stage_label": stage_label,
-                "stage_color": stage_color,
-                "bar_color": _bar_color(score),
-                "bar_width": score * 10,
-            })
-        categories_data.append({
-            "name": cat.title(),
-            "dimensions": dim_data,
-        })
-
-    return _render("development.html",
+    return _render("mastery.html",
         token=token,
         player=player,
         first_name=player["name"].split()[0],
-        categories=categories_data,
-        gaps=gaps,
-        strengths=strengths,
-        score_to_stage=_score_to_stage,
-        bar_color=_bar_color,
-        active="development",
+        categories=cats,
+        active="mastery",
     )
 
 
@@ -348,7 +405,7 @@ async def player_settings(request: Request, token: str):
         first_name=player["name"].split()[0],
         all_days=_ALL_DAYS,
         preferred_days=preferred,
-        active="home",
+        active=None,
         saved=False,
     )
 
@@ -372,7 +429,7 @@ async def player_settings_save(request: Request, token: str):
         first_name=player["name"].split()[0],
         all_days=_ALL_DAYS,
         preferred_days=chosen or db.get_preferred_days(player_id),
-        active="home",
+        active=None,
         saved=True,
     )
 

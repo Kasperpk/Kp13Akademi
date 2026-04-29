@@ -1,96 +1,60 @@
 {% extends "base.html" %}
-{% block title %}{{ first_name }}'s Training – KP13{% endblock %}
+{% block title %}{{ first_name }}'s Udvikling – KP13{% endblock %}
 
 {% block content %}
 <!-- Header -->
 <div class="mb-6">
     <p class="text-kp-muted text-sm">KP13 Akademi</p>
-    <h1 class="text-2xl font-bold mt-1">{{ first_name }}'s Week</h1>
-    {% if schedule and schedule.week_focus %}
-    <p class="text-kp-accent text-sm font-medium mt-2">{{ schedule.week_focus }}</p>
-    {% endif %}
-    {% if schedule and schedule.week_rationale %}
-    <p class="text-kp-muted text-xs mt-1.5 leading-relaxed">{{ schedule.week_rationale }}</p>
+    <h1 class="text-2xl font-bold mt-1">Din udvikling</h1>
+    {% if started_label %}
+    <p class="text-kp-muted text-xs mt-1">På akademiet siden {{ started_label }}</p>
     {% endif %}
 </div>
 
-{% if schedule and schedule.sessions %}
-<!-- Weekly schedule -->
-<div class="space-y-3">
-    {% for session in schedule.sessions %}
-    {% set is_today = session.day == today_name %}
-    {% set is_done = session.day in completions %}
-    <a href="/p/{{ token }}/session/{{ session.day }}"
-       class="block rounded-xl p-4 border transition-all
-              {% if is_done %}
-                bg-green-900/20 border-green-800/40
-              {% elif is_today %}
-                bg-kp-accent/10 border-kp-accent/30
-              {% else %}
-                bg-kp-card border-kp-border hover:border-kp-accent/30
-              {% endif %}">
-
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                {% if is_done %}
-                <div class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
-                    <svg class="w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-                    </svg>
-                </div>
-                {% elif is_today %}
-                <div class="w-8 h-8 rounded-full bg-kp-accent/20 flex items-center justify-center">
-                    <div class="w-2.5 h-2.5 rounded-full bg-kp-accent"></div>
-                </div>
-                {% else %}
-                <div class="w-8 h-8 rounded-full bg-kp-border/50 flex items-center justify-center">
-                    <div class="w-2 h-2 rounded-full bg-kp-muted/50"></div>
-                </div>
-                {% endif %}
-
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="font-semibold text-sm">{{ session.day }}</span>
-                        {% if is_today %}
-                        <span class="text-[10px] bg-kp-accent/20 text-kp-accent px-2 py-0.5 rounded-full font-medium">TODAY</span>
-                        {% endif %}
-                    </div>
-                    <p class="text-kp-muted text-xs mt-0.5">{{ session.theme }}</p>
-                </div>
-            </div>
-
-            <div class="text-right">
-                <span class="text-kp-muted text-xs">{{ session.duration_min }} min</span>
-                <svg class="w-4 h-4 text-kp-muted inline-block ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-                </svg>
-            </div>
-        </div>
-
-        {% if is_today and not is_done and session.coaches_note %}
-        <p class="text-xs text-kp-muted/80 mt-3 pl-11 italic">{{ session.coaches_note }}</p>
+<!-- Hero: 3 metric cards (week / month / total) -->
+<div class="grid grid-cols-3 gap-2 mb-6">
+    <!-- Week -->
+    <div class="bg-kp-card border border-kp-border rounded-xl p-4">
+        <p class="text-[10px] uppercase tracking-wider text-kp-muted">Denne uge</p>
+        <p class="text-2xl font-bold mt-1">{{ week.hours_label }}</p>
+        <p class="text-[11px] text-kp-muted mt-0.5">{{ week.sessions }} session(er)</p>
+        {% if week.delta_label %}
+        <p class="text-[10px] mt-2 {{ week.delta_color }}">{{ week.delta_label }}</p>
+        {% else %}
+        <p class="text-[10px] text-kp-muted mt-2">vs sidste uge: —</p>
         {% endif %}
-    </a>
-    {% endfor %}
-</div>
+    </div>
 
-<!-- Completion summary -->
-<div class="mt-6 text-center">
-    <p class="text-kp-muted text-xs">
-        {{ completions|length }} of {{ schedule.sessions|length }} sessions completed this week
-    </p>
-    <div class="flex justify-center gap-1.5 mt-2">
-        {% for session in schedule.sessions %}
-        <div class="w-8 h-1.5 rounded-full {{ 'bg-green-500' if session.day in completions else 'bg-kp-border' }}"></div>
-        {% endfor %}
+    <!-- Month -->
+    <div class="bg-kp-card border border-kp-border rounded-xl p-4">
+        <p class="text-[10px] uppercase tracking-wider text-kp-muted">Denne måned</p>
+        <p class="text-2xl font-bold mt-1">{{ month.hours_label }}</p>
+        <p class="text-[11px] text-kp-muted mt-0.5">{{ month.sessions }} session(er)</p>
+        {% if month.delta_label %}
+        <p class="text-[10px] mt-2 {{ month.delta_color }}">{{ month.delta_label }}</p>
+        {% else %}
+        <p class="text-[10px] text-kp-muted mt-2">vs sidste måned: —</p>
+        {% endif %}
+    </div>
+
+    <!-- Total -->
+    <div class="bg-kp-card border border-kp-border rounded-xl p-4">
+        <p class="text-[10px] uppercase tracking-wider text-kp-muted">I alt</p>
+        <p class="text-2xl font-bold mt-1">{{ total.hours_label }}</p>
+        <p class="text-[11px] text-kp-muted mt-0.5">{{ total.sessions }} session(er)</p>
+        <p class="text-[10px] text-kp-muted mt-2">siden start</p>
     </div>
 </div>
 
-{% else %}
-<!-- No schedule -->
-<div class="bg-kp-card border border-kp-border rounded-xl p-8 text-center">
-    <p class="text-kp-muted">No training schedule for this week yet.</p>
-    <p class="text-kp-muted text-sm mt-2">Your coach will generate one soon.</p>
+<!-- 10-week review explainer -->
+<div class="mt-6 mb-2">
+    <h2 class="text-xs font-semibold text-kp-muted uppercase tracking-wider mb-2">Færdighedsniveauer</h2>
+    <div class="bg-kp-card border border-kp-border rounded-xl p-4">
+        <p class="text-sm text-kp-text leading-relaxed">
+            Hvor du står på hver færdighed gennemgår vi sammen ca. hver 10. uge.
+            Du kan altid se på <a href="/p/{{ token }}/mastery" class="text-kp-accent">Mestring</a>
+            hvad det vil sige at mestre hver enkelt færdighed.
+        </p>
+    </div>
 </div>
-{% endif %}
 {% endblock %}
