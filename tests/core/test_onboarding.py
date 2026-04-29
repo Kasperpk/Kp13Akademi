@@ -28,6 +28,10 @@ def test_suggest_epm_from_measurements_derives_expected_keys():
         "juggling_alt_count": 12.0,
         "taps_right_15s": 35.0,
         "taps_left_15s": 28.0,
+        "first_touch_clean_10": 6.0,
+        "passing_right_5m_10": 7.0,
+        "passing_left_5m_10": 4.0,
+        "finishing_on_target_10": 5.0,
     }
 
     suggested = suggest_epm_from_measurements(measurements)
@@ -38,9 +42,23 @@ def test_suggest_epm_from_measurements_derives_expected_keys():
         "dribbling_speed",
         "ball_mastery",
         "weak_foot",
+        "first_touch",
+        "passing",
+        "finishing",
     }
     assert expected_dims == set(suggested.keys())
     assert all(1.0 <= score <= 10.0 for score in suggested.values())
+
+
+def test_weak_foot_blends_taps_and_passing_left():
+    """weak_foot averages taps_left and passing_left when both are present."""
+    measurements = {
+        "taps_left_15s": 28.0,
+        "passing_left_5m_10": 4.0,
+    }
+    suggested = suggest_epm_from_measurements(measurements)
+    assert "weak_foot" in suggested
+    assert 1.0 <= suggested["weak_foot"] <= 10.0
 
 
 def test_ball_mastery_uses_ball_tax_and_skill_components():
@@ -78,4 +96,21 @@ def test_key_metrics_snapshot_filters_to_new_keys():
         "juggling_alt_count",
         "taps_right_15s",
         "taps_left_15s",
+    }
+
+
+def test_key_metrics_snapshot_includes_new_technical_tests():
+    measurements = {
+        "first_touch_clean_10": 6.0,
+        "passing_right_5m_10": 7.0,
+        "passing_left_5m_10": 4.0,
+        "finishing_on_target_10": 5.0,
+        "self_confidence_1v1": 6.0,
+    }
+    snapshot = key_metrics_snapshot(measurements)
+    assert set(snapshot.keys()) == {
+        "first_touch_clean_10",
+        "passing_right_5m_10",
+        "passing_left_5m_10",
+        "finishing_on_target_10",
     }

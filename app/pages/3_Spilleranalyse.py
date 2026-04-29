@@ -1,4 +1,4 @@
-"""Spilleranalyse — baseline-målinger, dybde-spørgsmål, udviklingsoverblik og 10-ugers review."""
+"""Spilleranalyse — samlet oversigt, baseline-måling, dybde-spørgsmål og 10-ugers review."""
 
 from __future__ import annotations
 
@@ -12,20 +12,29 @@ if str(_ROOT) not in sys.path:
 
 import streamlit as st
 
-from core.auth import require_coach
+from core.auth import player_selector, require_coach
+from core.charts import category_bars, epm_radar, multi_trend
+from core.clients_loader import append_to_ongoing
 from core.database import (
     get_epm_history,
-    get_players,
-    save_player_assessment,
+    get_observations,
     get_player_assessments,
+    get_players,
+    initialise_player_epm,
+    save_player_assessment,
     set_epm_score,
+    upsert_player,
 )
 from core.epm import (
-    CATEGORIES, CATEGORY_DIMS, DIM_BY_KEY, DIMENSIONS, get_player_profile,
+    CATEGORIES,
+    CATEGORY_DIMS,
+    DIM_BY_KEY,
+    DIMENSIONS,
+    get_player_profile,
+    identify_gaps,
+    identify_strengths,
 )
 from core.onboarding import key_metrics_snapshot, suggest_epm_from_measurements
-from core.clients_loader import append_to_ongoing
-from core.charts import multi_trend
 from core.review import current_and_next
 from core.theme import apply_theme, score_to_stage
 
@@ -48,50 +57,203 @@ apply_theme()
 require_coach()
 
 st.title("Spilleranalyse")
-st.caption(
-    "Struktureret onboarding med målbare tests + dyb spillerforståelse. "
-    "Brug samme flow til re-tests for at holde baseline opdateret."
-)
+
+# ---- sidebar: player selector + add player ---------------------------------
 
 players = get_players()
+
+with st.sidebar.expander("Tilføj ny spiller"):
+    with st.form("add_player"):
+        new_id = st.text_input("Spiller-ID (små bogstaver, ingen mellemrum)", placeholder="felix")
+        new_name = st.text_input("Fuldt navn", placeholder="Felix Kirk Nebel")
+        new_age = st.text_input("Aldersgruppe", placeholder="U9")
+        new_pos = st.text_input("Position", placeholder="Central midtbane")
+        new_club = st.text_input("Klub", placeholder="")
+        new_foot = st.selectbox("Dominerende fod", ["højre", "venstre", "begge"])
+        new_parent = st.text_input("Forældrekontakt", placeholder="")
+        submitted = st.form_submit_button("Opret spiller")
+        if submitted and new_id and new_name:
+            upsert_player(
+                new_id, new_name,
+                age_group=new_age, position=new_pos, club=new_club,
+                dominant_foot=new_foot, parent_name=new_parent,
+            )
+            initialise_player_epm(new_id)
+            st.success(f"Oprettet {new_name}!")
+            st.rerun()
+
 if not players:
-    st.info("Ingen spillere registreret endnu.")
+    st.info("Tilføj en spiller fra sidepanelet for at komme i gang.")
     st.stop()
 
-player_options = {p["id"]: p["name"] for p in players}
-player_id = st.selectbox(
-    "Spiller",
-    options=list(player_options.keys()),
-    format_func=lambda pid: player_options[pid],
-)
-
-if not player_id:
-    st.info("Vælg en spiller for at fortsætte.")
-    st.stop()
-
+player_id = player_selector(players)
 profile = get_player_profile(player_id)
 if not profile:
     st.error("Spiller ikke fundet.")
     st.stop()
 
 player = profile["player"]
+flat = profile["flat_scores"]
 
-st.markdown(
-    f"**{player['name']}** · {player.get('age_group', '')} · {player.get('position', '')}"
+# ---- header ----------------------------------------------------------------
+
+gaps = identify_gaps(player_id, top_n=3)
+strengths = identify_strengths(player_id, top_n=3)
+
+h1, h2, h3 = st.columns([2, 1, 1])
+with h1:
+    st.header(player["name"])
+    sub_parts = [player.get("age_group", ""), player.get("position", ""), player.get("club", "")]
+    sub = " · ".join(p for p in sub_parts if p)
+    if sub:
+        st.caption(sub)
+with h2:
+    st.markdown("**Top huller**")
+    if gaps:
+        for g in gaps:
+            st.markdown(f"- {g['name']}: **{g['score']:.1f}**")
+    else:
+        st.caption("_ingen data_")
+with h3:
+    st.markdown("**Styrker**")
+    if strengths:
+        for s in strengths:
+            st.markdown(f"- {s['name']}: **{s['score']:.1f}**")
+    else:
+        st.caption("_ingen data_")
+
+st.divider()
+
+overview_tab, sessions_tab, baseline_tab, questions_tab, review_tab = st.tabs(
+    ["Overblik", "Sessionshistorik", "Baseline-måling", "Dybde-spørgsmål", "10-ugers Review"]
 )
 
-onboarding_tab, questions_tab, overview_tab, review_tab = st.tabs(
-    ["1) Målbar Baseline", "2) Dybde-Spørgsmål", "3) Udviklingsoverblik", "4) 10-ugers Review"]
-)
+# ---- tab: overblik ---------------------------------------------------------
 
-with onboarding_tab:
-    st.subheader("Første testpakke")
+with overview_tab:
+    st.subheader("EPM Radar")
+    st.plotly_chart(epm_radar(flat, player["name"]), use_container_width=True)
+
+    st.subheader("Scoreoversigt")
+    st.plotly_chart(category_bars(flat), use_container_width=True)
+
+    for cat in CATEGORIES:
+        dims = CATEGORY_DIMS[cat]
+        st.markdown(f"**{_CATEGORY_LABELS.get(cat, cat.capitalize())}**")
+        for d in dims:
+            score = flat.get(d.key, 5.0)
+            scores_data = profile["scores"].get(cat, [])
+            dim_data = next((x for x in scores_data if x["key"] == d.key), {})
+            conf = dim_data.get("confidence", "low")
+            obs_count = dim_data.get("observations", 0)
+            st.markdown(
+                f"**{d.name}**: {score:.1f}/10 *[{conf}, {obs_count} obs]*"
+            )
+
+    st.divider()
+    st.subheader("Udviklingsforløb")
+    selected_dims = st.multiselect(
+        "Vælg dimensioner at følge",
+        options=[d.key for d in DIMENSIONS],
+        default=[g["key"] for g in gaps[:3]],
+        format_func=lambda k: DIM_BY_KEY[k].name,
+        key="trend_dims",
+    )
+    if selected_dims:
+        history_by_dim = {dk: get_epm_history(player_id, dk, limit=50) for dk in selected_dims}
+        st.plotly_chart(
+            multi_trend(history_by_dim, f"{player['name']} — Udviklingsforløb"),
+            use_container_width=True,
+        )
+    else:
+        st.info("Vælg dimensioner ovenfor for at se udviklingsforløb.")
+
+    st.divider()
+    st.subheader("Baseline-historik")
+    assessments = get_player_assessments(player_id, limit=30)
+    if assessments:
+        rows = []
+        for a in assessments:
+            metrics = key_metrics_snapshot(a.get("metrics_json", {}))
+            rows.append(
+                {
+                    "dato": a["assessment_date"],
+                    "type": a["assessment_type"],
+                    "sprint_10m": metrics.get("sprint_10m_seconds"),
+                    "long_jump_cm": metrics.get("long_jump_cm"),
+                    "turn_sprint_no_ball": metrics.get("turn_sprint_no_ball_seconds"),
+                    "turn_sprint_with_ball": metrics.get("turn_sprint_with_ball_seconds"),
+                    "juggling_alt": metrics.get("juggling_alt_count"),
+                    "taps_right": metrics.get("taps_right_15s"),
+                    "taps_left": metrics.get("taps_left_15s"),
+                    "first_touch_/10": metrics.get("first_touch_clean_10"),
+                    "pass_right_/10": metrics.get("passing_right_5m_10"),
+                    "pass_left_/10": metrics.get("passing_left_5m_10"),
+                    "shots_/10": metrics.get("finishing_on_target_10"),
+                }
+            )
+        st.dataframe(rows, use_container_width=True, hide_index=True)
+    else:
+        st.info("Ingen baseline-tests endnu — gå til **Baseline-måling**.")
+
+    st.divider()
+    with st.expander("Rediger EPM-scores manuelt"):
+        st.caption("Justér scores direkte. Bruges til korrektioner uden for de regulære input-flows.")
+        with st.form("manual_baseline"):
+            new_scores: dict[str, float] = {}
+            for cat in CATEGORIES:
+                st.markdown(f"**{_CATEGORY_LABELS.get(cat, cat.capitalize())}**")
+                cols = st.columns(len(CATEGORY_DIMS[cat]))
+                for i, d in enumerate(CATEGORY_DIMS[cat]):
+                    current = flat.get(d.key, 5.0)
+                    new_scores[d.key] = cols[i].number_input(
+                        f"{d.name}",
+                        min_value=1.0, max_value=10.0,
+                        value=current, step=0.5,
+                        key=f"manual_{d.key}",
+                    )
+            save_manual = st.form_submit_button("Gem manuelle scores")
+            if save_manual:
+                for dim_key, score in new_scores.items():
+                    obs_count = 0
+                    for cat_dims in profile["scores"].values():
+                        for dd in cat_dims:
+                            if dd["key"] == dim_key:
+                                obs_count = dd["observations"]
+                                break
+                    set_epm_score(player_id, dim_key, score, "manual", obs_count)
+                st.success("Scores opdateret.")
+                st.rerun()
+
+# ---- tab: sessionshistorik ------------------------------------------------
+
+with sessions_tab:
+    st.subheader("Sessionshistorik")
+    observations = get_observations(player_id, limit=20)
+    if observations:
+        for obs in observations:
+            with st.expander(f"{obs['date']} — {obs['session_type']}: {obs.get('theme', 'N/A')}"):
+                if obs.get("coach_notes"):
+                    st.markdown(obs["coach_notes"])
+                if obs.get("extracted_scores"):
+                    st.markdown("**Registrerede scores:**")
+                    for dim_key, score in obs["extracted_scores"].items():
+                        meta = DIM_BY_KEY.get(dim_key)
+                        name = meta.name if meta else dim_key
+                        st.markdown(f"- {name}: {score:.1f}")
+    else:
+        st.info("Ingen sessioner logget endnu. Gå til **Log Træning** for at registrere.")
+
+# ---- tab: baseline-måling --------------------------------------------------
+
+with baseline_tab:
+    st.subheader("Baseline-test")
     st.caption(
-        "Registrer objective målinger. Appen foreslår baseline-scores, som du kan justere "
-        "og anvende direkte i EPM."
+        "Registrér objektive målinger. Appen foreslår baseline-scores for de testbare "
+        "EPM-dimensioner — kognitive og mentale dimensioner dækkes af 10-ugers reviewet."
     )
 
-    with st.form("onboarding_metrics"):
+    with st.form("baseline_metrics"):
         st.markdown("**Atletisk grundlag**")
         c1, c2 = st.columns(2)
         with c1:
@@ -137,13 +299,37 @@ with onboarding_tab:
                 min_value=0, max_value=200, value=25, step=1,
             )
 
-        st.markdown("**Selv-vurdering** (1–10)")
-        c8, c9, c10 = st.columns(3)
+        st.markdown("**Tekniske tests** (10 forsøg pr. test)")
+        st.caption(
+            "First touch: trænerpas fra 8 m, kontrol indenfor 1,5 m cirkel /10. "
+            "Pasninger: 5 m kegle-mål, 10 forsøg pr. fod. "
+            "Afslutninger: skud på mål med kegler /10."
+        )
+        c8, c9, c10, c11 = st.columns(4)
         with c8:
-            self_confidence_1v1 = st.slider("Selvtillid i 1v1", 1, 10, 5)
+            first_touch_clean = st.number_input(
+                "First touch /10", min_value=0, max_value=10, value=5, step=1,
+            )
         with c9:
-            self_weak_foot_comfort = st.slider("Komfort med svagt ben", 1, 10, 5)
+            passing_right = st.number_input(
+                "Pasning højre /10", min_value=0, max_value=10, value=5, step=1,
+            )
         with c10:
+            passing_left = st.number_input(
+                "Pasning venstre /10", min_value=0, max_value=10, value=3, step=1,
+            )
+        with c11:
+            finishing = st.number_input(
+                "Afslutning /10", min_value=0, max_value=10, value=4, step=1,
+            )
+
+        st.markdown("**Selv-vurdering** (1–10)")
+        c12, c13, c14 = st.columns(3)
+        with c12:
+            self_confidence_1v1 = st.slider("Selvtillid i 1v1", 1, 10, 5)
+        with c13:
+            self_weak_foot_comfort = st.slider("Komfort med svagt ben", 1, 10, 5)
+        with c14:
             self_focus_training = st.slider("Fokus i træning", 1, 10, 5)
 
         assessment_date = st.date_input("Dato", value=date.today())
@@ -169,6 +355,10 @@ with onboarding_tab:
         "juggling_alt_count": float(juggling_alt),
         "taps_right_15s": float(taps_right),
         "taps_left_15s": float(taps_left),
+        "first_touch_clean_10": float(first_touch_clean),
+        "passing_right_5m_10": float(passing_right),
+        "passing_left_5m_10": float(passing_left),
+        "finishing_on_target_10": float(finishing),
         "self_confidence_1v1": float(self_confidence_1v1),
         "self_weak_foot_comfort": float(self_weak_foot_comfort),
         "self_focus_training": float(self_focus_training),
@@ -206,7 +396,7 @@ with onboarding_tab:
 
         try:
             summary_lines = [
-                "Målbar baseline-test gemt.",
+                "Baseline-test gemt.",
                 "",
                 f"10m sprint: {sprint_10m:.2f} s",
                 f"Stående længdespring: {long_jump_cm} cm",
@@ -216,6 +406,10 @@ with onboarding_tab:
                 f"Jonglering (alt.): {juggling_alt}",
                 f"Inde-ude højre 15s: {taps_right}",
                 f"Inde-ude venstre 15s: {taps_left}",
+                f"First touch /10: {first_touch_clean}",
+                f"Pasning højre /10: {passing_right}",
+                f"Pasning venstre /10: {passing_left}",
+                f"Afslutning /10: {finishing}",
                 "",
                 f"Selvtillid 1v1: {self_confidence_1v1}/10",
                 f"Komfort svagt ben: {self_weak_foot_comfort}/10",
@@ -226,17 +420,18 @@ with onboarding_tab:
             append_to_ongoing(
                 player_id=player_id,
                 entry_date=assessment_date,
-                title="Onboarding baseline",
+                title="Baseline-test",
                 body="\n".join(summary_lines),
             )
         except Exception:
-            # Markdown append errors should not block DB save.
             pass
 
         st.success("Baseline-test gemt.")
         if apply_to_epm and suggested:
             st.info("Foreslåede scores er anvendt i EPM.")
         st.rerun()
+
+# ---- tab: dybde-spørgsmål --------------------------------------------------
 
 with questions_tab:
     st.subheader("Dybde-spørgsmål")
@@ -245,7 +440,7 @@ with questions_tab:
         "Gemmes som assessment-data og kan bruges i spillerprofil, forældrekommunikation og planlægning."
     )
 
-    with st.form("onboarding_questions"):
+    with st.form("deep_questions"):
         q1 = st.text_area("Hvad elsker spilleren mest ved fodbold?")
         q2 = st.text_area("Hvornår falder niveauet typisk (stress, tempo, efter fejl)?")
         q3 = st.text_area("Hvordan lærer spilleren bedst (vise, forklaring, repetition, konkurrence)?")
@@ -286,7 +481,7 @@ with questions_tab:
             append_to_ongoing(
                 player_id=player_id,
                 entry_date=q_date,
-                title="Onboarding dybde-spørgsmål",
+                title="Dybde-spørgsmål",
                 body="\n".join(answer_lines),
             )
         except Exception:
@@ -295,36 +490,7 @@ with questions_tab:
         st.success("Dybde-spørgsmål gemt.")
         st.rerun()
 
-with overview_tab:
-    st.subheader("Udvikling af key metrics")
-
-    assessments = get_player_assessments(player_id, limit=30)
-    if assessments:
-        rows = []
-        for a in assessments:
-            metrics = key_metrics_snapshot(a.get("metrics_json", {}))
-            rows.append(
-                {
-                    "dato": a["assessment_date"],
-                    "type": a["assessment_type"],
-                    "sprint_10m": metrics.get("sprint_10m_seconds"),
-                    "long_jump_cm": metrics.get("long_jump_cm"),
-                    "turn_sprint_no_ball": metrics.get("turn_sprint_no_ball_seconds"),
-                    "turn_sprint_with_ball": metrics.get("turn_sprint_with_ball_seconds"),
-                    "juggling_alt": metrics.get("juggling_alt_count"),
-                    "taps_right_15s": metrics.get("taps_right_15s"),
-                    "taps_left_15s": metrics.get("taps_left_15s"),
-                }
-            )
-        st.dataframe(rows, use_container_width=True, hide_index=True)
-    else:
-        st.info("Ingen assessments endnu.")
-
-    st.markdown("### EPM-udvikling i nøgleområder")
-    tracked_dims = ["acceleration", "agility", "dribbling_speed", "ball_mastery", "weak_foot"]
-    history_by_dim = {k: get_epm_history(player_id, k, limit=50) for k in tracked_dims}
-    fig = multi_trend(history_by_dim, title=f"{player['name']} — onboarding til progression")
-    st.plotly_chart(fig, use_container_width=True)
+# ---- tab: 10-ugers review --------------------------------------------------
 
 with review_tab:
     st.subheader("10-ugers Review")
@@ -333,7 +499,6 @@ with review_tab:
         "fortæl spilleren hvor de står nu, og hvad næste niveau ser ud som."
     )
 
-    flat = profile["flat_scores"]
     review_date = st.date_input("Review-dato", value=date.today(), key="review_date")
 
     _state_key_prefix = f"review::{player_id}::{review_date.isoformat()}"

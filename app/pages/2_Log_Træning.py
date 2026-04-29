@@ -23,7 +23,7 @@ st.caption("Registrér en træning. Den tælles med i spillerens samlede trænin
 
 players = get_players()
 if not players:
-    st.warning("Ingen spillere registreret. Gå til Spilleroversigt for at tilføje en spiller.")
+    st.warning("Ingen spillere registreret. Gå til Spilleranalyse for at tilføje en spiller.")
     st.stop()
 
 player_options = {p["id"]: p["name"] for p in players}

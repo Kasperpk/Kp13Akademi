@@ -51,6 +51,10 @@ _MEASUREMENT_SCALES: dict[str, MeasurementScale] = {
     "juggling_alt_count": MeasurementScale(low_anchor=0.0, high_anchor=30.0, lower_is_better=False),
     "taps_right_15s": MeasurementScale(low_anchor=20.0, high_anchor=60.0, lower_is_better=False),
     "taps_left_15s": MeasurementScale(low_anchor=15.0, high_anchor=50.0, lower_is_better=False),
+    "first_touch_clean_10": MeasurementScale(low_anchor=2.0, high_anchor=9.0, lower_is_better=False),
+    "passing_right_5m_10": MeasurementScale(low_anchor=2.0, high_anchor=9.0, lower_is_better=False),
+    "passing_left_5m_10": MeasurementScale(low_anchor=0.0, high_anchor=8.0, lower_is_better=False),
+    "finishing_on_target_10": MeasurementScale(low_anchor=1.0, high_anchor=9.0, lower_is_better=False),
 }
 
 
@@ -103,9 +107,40 @@ def suggest_epm_from_measurements(measurements: dict[str, float]) -> dict[str, f
     if ball_mastery_components:
         out["ball_mastery"] = _clamp_score(_avg(ball_mastery_components))
 
+    weak_foot_components: list[float] = []
+
     taps_left = measurements.get("taps_left_15s")
     if taps_left is not None:
-        out["weak_foot"] = map_to_score(taps_left, _MEASUREMENT_SCALES["taps_left_15s"])
+        weak_foot_components.append(
+            map_to_score(taps_left, _MEASUREMENT_SCALES["taps_left_15s"])
+        )
+
+    passing_left = measurements.get("passing_left_5m_10")
+    if passing_left is not None:
+        weak_foot_components.append(
+            map_to_score(passing_left, _MEASUREMENT_SCALES["passing_left_5m_10"])
+        )
+
+    if weak_foot_components:
+        out["weak_foot"] = _clamp_score(_avg(weak_foot_components))
+
+    first_touch = measurements.get("first_touch_clean_10")
+    if first_touch is not None:
+        out["first_touch"] = map_to_score(
+            first_touch, _MEASUREMENT_SCALES["first_touch_clean_10"]
+        )
+
+    passing_right = measurements.get("passing_right_5m_10")
+    if passing_right is not None:
+        out["passing"] = map_to_score(
+            passing_right, _MEASUREMENT_SCALES["passing_right_5m_10"]
+        )
+
+    finishing = measurements.get("finishing_on_target_10")
+    if finishing is not None:
+        out["finishing"] = map_to_score(
+            finishing, _MEASUREMENT_SCALES["finishing_on_target_10"]
+        )
 
     return out
 
@@ -120,5 +155,9 @@ def key_metrics_snapshot(measurements: dict[str, float]) -> dict[str, float]:
         "juggling_alt_count",
         "taps_right_15s",
         "taps_left_15s",
+        "first_touch_clean_10",
+        "passing_right_5m_10",
+        "passing_left_5m_10",
+        "finishing_on_target_10",
     }
     return {k: v for k, v in measurements.items() if k in keep}
