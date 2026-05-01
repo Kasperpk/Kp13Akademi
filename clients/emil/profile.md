@@ -1,10 +1,10 @@
 # Player Profile
 
 **Name:** Emil Kærgaard
-**Age:** <!-- U-group -->
-**Dominant foot:** <!-- right / left / two-footed -->
-**Position:** <!-- -->
-**Club:** <!-- -->
+**Age:** U14
+**Dominant foot:** two-footed
+**Position:** wing and offensive mid
+**Club:** AAFA
 **Started training:** 2026-04-30
 **Contact (parent/player):** <!-- -->
 
@@ -35,66 +35,7 @@
 ## 3. Dimension anchors
 
 Scores are 1–10. **Anchor** means a specific rep or observation that justifies the number.
-Measured numbers (juggle counts, sprint times, etc.) live in [benchmarks.md](benchmarks.md).
 
-### Technical
-
-#### Første Touch (`first_touch`)
-- **What we've seen:** <!-- -->
-- **Anchor reps:** <!-- -->
-- **Known gap:** <!-- -->
-- **Working score:** <!-- 1-10 -->
-
-#### Pasning (`passing`)
-- **What we've seen:** <!-- -->
-- **Anchor reps:** <!-- -->
-- **Known gap:** <!-- -->
-- **Working score:** <!-- 1-10 -->
-
-#### Boldbeherskelse (`ball_mastery`)
-- **What we've seen:** <!-- -->
-- **Anchor reps:** <!-- -->
-- **Known gap:** <!-- -->
-- **Working score:** <!-- 1-10 -->
-
-#### Dribling med Fart (`dribbling_speed`)
-- **What we've seen:** <!-- -->
-- **Anchor reps:** <!-- -->
-- **Known gap:** <!-- -->
-- **Working score:** <!-- 1-10 -->
-
-#### Afslutning (`finishing`)
-- **What we've seen:** <!-- -->
-- **Anchor reps:** <!-- -->
-- **Known gap:** <!-- -->
-- **Working score:** <!-- 1-10 -->
-
-#### Svagt Ben (`weak_foot`)
-- **Dominant foot:** <!-- -->
-- **What we've seen:** <!-- -->
-- **Anchor reps:** <!-- -->
-- **Known gap:** <!-- -->
-- **Working score:** <!-- 1-10 -->
-
-### Physical
-
-#### Acceleration (`acceleration`)
-- **What we've seen:** <!-- -->
-- **Anchor reps:** <!-- -->
-- **Known gap:** <!-- -->
-- **Working score:** <!-- 1-10 -->
-
-#### Smidighed (`agility`)
-- **What we've seen:** <!-- -->
-- **Anchor reps:** <!-- -->
-- **Known gap:** <!-- -->
-- **Working score:** <!-- 1-10 -->
-
-#### Udholdenhed (`endurance`)
-- **What we've seen:** <!-- -->
-- **Anchor reps:** <!-- -->
-- **Known gap:** <!-- -->
-- **Working score:** <!-- 1-10 -->
 
 ### Cognitive
 
@@ -140,15 +81,6 @@ Measured numbers (juggle counts, sprint times, etc.) live in [benchmarks.md](ben
 - **What we've seen:** <!-- -->
 - **Anchor reps:** <!-- -->
 - **Working score:** <!-- 1-10 -->
-
----
-
-## 4. Upcoming fixtures & tournaments
-
-- **Tournament 1:** <!-- name, date, format, role -->
-- **Tournament 2:** <!-- -->
-
-**What I want to see in matches:** <!-- -->
 
 ---
 
