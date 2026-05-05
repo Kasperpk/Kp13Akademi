@@ -36,3 +36,18 @@ Forældrebehov: <!-- -->
 
 ---
 
+## 2026-05-05 - Second session
+Decent session where the structure was like this
+* warmup
+* footwork
+* turn without the ball
+* turn with the ball
+* dribling exercises
+* square dribling -> push, stop, pass
+* turning in three different directions with call
+* recieve on the wing and go deep versus go in to the field
+* recieve on the wing and go deep or in the field with finishing¨
+
+Emil is pretty good but we can work on some details where he can be better at pushing of the back foot to explode into new
+move. I think we should work more on this next time. 
+
