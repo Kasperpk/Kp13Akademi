@@ -40,71 +40,70 @@ Scores are 1–10. **Anchor** means a specific rep or observation that justifies
 ### Cognitive
 
 #### Spilforståelse (`game_reading`)
-- **What we've seen:** <!-- -->
-- **Anchor reps:** <!-- -->
-- **Known gap:** <!-- -->
-- **Working score:** <!-- 1-10 -->
+- **What we've seen:** A bit of his intelligence in terms of game in the first onboarding session
+- **Anchor reps:** The first onboarding session and seeing some of this trainings
+- **Known gap:** Not sure, but i guess he could be become more game intelligent
+- **Working score:** 6
 
 #### Beslutningshastighed (`decision_speed`)
-- **What we've seen:** <!-- -->
-- **Anchor reps:** <!-- -->
-- **Known gap:** <!-- -->
-- **Working score:** <!-- 1-10 -->
+- **What we've seen:** In 1v1s he seemed quite good at looking up and checking the space to the defender and making a move of that
+- **Known gap:** Not sure if there is a known gap but decision speed is a very important quality in modern football
+- **Working score:** 7
 
 #### Positionsspil (`positional_play`)
-- **What we've seen:** <!-- -->
-- **Anchor reps:** <!-- -->
-- **Known gap:** <!-- -->
-- **Working score:** <!-- 1-10 -->
+- **What we've seen:** Onboarding session
+- **Anchor reps:** Seen abit through training with him in the onboarding session
+- **Known gap:** Havent seen enough to identify known gaps
+- **Working score:** 6
 
 ### Mental
 
 #### Robusthed (`resilience`)
-- **What we've seen:** <!-- -->
-- **Anchor reps:** <!-- -->
-- **Known gap:** <!-- -->
+- **What we've seen:** The onboarding session
+- **Anchor reps:** In the onboarding session he showed good resilience to work through the trainings
+- **Known gap:** Don't have enough information for that. 
 - **Working score:** <!-- 1-10 -->
 
 #### Intensitet (`intensity`)
-- **What we've seen:** <!-- -->
-- **Anchor reps:** <!-- -->
-- **Known gap:** <!-- -->
-- **Working score:** <!-- 1-10 -->
+- **What we've seen:** In the onboarding session he did well to go through the sessions with intensity
+- **Anchor reps:** Really good onboarding session
+- **Known gap:** I don't think there is a known gap for his intensity
+- **Working score:** 9
 
 #### Trænarbarhed (`coachability`)
-- **What we've seen:** <!-- -->
-- **Anchor reps:** <!-- -->
-- **Known gap:** <!-- -->
-- **Working score:** <!-- 1-10 -->
+- **What we've seen:** He listened to the things i said in traiing and did well to try and adjust his methods and playstyle
+- **Anchor reps:** Onboarding session
+- **Known gap:** I am not sure if there is one, obviously he should also learn to coach himself during the week
+- **Working score:** 8
 
 #### Glæde (`joy`)
-- **What we've seen:** <!-- -->
-- **Anchor reps:** <!-- -->
-- **Working score:** <!-- 1-10 -->
+- **What we've seen:** Onboarding session and private games 
+- **Anchor reps:** He really enjoys the game that is for sure
+- **Working score:** 9
 
 ---
 
 ## 5. Home training context
 
-- **Access:** <!-- garden / cul-de-sac / indoor hallway / park nearby -->
-- **Equipment:** <!-- ball, cones, wall, rebounder -->
-- **Typical available time per day:** <!-- minutes -->
+- **Access:** Home court at home in the garden
+- **Equipment:** ball and wall and cones
+- **Typical available time per day:** 30-60 minutes
 - **Supervision:** solo (no opponents, no coaching adult on the ball)
-- **Persian Ball fit:** <!-- -->
-- **Constraints:** <!-- -->
+- **Persian Ball fit:** Yes he would benefit from doing some individual session focused on the persian ball training
+- **Constraints:** none
 
 ---
 
 ## 6. Parent context & communication
 
-**Parent name(s):** <!-- -->
-**Preferred channel:** <!-- -->
-**Parent's own football background:** <!-- -->
+**Parent name(s):** Henrik
+**Preferred channel:** Messenger
+**Parent's own football background:** None
 **Tone note (Lagoon Oasis):** parents should come away feeling confident and secure, never anxious. Lead with joy and progress, frame gaps as the next climb not a problem.
-**Specific asks from the parent:** <!-- -->
+**Specific asks from the parent:** Not much other than he trust me
 
 ---
 
 ## 7. Known unknowns
 
-- <!-- to populate after today's onboarding session -->
+
