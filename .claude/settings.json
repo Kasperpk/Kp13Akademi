@@ -6,7 +6,10 @@
       "Bash(.venv/Scripts/python.exe -m pytest)",
       "Bash(gh pr *)",
       "Bash(git fetch *)",
-      "Bash(git ls-tree *)"
+      "Bash(git ls-tree *)",
+      "Bash(python -c ' *)",
+      "Bash(python -m pip show python-docx)",
+      "Bash(python -)"
     ]
   }
 }
