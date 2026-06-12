@@ -1,0 +1,12 @@
+AAFA football training U9 – 10/06/2026
+We’ve had some tournaments lately and what i see from those is that our players are not really at the la masia level yet. We’re trying to work on the fundamentals. What i see as a trainer is that players are not having the spatial awareness and game understanding. So when we built up they might play across the goal then sort of hoping that someone else find a solution. They are not really thinking. It seems that there is no idea behind the play. 
+What we usually practice is something like this 
+•	Ball mastery (each player has a ball to begin with)
+•	Maybe 1v1s or passing exercises
+•	Bigger possessions games
+•	Free form games with goals
+Usually when it comes to the bigger possessions games the players are not really making things flow. The ball is not flowing. From my perspective the kids are running around randomly. Not able to deal with pressure even if it’s often fairly light like 7 v 3 or 6 v 2. 
+Many times in our tournaments we are trying to look for a play into the centre of the field but the play very often fails. It’s forced, it’s one dimensional. Perhaps the receiving player is not moving enough to become free or the wings are not moving enough to become free but i am not sure what would unlock the players and how to train it. When i look at Barcelona and la masia it seems like the players know when to move, when to hold their position, how to open up and use their first touch and how to keep the ball moving productively. They know where to move also according to how the players around them so they don’t take up space where others could run into. They make runs that open up space for others with overlaps and they don’t understand how supporting runs can open up the play even if they don’t receive the ball of it. 
+
+AAFA Football training – 12/06/2026
+After last weeks training which was really good, the players were improving and our possession and free form games were much higher quality. They begun moving much more trying to provide the player in position with at least 2 passing options, which was nice to see. This is something i want to keep being a focus for the rest of the season. I also think an important thing is to work on receiving and playing a pass quicker so that when you receive the ball now that you are free and having moved you understand how to do that effectively. That could perhaps be the focus of the next session here today as well as some dribbling. 
